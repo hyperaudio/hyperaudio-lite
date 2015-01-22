@@ -4,27 +4,30 @@
   <meta charset="utf-8">
   <title>HA - Lite</title>
   <style>
+
     a { 
       cursor: pointer; 
-      background-color: yellow;
-    }
-
-    .active {;
       background-color: yellow;
     }
 
     .active ~ a {
       background-color: white;
     }
+
+    p.active ~ p a{
+      background-color: white !important;
+    }
+
   </style>
   <script src="hyperaudio-lite.js"></script>
+  <script src="velocity-min.js"></script>
 </head>
 <body>
 <audio id="hyperplayer" src="http://hyperaud.io/lab/halite/interview.mp3" type="audio/mpeg" controls></audio>
 <div id="hypertranscript">
 </div>
 <script>
-hyperaudiolite.loadTranscript('transcript.html');
+hyperaudiolite.loadTranscript('transcriptparas.html');
 </script>
 </body>
 </html>

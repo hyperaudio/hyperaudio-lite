@@ -7,8 +7,10 @@ var hyperaudiolite = (function () {
 
   function init() {
     words = transcript.getElementsByTagName('a');
+    paras = transcript.getElementsByTagName('p');
     player = document.getElementById("hyperplayer");
     words[0].className = "active";
+    paras[0].className = "active";
     transcript.addEventListener("click", setPlayHead, false);
     player.addEventListener("timeupdate", checkPlayHead, false);
   }
@@ -23,6 +25,7 @@ var hyperaudiolite = (function () {
 
   function checkPlayHead(e) {
     var activewords = transcript.getElementsByClassName('active');
+    var activeparas = transcript.getElementsByClassName('active');
 
     if (activewords) {
       for (a = 0; a < activewords.length; a++) {
@@ -30,9 +33,16 @@ var hyperaudiolite = (function () {
       }
     }
 
+    if (activeparas) {
+      for (a = 0; a < activeparas.length; a++) {
+        activeparas[a].className = "";
+      }
+    }
+
     for (i = 0; i < words.length; i++) {
       if (parseInt(words[i].getAttribute("data-m"))/1000 >= player.currentTime) {
         words[i].setAttribute("class", "active");
+        words[i].parentNode.setAttribute("class", "active");
         break;
       }
     }
