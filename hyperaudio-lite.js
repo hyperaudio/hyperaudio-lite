@@ -21,8 +21,11 @@ var hyperaudiolite = (function () {
     var target = (e.target) ? e.target : e.srcElement;
     target.setAttribute("class", "active");
     var timeSecs = parseInt(target.getAttribute("data-m"))/1000;
-    player.currentTime = timeSecs;
-    player.play();
+    
+    if(!isNaN(parseFloat(timeSecs))) {
+      player.currentTime = timeSecs;
+      player.play();
+    }
   }
 
   function checkPlayHead(e) {
