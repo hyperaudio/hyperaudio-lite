@@ -4,7 +4,16 @@ var hyperaudiolite = (function () {
     transcript, 
     words, 
     player,
-    paraIndex;
+    paraIndex,
+    start,
+    end;
+  
+  function getParameter(name) {
+    name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+    var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+        results = regex.exec(location.search);
+    return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+  }
 
   function init() {
     words = transcript.getElementsByTagName('a');
@@ -15,6 +24,17 @@ var hyperaudiolite = (function () {
     paras[0].classList.add("active");
     transcript.addEventListener("click", setPlayHead, false);
     player.addEventListener("timeupdate", checkPlayHead, false);
+    
+    //check for queryString params
+
+    start = getParameter('s');
+
+    if (!isNaN(parseFloat(start))) {
+      player.currentTime = start/10;
+      player.play();      
+    }
+
+    end = parseFloat(getParameter('d')) + parseFloat(start);
   }
 
   function setPlayHead(e) {
@@ -29,6 +49,13 @@ var hyperaudiolite = (function () {
   }
 
   function checkPlayHead(e) {
+    
+    //check for end time of shared piece
+
+    if (end && (end/10 < player.currentTime)) {
+      player.pause();
+    }
+    
     var activeitems = transcript.getElementsByClassName('active');
     var activeitemsLength = activeitems.length;
 
