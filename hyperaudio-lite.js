@@ -43,6 +43,7 @@ var hyperaudiolite = (function () {
     var timeSecs = parseInt(target.getAttribute("data-m"))/1000;
     
     if(!isNaN(parseFloat(timeSecs))) {
+      end = null;
       player.currentTime = timeSecs;
       player.play();
     }
@@ -54,6 +55,7 @@ var hyperaudiolite = (function () {
 
     if (end && (end/10 < player.currentTime)) {
       player.pause();
+      end = null;
     }
     
     var activeitems = transcript.getElementsByClassName('active');
