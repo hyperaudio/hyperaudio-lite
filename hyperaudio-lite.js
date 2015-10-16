@@ -15,10 +15,10 @@ var hyperaudiolite = (function () {
     return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
   }
 
-  function init() {
+  function init(mediaElementId) {
     words = transcript.getElementsByTagName('a');
     paras = transcript.getElementsByTagName('p');
-    player = document.getElementById("hyperplayer");
+    player = document.getElementById(mediaElementId);
     paraIndex = 0;
     words[0].classList.add("active");
     paras[0].classList.add("active");
@@ -95,7 +95,7 @@ var hyperaudiolite = (function () {
         if (currentParaIndex != paraIndex) {
 
           Velocity(words[i].parentNode, "scroll", { 
-            /*container: transcript,*/
+            container: hypertranscript,
             duration: 800,
             delay: 0
           });
@@ -108,9 +108,9 @@ var hyperaudiolite = (function () {
     }
   }
 
-  hal.init = function() {
-    transcript = document.getElementById("hypertranscript");
-    init();
+  hal.init = function(transcriptId, mediaElementId) {
+    transcript = document.getElementById(transcriptId);
+    init(mediaElementId);
   }
 
   hal.loadTranscript = function(url) {
