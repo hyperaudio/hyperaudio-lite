@@ -9,8 +9,8 @@
     "coverage": "babel-node node_modules/isparta/bin/isparta cover node_modules/mocha/bin/_mocha --report lcovonly -- -R spec",
     "coveralls": "npm run coverage && coveralls < coverage/lcov.info && rimraf coverage",
     "test": "npm run test-server && npm run test-browser",
-    "test-server": "echo mocha test/server --recursive --bail --require babel-core/register mocha.config.js",
-    "test-browser": "echo karma start --single-run",
+    "test-server": "echo 'TODO' || mocha test/server --recursive --bail --require babel-core/register mocha.config.js",
+    "test-browser": "echo 'TODO' || karma start --single-run",
     "tdd": "npm run test-server -- --watch",
     "tdd-browser": "karma start"
   },
