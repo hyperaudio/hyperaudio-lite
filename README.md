@@ -5,7 +5,7 @@
 
 A lightweight no-dependency viewer for viewing Hypertranscripts
 
-As demonstrated [here](http://hyperaud.io/lab/halite/)
+As demonstrated [here](http://hyperaudio.github.io/hyperaudio-lite/)
 
 ## Installation
 

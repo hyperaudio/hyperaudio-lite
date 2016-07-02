@@ -12,7 +12,8 @@
     "test-server": "echo 'TODO' || mocha test/server --recursive --bail --require babel-core/register mocha.config.js",
     "test-browser": "echo 'TODO' || karma start --single-run",
     "tdd": "npm run test-server -- --watch",
-    "tdd-browser": "karma start"
+    "tdd-browser": "karma start",
+    "gh-pages": "git subtree push --prefix examples origin gh-pages"
   },
   "repository": "hyperaudio/hyperaudio-lite",
   "keywords": [
