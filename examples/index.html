@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>HA - Lite</title>
+  <style>
+    a {
+      cursor: pointer;
+      background-color: yellow;
+    }
+
+    .active ~ a {
+      background-color: white;
+    }
+
+    p.active ~ p a{
+      background-color: white !important;
+    }
+  </style>
+  <script src="../dist/hyperaudio-lite.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/velocity/1.2.3/velocity.js"></script>
+</head>
+<body>
+  <audio id="hyperplayer" src="http://hyperaud.io/lab/halite/interview.mp3" type="audio/mpeg" controls></audio>
+
+  <div id="hypertranscript">
+  </div>
+
+  <script>
+    hyperaudioLite.loadTranscript('transcriptparas.html', function() {
+      hyperaudioLite.init('hypertranscript', 'hyperplayer');
+    });
+  </script>
+  <!-- Uncomment the following script if you require IE versions less than 10 to be supported or Opera Mini http://caniuse.com/#search=classlist ¯\_(ツ)_/¯ -->
+  <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/2014.01.31/classList.min.js"></script> -->
+</body>
+</html>
