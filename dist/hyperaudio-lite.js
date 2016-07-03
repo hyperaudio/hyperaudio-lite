@@ -62,6 +62,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _utils = __webpack_require__(1);
 
+	// default options
 	var defaults = {
 	  scroll: true
 	};
@@ -71,19 +72,29 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	  options = Object.assign({}, defaults, options);
 
-	  var words = transcript.getElementsByTagName('a');
-	  var paras = transcript.getElementsByTagName('p');
+	  var words = transcript.getElementsByTagName('a'); // TODO use @data-m
+	  var paras = transcript.getElementsByTagName('p'); // TODO use parents tree
 
 	  var paraIndex = 0;
 
 	  words[0].classList.add('active');
 	  paras[0].classList.add('active');
 
-	  var start = (0, _utils.getParameter)('s');
+	  // start with 1st word
+	  var start = parseInt(words[0].getAttribute('data-m'), 10);
+	  // end of transcript segment
 	  var stop = parseInt(words[words.length - 1].getAttribute('data-m'), 10);
-	  var end = parseFloat((0, _utils.getParameter)('d')) + parseFloat(start);
-	  if (stop < end) end = stop;
+	  var end = stop;
 
+	  // allow start/end within start/stop
+	  if (!isNaN(parseFloat((0, _utils.getParameter)('s'))) && start <= parseFloat((0, _utils.getParameter)('s'))) {
+	    start = parseFloat((0, _utils.getParameter)('s'));
+	    if (!isNaN(parseFloat((0, _utils.getParameter)('d'))) && stop >= parseFloat((0, _utils.getParameter)('d')) + parseFloat(start)) {
+	      end = parseFloat((0, _utils.getParameter)('d')) + parseFloat(start);
+	    }
+	  }
+
+	  // user action
 	  transcript.addEventListener('click', function (e) {
 	    var target = e.target ? e.target : e.srcElement;
 	    target.setAttribute('class', 'active');
@@ -96,8 +107,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	  }, false);
 
+	  // player clock
 	  player.addEventListener('timeupdate', function (e) {
-	    // check for end time of shared piece
 	    if (end && end / 1000 < player.currentTime) {
 	      player.pause();
 	      end = null;
@@ -108,13 +119,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	      player.pause();
 	    }
 
-	    var activeitems = transcript.getElementsByClassName('active');
-	    var activeitemsLength = activeitems.length;
+	    var activeItems = transcript.getElementsByClassName('active');
 
-	    for (var a = 0; a < activeitemsLength; a++) {
-	      if (activeitems[a]) {
+	    for (var a = 0; a < activeItems.length; a++) {
+	      if (activeItems[a]) {
 	        // TODO: look into why we need this
-	        activeitems[a].classList.remove('active');
+	        activeItems[a].classList.remove('active');
 	      }
 	    }
 
@@ -230,12 +240,18 @@ return /******/ (function(modules) { // webpackBootstrap
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
+
+	// TODO use media fragment URI
 	var getParameter = exports.getParameter = function getParameter(name) {
 	  name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
 	  var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
 	  var results = regex.exec(location.search);
 	  return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
 	};
+
+	// TODO
+	// XHR load transcript
+	// audio/video player creation
 
 /***/ }
 /******/ ])

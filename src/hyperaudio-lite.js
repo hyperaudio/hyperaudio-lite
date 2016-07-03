@@ -1,5 +1,6 @@
 import { getParameter } from './utils';
 
+// default options
 const defaults = {
   scroll: true
 };
@@ -7,19 +8,31 @@ const defaults = {
 const HyperaudioLite = (player, transcript, options = {}) => {
   options = Object.assign({}, defaults, options);
 
-  const words = transcript.getElementsByTagName('a');
-  const paras = transcript.getElementsByTagName('p');
+  const words = transcript.getElementsByTagName('a'); // TODO use @data-m
+  const paras = transcript.getElementsByTagName('p'); // TODO use parents tree
 
   let paraIndex = 0;
 
   words[0].classList.add('active');
   paras[0].classList.add('active');
 
-  const start = getParameter('s');
+  // start with 1st word
+  let start = parseInt(words[0].getAttribute('data-m'), 10);
+  // end of transcript segment
   const stop = parseInt(words[words.length - 1].getAttribute('data-m'), 10);
-  let end = parseFloat(getParameter('d')) + parseFloat(start);
-  if (stop < end) end = stop;
+  let end = stop;
 
+  // allow start/end within start/stop
+  if (!isNaN(parseFloat(getParameter('s')))
+    && start <= parseFloat(getParameter('s'))) {
+    start = parseFloat(getParameter('s'));
+    if (!isNaN(parseFloat(getParameter('d')))
+      && stop >= parseFloat(getParameter('d')) + parseFloat(start)) {
+      end = parseFloat(getParameter('d')) + parseFloat(start);
+    }
+  }
+
+  // user action
   transcript.addEventListener('click', (e) => {
     const target = (e.target) ? e.target : e.srcElement;
     target.setAttribute('class', 'active');
@@ -32,8 +45,8 @@ const HyperaudioLite = (player, transcript, options = {}) => {
     }
   }, false);
 
+  // player clock
   player.addEventListener('timeupdate', (e) => {
-    // check for end time of shared piece
     if (end && (end / 1000 < player.currentTime)) {
       player.pause();
       end = null;
@@ -44,12 +57,11 @@ const HyperaudioLite = (player, transcript, options = {}) => {
       player.pause();
     }
 
-    const activeitems = transcript.getElementsByClassName('active');
-    const activeitemsLength = activeitems.length;
+    const activeItems = transcript.getElementsByClassName('active');
 
-    for (let a = 0; a < activeitemsLength; a++) {
-      if (activeitems[a]) { // TODO: look into why we need this
-        activeitems[a].classList.remove('active');
+    for (let a = 0; a < activeItems.length; a++) {
+      if (activeItems[a]) { // TODO: look into why we need this
+        activeItems[a].classList.remove('active');
       }
     }
 
@@ -127,7 +139,7 @@ const ready = () => {
   }
 };
 
-if (document.readyState !== 'loading'){
+if (document.readyState !== 'loading') {
   ready();
 } else {
   document.addEventListener('DOMContentLoaded', ready);
