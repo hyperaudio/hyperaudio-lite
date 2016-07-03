@@ -88,9 +88,41 @@ const HyperaudioLite = (player, transcript, options = {}) => {
   }
 };
 
-export default (playerId, transcriptId, options) => {
-  const player = document.getElementById(playerId);
+const factory = (playerId, transcriptId, options) => {
+  console.log(playerId, transcriptId, options);
   const transcript = document.getElementById(transcriptId);
+
+  if (playerId === null && transcript.getAttribute('data-audio-src') !== null) {
+    const audio = document.createElement('audio');
+    playerId = transcriptId + '-player';
+    audio.setAttribute('id', playerId);
+    audio.setAttribute('controls', true);
+    audio.setAttribute('src', transcript.getAttribute('data-audio-src'));
+    audio.style.display = 'none';
+    transcript.appendChild(audio);
+  }
+
+  const player = document.getElementById(playerId);
 
   return new HyperaudioLite(player, transcript, options);
 };
+
+export default factory;
+
+// READY
+const ready = () => {
+  for (const transcript of [].slice.call(document.querySelectorAll('.hyperaudio-transcript'))) {
+    let transcriptId = transcript.id;
+    if ( transcriptId === null || transcriptId === '') {
+      transcriptId = 'ha-' + new Date().getTime() + '-' + parseInt(Math.random() * 1e7);
+      transcript.setAttribute('id', transcriptId);
+    }
+    factory(null, transcriptId, null);
+  }
+};
+
+if (document.readyState !== 'loading'){
+  ready();
+} else {
+  document.addEventListener('DOMContentLoaded', ready);
+}

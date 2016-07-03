@@ -153,13 +153,66 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }
 	};
 
-	exports.default = function (playerId, transcriptId, options) {
-	  var player = document.getElementById(playerId);
+	var factory = function factory(playerId, transcriptId, options) {
+	  console.log(playerId, transcriptId, options);
 	  var transcript = document.getElementById(transcriptId);
+
+	  if (playerId === null && transcript.getAttribute('data-audio-src') !== null) {
+	    var audio = document.createElement('audio');
+	    playerId = transcriptId + '-player';
+	    audio.setAttribute('id', playerId);
+	    audio.setAttribute('controls', true);
+	    audio.setAttribute('src', transcript.getAttribute('data-audio-src'));
+	    audio.style.display = 'none';
+	    transcript.appendChild(audio);
+	  }
+
+	  var player = document.getElementById(playerId);
 
 	  return new HyperaudioLite(player, transcript, options);
 	};
 
+	exports.default = factory;
+
+	// READY
+
+	var ready = function ready() {
+	  var _iteratorNormalCompletion = true;
+	  var _didIteratorError = false;
+	  var _iteratorError = undefined;
+
+	  try {
+	    for (var _iterator = [].slice.call(document.querySelectorAll('.hyperaudio-transcript'))[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+	      var transcript = _step.value;
+
+	      var transcriptId = transcript.id;
+	      if (transcriptId === null || transcriptId === '') {
+	        transcriptId = 'ha-' + new Date().getTime() + '-' + parseInt(Math.random() * 1e7);
+	        transcript.setAttribute('id', transcriptId);
+	      }
+	      factory(null, transcriptId, null);
+	    }
+	  } catch (err) {
+	    _didIteratorError = true;
+	    _iteratorError = err;
+	  } finally {
+	    try {
+	      if (!_iteratorNormalCompletion && _iterator.return) {
+	        _iterator.return();
+	      }
+	    } finally {
+	      if (_didIteratorError) {
+	        throw _iteratorError;
+	      }
+	    }
+	  }
+	};
+
+	if (document.readyState !== 'loading') {
+	  ready();
+	} else {
+	  document.addEventListener('DOMContentLoaded', ready);
+	}
 	module.exports = exports['default'];
 
 /***/ },
