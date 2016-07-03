@@ -84,8 +84,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	  var end = parseFloat((0, _utils.getParameter)('d')) + parseFloat(start);
 	  if (stop < end) end = stop;
 
-	  console.log(start, end);
-
 	  transcript.addEventListener('click', function (e) {
 	    var target = e.target ? e.target : e.srcElement;
 	    target.setAttribute('class', 'active');
@@ -163,7 +161,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 	var factory = function factory(playerId, transcriptId, options) {
-	  // console.log(playerId, transcriptId, options);
 	  var transcript = document.getElementById(transcriptId);
 
 	  if (playerId === null && transcript.getAttribute('data-audio-src') !== null) {
