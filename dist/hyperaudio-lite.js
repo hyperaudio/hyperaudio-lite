@@ -4,9 +4,9 @@
 	else if(typeof define === 'function' && define.amd)
 		define([], factory);
 	else if(typeof exports === 'object')
-		exports["hyperaudioLite"] = factory();
+		exports["HyperaudioLite"] = factory();
 	else
-		root["hyperaudioLite"] = factory();
+		root["HyperaudioLite"] = factory();
 })(this, function() {
 return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
@@ -52,67 +52,50 @@ return /******/ (function(modules) { // webpackBootstrap
 /************************************************************************/
 /******/ ([
 /* 0 */
-/***/ function(module, exports) {
+/***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	var hyperaudiolite = function () {
 
-	  var hal = {},
-	      transcript,
-	      words,
-	      paras,
-	      player,
-	      paraIndex,
-	      start,
-	      end;
+	var _utils = __webpack_require__(1);
 
-	  function getParameter(name) {
-	    name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
-	    var regex = new RegExp('[\\?&]' + name + '=([^&#]*)'),
-	        results = regex.exec(location.search);
-	    return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
-	  }
+	var defaults = {
+	  scroll: true
+	};
 
-	  function init(mediaElementId) {
-	    words = transcript.getElementsByTagName('a');
-	    paras = transcript.getElementsByTagName('p');
-	    player = document.getElementById(mediaElementId);
-	    paraIndex = 0;
-	    words[0].classList.add('active');
-	    paras[0].classList.add('active');
-	    transcript.addEventListener('click', setPlayHead, false);
-	    player.addEventListener('timeupdate', checkPlayHead, false);
+	var HyperaudioLite = function HyperaudioLite(player, transcript) {
+	  var options = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
 
-	    //check for queryString params
-	    start = getParameter('s');
+	  options = Object.assign({}, defaults, options);
 
-	    if (!isNaN(parseFloat(start))) {
-	      player.currentTime = start / 10;
-	      player.play();
-	    }
+	  var words = transcript.getElementsByTagName('a');
+	  var paras = transcript.getElementsByTagName('p');
 
-	    end = parseFloat(getParameter('d')) + parseFloat(start);
-	  }
+	  var paraIndex = 0;
 
-	  function setPlayHead(e) {
+	  words[0].classList.add('active');
+	  paras[0].classList.add('active');
+
+	  var start = (0, _utils.getParameter)('s');
+	  var end = parseFloat((0, _utils.getParameter)('d')) + parseFloat(start);
+
+	  transcript.addEventListener('click', function (e) {
 	    var target = e.target ? e.target : e.srcElement;
 	    target.setAttribute('class', 'active');
-	    var timeSecs = parseInt(target.getAttribute('data-m')) / 1000;
+	    var timeSecs = parseInt(target.getAttribute('data-m'), 10) / 1000;
 
 	    if (!isNaN(parseFloat(timeSecs))) {
 	      end = null;
 	      player.currentTime = timeSecs;
 	      player.play();
 	    }
-	  }
+	  }, false);
 
-	  function checkPlayHead(e) {
-	    //check for end time of shared piece
-
+	  player.addEventListener('timeupdate', function (e) {
+	    // check for end time of shared piece
 	    if (end && end / 10 < player.currentTime) {
 	      player.pause();
 	      end = null;
@@ -129,7 +112,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 
 	    // Establish current paragraph index
-	    var currentParaIndex;
+	    var currentParaIndex = void 0;
 
 	    for (var i = 1; i < words.length; i++) {
 	      if (parseInt(words[i].getAttribute('data-m')) / 1000 > player.currentTime) {
@@ -141,68 +124,59 @@ return /******/ (function(modules) { // webpackBootstrap
 	        words[i - 1].classList.add('active');
 	        words[i - 1].parentNode.classList.add('active');
 
-	        paras = transcript.getElementsByTagName('p');
-
-	        for (var aa = 0; aa < paras.length; aa++) {
-	          if (paras[aa].classList.contains('active')) {
-	            currentParaIndex = aa;
+	        for (var _a = 0; _a < paras.length; _a++) {
+	          if (paras[_a].classList.contains('active')) {
+	            currentParaIndex = _a;
 	            break;
 	          }
 	        }
 
-	        if (currentParaIndex !== paraIndex) {
-	          Velocity(words[i].parentNode, 'scroll', {
-	            container: hypertranscript,
-	            duration: 800,
-	            delay: 0
-	          });
+	        if (options.scroll && typeof Velocity !== 'undefined' && currentParaIndex !== paraIndex) {
+	          try {
+	            Velocity(words[i].parentNode, 'scroll', {
+	              container: transcript,
+	              duration: 800,
+	              delay: 0
+	            });
+	          } catch (ignored) {}
 	          paraIndex = currentParaIndex;
 	        }
 
 	        break;
 	      }
 	    }
+	  }, false);
+
+	  if (!isNaN(parseFloat(start))) {
+	    player.currentTime = start / 10;
+	    player.play();
 	  }
+	};
 
-	  hal.init = function (transcriptId, mediaElementId) {
-	    transcript = document.getElementById(transcriptId);
-	    init(mediaElementId);
-	  };
+	exports.default = function (playerId, transcriptId, options) {
+	  var player = document.getElementById(playerId);
+	  var transcript = document.getElementById(transcriptId);
 
-	  hal.loadTranscript = function (url, callback) {
-	    var xmlhttp;
+	  return new HyperaudioLite(player, transcript, options);
+	};
 
-	    if (window.XMLHttpRequest) {
-	      // code for IE7+, Firefox, Chrome, Opera, Safari
-	      xmlhttp = new XMLHttpRequest();
-	    } else {
-	      // code for IE6, IE5
-	      xmlhttp = new ActiveXObject('Microsoft.XMLHTTP');
-	    }
-
-	    xmlhttp.onreadystatechange = function () {
-	      if (xmlhttp.readyState === 4) {
-	        if (xmlhttp.status === 200) {
-	          transcript = document.getElementById('hypertranscript');
-	          transcript.innerHTML = xmlhttp.responseText;
-	          callback();
-	        } else if (xmlhttp.status === 400) {
-	          alert('There was an error 400');
-	        } else {
-	          alert('something else other than 200 was returned');
-	        }
-	      }
-	    };
-
-	    xmlhttp.open('GET', url, true);
-	    xmlhttp.send();
-	  };
-
-	  return hal;
-	}();
-
-	exports.default = hyperaudiolite;
 	module.exports = exports['default'];
+
+/***/ },
+/* 1 */
+/***/ function(module, exports) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	var getParameter = exports.getParameter = function getParameter(name) {
+	  name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+	  var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+	  var results = regex.exec(location.search);
+	  return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+	};
 
 /***/ }
 /******/ ])
