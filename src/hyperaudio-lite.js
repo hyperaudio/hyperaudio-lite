@@ -20,8 +20,6 @@ const HyperaudioLite = (player, transcript, options = {}) => {
   let end = parseFloat(getParameter('d')) + parseFloat(start);
   if (stop < end) end = stop;
 
-  console.log(start, end);
-
   transcript.addEventListener('click', (e) => {
     const target = (e.target) ? e.target : e.srcElement;
     target.setAttribute('class', 'active');
@@ -98,7 +96,6 @@ const HyperaudioLite = (player, transcript, options = {}) => {
 };
 
 const factory = (playerId, transcriptId, options) => {
-  // console.log(playerId, transcriptId, options);
   const transcript = document.getElementById(transcriptId);
 
   if (playerId === null && transcript.getAttribute('data-audio-src') !== null) {
