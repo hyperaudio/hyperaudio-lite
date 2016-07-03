@@ -16,7 +16,11 @@ const HyperaudioLite = (player, transcript, options = {}) => {
   paras[0].classList.add('active');
 
   const start = getParameter('s');
+  const stop = parseInt(words[words.length - 1].getAttribute('data-m'), 10);
   let end = parseFloat(getParameter('d')) + parseFloat(start);
+  if (stop < end) end = stop;
+
+  console.log(start, end);
 
   transcript.addEventListener('click', (e) => {
     const target = (e.target) ? e.target : e.srcElement;
@@ -32,9 +36,14 @@ const HyperaudioLite = (player, transcript, options = {}) => {
 
   player.addEventListener('timeupdate', (e) => {
     // check for end time of shared piece
-    if (end && (end / 10 < player.currentTime)) {
+    if (end && (end / 1000 < player.currentTime)) {
       player.pause();
       end = null;
+    }
+
+    // stop at end of transcript
+    if (stop / 1000 < player.currentTime) {
+      player.pause();
     }
 
     const activeitems = transcript.getElementsByClassName('active');
@@ -83,13 +92,13 @@ const HyperaudioLite = (player, transcript, options = {}) => {
   }, false);
 
   if (!isNaN(parseFloat(start))) {
-    player.currentTime = start / 10;
+    player.currentTime = start / 1000;
     player.play();
   }
 };
 
 const factory = (playerId, transcriptId, options) => {
-  console.log(playerId, transcriptId, options);
+  // console.log(playerId, transcriptId, options);
   const transcript = document.getElementById(transcriptId);
 
   if (playerId === null && transcript.getAttribute('data-audio-src') !== null) {
