@@ -13,7 +13,7 @@ module.exports = {
     path: './dist',
     filename: minimize ? 'hyperaudio-lite.min.js' : 'hyperaudio-lite.js',
     libraryTarget: 'umd',
-    library: 'hyperaudioLite'
+    library: 'HyperaudioLite'
   },
   module: {
     loaders: [{
