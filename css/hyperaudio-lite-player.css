@@ -1,0 +1,78 @@
+    #hypertranscript .strikethrough {
+      text-decoration: line-through;
+    }
+
+    #hypertranscript .annotation, #hypertranscript .parannotation{
+      opacity: 0.7;
+    }
+
+    #hypertranscript span.highlight {
+      background-color: yellow !important;
+    }
+
+    #hypertranscript span.highlight.active {
+      background-color: lightGreen !important;
+    }
+
+    #hypertranscript  header {
+      font-size: 200%;
+    }
+
+    #hypertranscript a {
+      cursor: pointer;
+      color: #000;
+    }
+/*
+    #hypertranscript .active ~ span {
+      color: #999;
+    }
+
+    #hypertranscript p.active ~ p span {
+      color: #999;
+    }
+*/
+
+    #hypertranscript span.read {
+      color: #000 !important;
+    }
+
+    #hypertranscript span.unread {
+      color: #999 !important;
+    }
+
+    #hypertranscript span.search-match {
+      background-color: pink !important;
+    }
+
+    #hypertranscript span.share-match {
+      background-color: #66ffad !important;
+    }
+
+    #hypertranscript sub:before {
+      content: '\231C';
+    }
+
+    #hypertranscript sub.highlight-duration:before {
+      content: '\231D';
+    }
+
+    #hypertranscript h5 {
+      font-size: 130%;
+    }
+
+    [data-m] {
+      cursor: pointer;
+    }
+
+    body {
+      font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif;
+      line-height: 1.5;
+    }
+
+    .speaker {
+      font-weight: bold;
+    }
+
+    .active {
+
+    }
