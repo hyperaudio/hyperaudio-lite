@@ -229,8 +229,14 @@ var hyperaudiolite = (function () {
         }
       }
 
+      var scrollNode = wordArr[l-1].n.parentNode;
+
+      if (scrollNode.tagName != "P") { // it's not inside a para so just use the element
+        scrollNode = wordArr[l-1].n;
+      }
+
       if (currentParaIndex != paraIndex) {
-        Velocity(wordArr[l-1].n.parentNode, "scroll", {
+        Velocity(scrollNode, "scroll", {
           container: hypertranscript,
           duration: 800,
           delay: 0
