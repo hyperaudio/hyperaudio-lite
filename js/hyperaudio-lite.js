@@ -12,7 +12,7 @@ var hyperaudiolite = (function () {
     end,
     timer,
     minimizedMode,
-    melarr = [];
+    wordArr = [];
 
   function init(mediaElementId, m) {
 
@@ -27,26 +27,27 @@ var hyperaudiolite = (function () {
     textShot = "";
     wordIndex = 0;
 
-    //Create the array of timed elements (melarr)
+    //Create the array of timed elements (wordArr)
 
-    var mels = document.querySelectorAll('[data-m]');
-    for (var i = 0; i < mels.length; ++i) {
-      var m = parseInt(mels[i].getAttribute('data-m'));
-      var p = mels[i].parentNode;
+    var words = document.querySelectorAll('[data-m]');
+    for (var i = 0; i < words.length; ++i) {
+      var m = parseInt(words[i].getAttribute('data-m'));
+      var p = words[i].parentNode;
       while (p !== document) {
         if (p.tagName.toLowerCase() === 'p' || p.tagName.toLowerCase() === 'figure' || p.tagName.toLowerCase() === 'ul') {
           break;
         }
         p = p.parentNode;
       }
-      melarr[i] = { 'n': mels[i], 'm': m, 'p': p }
+      wordArr[i] = { 'n': words[i], 'm': m, 'p': p }
     }
 
-    for (var i = 0; i < melarr.length; ++i) {
-      melarr[i].n.classList.add("unread");
+    for (var i = 0; i < wordArr.length; ++i) {
+      wordArr[i].n.classList.add("unread");
     };
 
-    words = transcript.getElementsByTagName('span');
+    //words = transcript.getElementsByTagName('span');
+
     paras = transcript.getElementsByTagName('p');
     player = document.getElementById(mediaElementId);
     paraIndex = 0;
@@ -168,10 +169,10 @@ var hyperaudiolite = (function () {
 
       var interval; // used to establish next checkPlayHead
 
-      var l = 0, r = melarr.length - 1;
+      var l = 0, r = wordArr.length - 1;
       while (l <= r) {
         var m = l + ((r - l) >> 1);
-        var comp = melarr[m].m / 1000 - player.currentTime;
+        var comp = wordArr[m].m / 1000 - player.currentTime;
         if (comp < 0) { // arr[m] comes before the element
           l = m + 1;
         }
@@ -185,17 +186,17 @@ var hyperaudiolite = (function () {
       }
 
       for (var i = 0; i < l; ++i) {
-        melarr[i].n.classList.add("read");
-        melarr[i].n.classList.remove("unread");
+        wordArr[i].n.classList.add("read");
+        wordArr[i].n.classList.remove("unread");
       }
 
-      for (var i = l; i < melarr.length; ++i) {
-        melarr[i].n.classList.add("unread");
-        melarr[i].n.classList.remove("read");
+      for (var i = l; i < wordArr.length; ++i) {
+        wordArr[i].n.classList.add("unread");
+        wordArr[i].n.classList.remove("read");
       }
 
       for (var i = 0; i < l; ++i) {
-        melarr[i].n.classList.remove("active");
+        wordArr[i].n.classList.remove("active");
       }
 
       paras = transcript.getElementsByTagName('p');
@@ -211,11 +212,11 @@ var hyperaudiolite = (function () {
       // set current word and para to active
 
       if (l > 0) {
-        melarr[l-1].n.classList.add("active");
-        melarr[l-1].n.parentNode.classList.add("active");
+        wordArr[l-1].n.classList.add("active");
+        wordArr[l-1].n.parentNode.classList.add("active");
       }
 
-      interval = parseInt(melarr[l].n.getAttribute("data-m") - player.currentTime*1000);
+      interval = parseInt(wordArr[l].n.getAttribute("data-m") - player.currentTime*1000);
 
       // Establish current paragraph index
 
@@ -229,7 +230,7 @@ var hyperaudiolite = (function () {
       }
 
       if (currentParaIndex != paraIndex) {
-        Velocity(melarr[l-1].n.parentNode, "scroll", {
+        Velocity(wordArr[l-1].n.parentNode, "scroll", {
           container: hypertranscript,
           duration: 800,
           delay: 0
