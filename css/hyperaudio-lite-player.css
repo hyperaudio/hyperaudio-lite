@@ -6,11 +6,11 @@
       opacity: 0.7;
     }
 
-    #hypertranscript span.highlight {
+    #hypertranscript .highlight {
       background-color: yellow !important;
     }
 
-    #hypertranscript span.highlight.active {
+    #hypertranscript .highlight.active {
       background-color: lightGreen !important;
     }
 
@@ -32,19 +32,19 @@
     }
 */
 
-    #hypertranscript span.read {
+    #hypertranscript .read {
       color: #000 !important;
     }
 
-    #hypertranscript span.unread {
+    #hypertranscript .unread {
       color: #999 !important;
     }
 
-    #hypertranscript span.search-match {
+    #hypertranscript .search-match {
       background-color: pink !important;
     }
 
-    #hypertranscript span.share-match {
+    #hypertranscript .share-match {
       background-color: #66ffad !important;
     }
 
@@ -73,5 +73,3 @@
     .speaker {
       font-weight: bold;
     }
-
-  
