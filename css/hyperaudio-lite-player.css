@@ -1,75 +1,79 @@
-    #hypertranscript .strikethrough {
-      text-decoration: line-through;
-    }
+#hypertranscript .strikethrough {
+  text-decoration: line-through;
+}
 
-    #hypertranscript .annotation, #hypertranscript .parannotation{
-      opacity: 0.7;
-    }
+#hypertranscript .annotation, #hypertranscript .parannotation{
+  opacity: 0.7;
+}
 
-    #hypertranscript .highlight {
-      background-color: yellow !important;
-    }
+#hypertranscript .highlight {
+  background-color: yellow !important;
+}
 
-    #hypertranscript .highlight.active {
-      background-color: lightGreen !important;
-    }
+#hypertranscript .highlight.active {
+  background-color: lightGreen !important;
+}
 
-    #hypertranscript  header {
-      font-size: 200%;
-    }
+#hypertranscript  header {
+  font-size: 200%;
+}
 
-    #hypertranscript a {
-      cursor: pointer;
-      color: #000;
-    }
+/*#hypertranscript a {
+  cursor: pointer;
+  color: #000;
+}*/
 /*
-    #hypertranscript .active ~ span {
-      color: #999;
-    }
+#hypertranscript .active ~ span {
+  color: #999;
+}
 
-    #hypertranscript p.active ~ p span {
-      color: #999;
-    }
+#hypertranscript p.active ~ p span {
+  color: #999;
+}
 */
 
-    #hypertranscript .read {
-      color: #000 !important;
-    }
+#hypertranscript a, a.link {
+  border: 0px;
+}
 
-    #hypertranscript .unread {
-      color: #999 !important;
-    }
+#hypertranscript .read {
+  color: #000 !important;
+}
 
-    #hypertranscript .search-match {
-      background-color: pink !important;
-    }
+#hypertranscript .unread {
+  color: #999 !important;
+}
 
-    #hypertranscript .share-match {
-      background-color: #66ffad !important;
-    }
+#hypertranscript .search-match {
+  background-color: pink !important;
+}
 
-    #hypertranscript sub:before {
-      content: '\231C';
-    }
+#hypertranscript .share-match {
+  background-color: #66ffad !important;
+}
 
-    #hypertranscript sub.highlight-duration:before {
-      content: '\231D';
-    }
+#hypertranscript sub:before {
+  content: '\231C';
+}
 
-    #hypertranscript h5 {
-      font-size: 130%;
-    }
+#hypertranscript sub.highlight-duration:before {
+  content: '\231D';
+}
 
-    [data-m] {
-      cursor: pointer;
-    }
+#hypertranscript h5 {
+  font-size: 130%;
+}
+
+[data-m] {
+  cursor: pointer;
+}
 
 
-    body {
-      font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif;
-      line-height: 1.5;
-    }
+body {
+  font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif;
+  line-height: 1.5;
+}
 
-    .speaker {
-      font-weight: bold;
-    }
+.speaker {
+  font-weight: bold;
+}
