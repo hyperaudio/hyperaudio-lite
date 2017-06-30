@@ -4,6 +4,7 @@
   <meta charset="utf-8">
   <title>BBCRD | Education | Ethics of personal data in the era of QS and IoT</title>
   <link rel="stylesheet" href="css/hyperaudio-lite-player.css">
+  <link rel="stylesheet" href="css/share-this.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/velocity/1.5.0/velocity.js"></script>
   <script src="https://platform.twitter.com/widgets.js"></script>
 </head>
@@ -968,17 +969,13 @@
 
   <script src="js/hyperaudio-lite.js"></script>
   <script src="js/hyperaudio-lite-wrapper.js"></script>
-  <script src="https://hyperaudio.github.io/sharect/sharect.min.js"></script>
-
+  <script src="js/share-this.js"></script>
+  <script src="js/share-this-twitter.js"></script>
   <script>
-  var sharect = new Sharect();
-    sharect.config({
-      /*facebook: true,*/
-      twitter: true,
-      twitterUsername: '%23hashtag', /*hashtag example*/
-      /*backgroundColor: '#ff4081',*/
-      iconColor: '#fff'
-    }).init();
+  ShareThis({
+      sharers: [ ShareThisViaTwitter ],
+      selector: "article"
+  }).init();
   </script>
 
   <!-- Uncomment the following script if you require IE versions less than 10 to be supported or Opera Mini http://caniuse.com/#search=classlist ¯\_(ツ)_/¯ -->

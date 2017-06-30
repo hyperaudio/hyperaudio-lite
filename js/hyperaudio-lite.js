@@ -23,6 +23,13 @@ var hyperaudiolite = (function () {
       }
     }, false);
 
+    window.addEventListener('touchend', function() {
+
+      if ( getSelectionMediaFragment() !== "") {
+        document.location.hash = getSelectionMediaFragment();
+      }
+    }, false);
+
     minimizedMode = m;
     textShot = "";
     wordIndex = 0;
