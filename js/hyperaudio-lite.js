@@ -18,15 +18,10 @@ var hyperaudiolite = (function () {
 
     window.addEventListener('mouseup', function() {
 
-      if ( getSelectionMediaFragment() !== "") {
-        document.location.hash = getSelectionMediaFragment();
-      }
-    }, false);
+      var mediaFragment = getSelectionMediaFragment();
 
-    window.addEventListener('touchend', function() {
-
-      if ( getSelectionMediaFragment() !== "") {
-        document.location.hash = getSelectionMediaFragment();
+      if ( mediaFragment !== "") {
+        document.location.hash = mediaFragment;
       }
     }, false);
 
@@ -102,11 +97,11 @@ var hyperaudiolite = (function () {
       fNode = selection.focusNode.parentNode;
       aNode = selection.anchorNode.parentNode;
 
-      if (aNode.tagName.toLowerCase() != "span" || aNode.className == "speaker") {
+      if (aNode.getAttribute('data-m') == null || aNode.className == "speaker") {
          aNode = aNode.nextElementSibling;
       }
 
-      if (fNode.tagName.toLowerCase() != "span" || fNode.className == "speaker") {
+      if (fNode.getAttribute('data-m') == null || fNode.className == "speaker") {
          fNode = fNode.previousElementSibling;
       }
 
@@ -115,7 +110,7 @@ var hyperaudiolite = (function () {
       var fNodeTime;
       var fNodeDuration;
 
-      if (fNode != null && fNode.tagName.toLowerCase() == "span") {
+      if (fNode != null && fNode.getAttribute('data-m') != null) {
         fNodeTime = parseInt(fNode.getAttribute('data-m'), 10);
         fNodeDuration = parseInt(fNode.getAttribute('data-d'), 10);
       }
@@ -146,6 +141,7 @@ var hyperaudiolite = (function () {
   }
 
   function setPlayHead(e) {
+
     var target = (e.target) ? e.target : e.srcElement;
     target.setAttribute("class", "active");
     var timeSecs = parseInt(target.getAttribute("data-m"))/1000;
@@ -236,22 +232,26 @@ var hyperaudiolite = (function () {
         }
       }
 
-      var scrollNode = wordArr[l-1].n.parentNode;
+      var scrollNode = null;
 
-      if (scrollNode.tagName != "P") { // it's not inside a para so just use the element
-        scrollNode = wordArr[l-1].n;
-      }
+      if (l > 0) {
+        scrollNode = wordArr[l-1].n.parentNode;
 
-      if (currentParaIndex != paraIndex) {
-        Velocity(scrollNode, "scroll", {
-          container: hypertranscript,
-          duration: 800,
-          delay: 0
-        });
+        if (scrollNode.tagName != "P") { // it's not inside a para so just use the element
+          scrollNode = wordArr[l-1].n;
+        }
 
-        newPara = true;
+        if (currentParaIndex != paraIndex) {
+          Velocity(scrollNode, "scroll", {
+            container: hypertranscript,
+            duration: 800,
+            delay: 0
+          });
 
-        paraIndex = currentParaIndex;
+          newPara = true;
+
+          paraIndex = currentParaIndex;
+        }
       }
 
       //minimizedMode is still experimental - it changes document.title upon every new word
