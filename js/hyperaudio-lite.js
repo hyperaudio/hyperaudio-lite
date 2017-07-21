@@ -219,7 +219,11 @@ var hyperaudiolite = (function () {
         wordArr[l-1].n.parentNode.classList.add("active");
       }
 
-      interval = parseInt(wordArr[l].n.getAttribute("data-m") - player.currentTime*1000);
+      if (wordArr[l]) {
+        interval = parseInt(wordArr[l].n.getAttribute("data-m") - player.currentTime*1000);
+      } else {
+        interval = 0;
+      }
 
       // Establish current paragraph index
 
