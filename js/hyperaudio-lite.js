@@ -1,13 +1,16 @@
+'use strict';
+
 var hyperaudiolite = (function () {
 
   var hashArray = window.location.hash.substr(3).split(',');
 
   var hal = {},
     transcript,
-    words,
     player,
     paraIndex,
     wordIndex,
+    textShot,
+    paras,
     start,
     end,
     timer,
@@ -85,6 +88,7 @@ var hyperaudiolite = (function () {
   function getSelectionMediaFragment() {
 
     var fragment = "";
+    var selection = null;
 
     if (window.getSelection) {
        selection = window.getSelection();
@@ -94,8 +98,8 @@ var hyperaudiolite = (function () {
 
     if (selection.toString() !== '') {
 
-      fNode = selection.focusNode.parentNode;
-      aNode = selection.anchorNode.parentNode;
+      var fNode = selection.focusNode.parentNode;
+      var aNode = selection.anchorNode.parentNode;
 
       if (aNode.getAttribute('data-m') == null || aNode.className == "speaker") {
          aNode = aNode.nextElementSibling;
@@ -157,7 +161,7 @@ var hyperaudiolite = (function () {
     if (timer) clearTimeout(timer);
   }
 
-  function checkPlayHead(e) {
+  function checkPlayHead() {
 
     clearTimer();
 

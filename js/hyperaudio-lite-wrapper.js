@@ -1,3 +1,4 @@
+'use strict';
 // Example wrapper for hyperaudio-lite with search and playbackRate included
 
 var searchForm = document.getElementById("searchForm");
