@@ -68,7 +68,14 @@ var hyperaudiolite = (function () {
 
     if (!isNaN(parseFloat(start))) {
       player.currentTime = start;
-      player.play();
+      var promise = player.play();
+      if (promise !== undefined) {
+        promise.catch(error => {
+            console.log("Auto-play prevented");
+        }).then(() => {
+            // Auto-play started
+        });
+      }
     }
 
     end = hashArray[1];
