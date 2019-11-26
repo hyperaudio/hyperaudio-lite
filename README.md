@@ -1,7 +1,7 @@
 # hyperaudio-lite
-Hyperaudio Lite - a Hypertranscript Viewer
+Hyperaudio Lite - an Interactive Transcript Viewer
 
-A lightweight no-dependency viewer for viewing Hypertranscripts
+A lightweight no-dependency viewer for viewing Interactive Transcripts
 
 As demonstrated [http://hyperaud.io/lab/halite/v18/](http://hyperaud.io/lab/halite/v18/)
 
