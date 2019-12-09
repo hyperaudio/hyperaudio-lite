@@ -111,16 +111,16 @@ Add to your HTML file in the following way:
 ```
 and in at the end of the `<body>`:
 
-```
+```html
   <script src="js/hyperaudio-lite.js"></script>
   <script src="js/hyperaudio-lite-wrapper.js"></script>
   <script src="js/share-this.js"></script>
   <script src="js/share-this-twitter.js"></script>
   <script>
-  ShareThis({
+    ShareThis({
       sharers: [ ShareThisViaTwitter ],
       selector: "article"
-  }).init();
+    }).init();
   </script>
 </body>
 ```
