@@ -109,7 +109,7 @@ Add to your HTML file in the following way:
   <script src="https://platform.twitter.com/widgets.js"></script>
 </head>
 ```
-and in at the end of the `<body>`:
+and at the end of the `<body>`:
 
 ```html
   <script src="js/hyperaudio-lite.js"></script>
