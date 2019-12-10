@@ -10,7 +10,7 @@ Hyperaudio Lite - è un visualizzatore di [Interactive Transcripts](https://en.w
 * nessuna dipendenza dal framework
 * Licenza MIT
 
-## :star2: Iper Poteri
+## :star2: Iper Poteri :star2:
 
 Interactive transcripts sono trascrizioni con poteri speciali. Le trascrizioni interattive di Hyperaudio sono chiamate Hypertranscripts e sono infuse con i seguenti iperpoteri:
 
