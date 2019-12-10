@@ -10,7 +10,7 @@ You can user Hyperaudio Lite to provide Interactive Transcripts, this readme det
 * no framework dependencies
 * MIT Licensed
 
-## :star2: Hyper Powers
+## :star2: Hyper Powers :star2:
 
 Interactive transcripts are transcripts with special powers. Hyperaudio's Interactive Transcripts are called Hypertranscripts and are infused with the following hyper-powers:
 
@@ -58,7 +58,7 @@ Here's an example:
 </p>
 ```
 
-Hyperaudio Lite is "tag agnostic" so for example, you could use other tags other than `<span>` to wrap words.
+Hyperaudio Lite is "tag agnostic" so for example, you could use other tags instead of `<span>` to wrap words.
 
 You could also make headings link to chapter points using attributes, like this:
 
@@ -66,13 +66,13 @@ You could also make headings link to chapter points using attributes, like this:
 <h5 data-m="214800">What kind of help is available for people to manage their own data?</h5>
 ```
 
-We see that a Hypertranscript is really just HTML, this helps keep it:
+We can see that a Hypertranscript is really just HTML, this helps keep it:
 
 * :clap: extensible 
 * :clap: accessible  
 * :clap: readable 
 
-###How to make a Hypertranscript
+### How to make a Hypertranscript
 
 One way is to use the [Hyperaudio Converter](https://hyperaud.io/converter/)
 
