@@ -125,7 +125,7 @@ e alla fine di `<body>`:
 </body>
 ```
 
-Visualizza il codice sorgente su [http://hyperaud.io/lab/halite/v18/](https://hyperaud.io/lab/halite/v18/) per un esempio completo.d.io/lab/halite/v18/) for a complete example.
+Visualizza il codice sorgente su [http://hyperaud.io/lab/halite/v18/](https://hyperaud.io/lab/halite/v18/) per un esempio completo.
 
 
 ## :tiger: Hyperaudio Lite in the Wild
