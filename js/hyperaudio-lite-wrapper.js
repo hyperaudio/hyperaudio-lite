@@ -1,3 +1,5 @@
+/*! (C) The Hyperaudio Project. MIT @license: en.wikipedia.org/wiki/MIT_License. */
+
 'use strict';
 // Example wrapper for hyperaudio-lite with search and playbackRate included
 
