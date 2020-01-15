@@ -177,39 +177,43 @@ var hyperaudiolite = (function () {
     if (end && (end < player.currentTime)) {
       player.pause();
       end = null;
-      paused = true;
+
     } else {
       var newPara = false;
 
       var interval; // used to establish next checkPlayHead
 
-      var l = 0, r = wordArr.length - 1;
-      while (l <= r) {
-        var m = l + ((r - l) >> 1);
-        var comp = wordArr[m].m / 1000 - player.currentTime;
-        if (comp < 0) { // arr[m] comes before the element
-          l = m + 1;
+      var index = 0;
+      var words = wordArr.length - 1;
+
+      // Binary search https://en.wikipedia.org/wiki/Binary_search_algorithm
+      while (index <= words) {
+        var guessIndex = index + ((words - index) >> 1); // >> 1 has the effect of halving and rounding down
+        var difference = wordArr[guessIndex].m / 1000 - player.currentTime; // wordArr[guessIndex].m represents start time of word
+
+        if (difference < 0) { // comes before the element
+          index = guessIndex + 1;
         }
-        else if (comp > 0) { // arr[m] comes after the element
-          r = m - 1;
+        else if (difference > 0) { // comes after the element
+          words = guessIndex - 1;
         }
-        else { // this[m] equals the element
-          l = m;
+        else { // equals the element
+          index = guessIndex;
           break;
         }
       }
 
-      for (var i = 0; i < l; ++i) {
+      for (var i = 0; i < index; ++i) {
         wordArr[i].n.classList.add("read");
         wordArr[i].n.classList.remove("unread");
       }
 
-      for (var i = l; i < wordArr.length; ++i) {
+      for (var i = index; i < wordArr.length; ++i) {
         wordArr[i].n.classList.add("unread");
         wordArr[i].n.classList.remove("read");
       }
 
-      for (var i = 0; i < l; ++i) {
+      for (var i = 0; i < index; ++i) {
         wordArr[i].n.classList.remove("active");
       }
 
@@ -225,13 +229,13 @@ var hyperaudiolite = (function () {
 
       // set current word and para to active
 
-      if (l > 0) {
-        wordArr[l-1].n.classList.add("active");
-        wordArr[l-1].n.parentNode.classList.add("active");
+      if (index > 0) {
+        wordArr[index - 1].n.classList.add("active");
+        wordArr[index - 1].n.parentNode.classList.add("active");
       }
 
-      if (wordArr[l]) {
-        interval = parseInt(wordArr[l].n.getAttribute("data-m") - player.currentTime*1000);
+      if (wordArr[index]) {
+        interval = parseInt(wordArr[index].n.getAttribute("data-m") - player.currentTime * 1000);
       } else {
         interval = 0;
       }
@@ -249,11 +253,11 @@ var hyperaudiolite = (function () {
 
       var scrollNode = null;
 
-      if (l > 0) {
-        scrollNode = wordArr[l-1].n.parentNode;
+      if (index > 0) {
+        scrollNode = wordArr[index-1].n.parentNode;
 
         if (scrollNode.tagName != "P") { // it's not inside a para so just use the element
-          scrollNode = wordArr[l-1].n;
+          scrollNode = wordArr[index-1].n;
         }
 
         if (currentParaIndex != paraIndex) {
