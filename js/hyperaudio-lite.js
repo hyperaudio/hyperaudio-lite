@@ -17,7 +17,9 @@ var hyperaudiolite = (function () {
     end,
     timer,
     minimizedMode,
-    wordArr = [];
+    wordArr = [],
+    playerType,
+    currentTime;
 
   function init(mediaElementId, m) {
 
@@ -56,28 +58,53 @@ var hyperaudiolite = (function () {
     //words = transcript.getElementsByTagName('span');
 
     paras = transcript.getElementsByTagName('p');
+
     player = document.getElementById(mediaElementId);
+    if (player.tagName == "VIDEO" || player.tagName == "AUDIO") { //native HTML media elements
+      playerType = "native";
+    } else { //assume it is a SoundCloud iframe 
+      playerType = "soundcloud";
+    }
+
+    if (playerType == "native") {
+      player.addEventListener('pause', clearTimer, false);
+      player.addEventListener('play', checkPlayHead, false);
+    } else { 
+      player = SC.Widget(mediaElementId);
+      player.bind(SC.Widget.Events.PAUSE, clearTimer);
+      player.bind(SC.Widget.Events.PLAY, checkPlayHead);
+    }
+    
+ 
     paraIndex = 0;
     words[0].classList.add("active");
     paras[0].classList.add("active");
-    transcript.addEventListener("click", setPlayHead, false);
-    transcript.addEventListener("click", checkPlayHead, false);
+    transcript.addEventListener('click', setPlayHead, false);
+    transcript.addEventListener('click', checkPlayHead, false);
     //player.addEventListener("timeupdate", checkPlayHead, false);
-    player.addEventListener("pause", clearTimer, false);
-    player.addEventListener("play", checkPlayHead, false);
+    
 
     start = hashArray[0];
 
     if (!isNaN(parseFloat(start))) {
-      player.currentTime = start;
-      var promise = player.play();
-      if (promise !== undefined) {
-        promise.catch(error => {
-            console.log("Auto-play prevented");
-        }).then(() => {
-            // Auto-play started
-        });
+
+      if (playerType == "native") {
+        player.currentTime = start;
+      } else { // assume soundcloud
+        player.seekTo(start*1000);
       }
+      
+      var promise = player.play();
+      if (playerType == "native") {
+        if (promise !== undefined) {
+          promise.catch(error => {
+              console.log("Auto-play prevented");
+          }).then(() => {
+              // Auto-play started
+          });
+        }
+      }
+      
     }
 
     end = hashArray[1];
@@ -161,7 +188,12 @@ var hyperaudiolite = (function () {
 
     if(!isNaN(parseFloat(timeSecs))) {
       end = null;
-      player.currentTime = timeSecs;
+      if (playerType == "native"){
+        player.currentTime = timeSecs;
+      } else { // assume soundcloud
+        player.seekTo(timeSecs*1000);
+      }
+      
       player.play();
     }
   }
@@ -174,9 +206,17 @@ var hyperaudiolite = (function () {
 
     clearTimer();
 
+    if (playerType == "native"){
+      currentTime = player.currentTime;
+    } else { // assume soundcloud
+      player.getPosition(function(ms) {
+        currentTime = ms / 1000;
+      });
+    }
+
     //check for end time of shared piece
 
-    if (end && (end < player.currentTime)) {
+    if (end && (end < currentTime)) {
       player.pause();
       end = null;
 
@@ -191,7 +231,7 @@ var hyperaudiolite = (function () {
       // Binary search https://en.wikipedia.org/wiki/Binary_search_algorithm
       while (index <= words) {
         var guessIndex = index + ((words - index) >> 1); // >> 1 has the effect of halving and rounding down
-        var difference = wordArr[guessIndex].m / 1000 - player.currentTime; // wordArr[guessIndex].m represents start time of word
+        var difference = wordArr[guessIndex].m / 1000 - currentTime; // wordArr[guessIndex].m represents start time of word
 
         if (difference < 0) { // comes before the element
           index = guessIndex + 1;
@@ -237,7 +277,7 @@ var hyperaudiolite = (function () {
       }
 
       if (wordArr[index]) {
-        interval = parseInt(wordArr[index].n.getAttribute("data-m") - player.currentTime * 1000);
+        interval = parseInt(wordArr[index].n.getAttribute('data-m') - currentTime * 1000);
       } else {
         interval = 0;
       }
