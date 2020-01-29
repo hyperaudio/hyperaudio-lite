@@ -10,6 +10,14 @@ You can user Hyperaudio Lite to provide Interactive Transcripts, this readme det
 * no framework dependencies
 * MIT Licensed
 
+## :tiger: Hyperaudio Lite in the Wild
+
+As demonstrated [http://hyperaud.io/lab/halite/v18/](http://hyperaud.io/lab/halite/v18/)
+
+SoundCloud Integration [lab.hyperaud.io/demos/scitranscript/v02/]
+
+Alternative version [https://github.com/vitorio/hyperaudio-lite](https://github.com/vitorio/hyperaudio-lite)
+
 ## :star2: Hyper Powers :star2:
 
 Interactive transcripts are transcripts with special powers. Hyperaudio's Interactive Transcripts are called Hypertranscripts and are infused with the following hyper-powers:
@@ -126,10 +134,3 @@ and at the end of the `<body>`:
 ```
 
 View the source code to [http://hyperaud.io/lab/halite/v18/](https://hyperaud.io/lab/halite/v18/) for a complete example.
-
-
-## :tiger: Hyperaudio Lite in the Wild
-
-As demonstrated [http://hyperaud.io/lab/halite/v18/](http://hyperaud.io/lab/halite/v18/)
-
-Alternative version [https://github.com/vitorio/hyperaudio-lite](https://github.com/vitorio/hyperaudio-lite)
