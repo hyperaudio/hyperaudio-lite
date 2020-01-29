@@ -89,6 +89,7 @@ This currently takes 3 possible inputs:
 * SRT (Subtitle format)
 * [Speechmatics](https://www.speechmatics.com/) JSON*
 * [Gentle](https://github.com/lowerquality/gentle) JSON
+* [Google Speech-to-Text](https://cloud.google.com/speech-to-text/) JSON
 
 *JavaScript Object Notation - a common data format
 
