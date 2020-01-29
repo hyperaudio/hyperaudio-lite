@@ -84,7 +84,7 @@ We can see that a Hypertranscript is really just HTML, this helps keep it:
 
 One way is to use the [Hyperaudio Converter](https://hyperaud.io/converter/)
 
-This currently takes 3 possible inputs:
+This currently takes 4 possible inputs:
 
 * SRT (Subtitle format)
 * [Speechmatics](https://www.speechmatics.com/) JSON*
