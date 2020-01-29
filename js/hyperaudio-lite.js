@@ -279,7 +279,7 @@ var hyperaudiolite = (function () {
 
       if (minimizedMode) {
 
-        var elements = document.getElementsByTagName('span');
+        var elements = document.querySelectorAll('[data-m]');
         var currentWord = "";
         var lastWordIndex = wordIndex;
 
