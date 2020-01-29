@@ -14,7 +14,7 @@ You can user Hyperaudio Lite to provide Interactive Transcripts, this readme det
 
 As demonstrated [http://hyperaud.io/lab/halite/v18/](http://hyperaud.io/lab/halite/v18/)
 
-SoundCloud Integration [lab.hyperaud.io/demos/scitranscript/v02/]
+SoundCloud Integration [lab.hyperaud.io/demos/scitranscript/v02/](lab.hyperaud.io/demos/scitranscript/v02/)
 
 Alternative version [https://github.com/vitorio/hyperaudio-lite](https://github.com/vitorio/hyperaudio-lite)
 
