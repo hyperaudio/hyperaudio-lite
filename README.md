@@ -136,22 +136,26 @@ and at the end of the `<body>`:
 
 View the source code to [http://hyperaud.io/lab/halite/v18/](https://hyperaud.io/lab/halite/v18/) for a complete example.
 
+## :tv: YouTube Support 
+
+In addition to supporting the web-native HTML `<audio>` and `<video>` elements we also support a YouTube `iframe` embed.
+
+Example of YouTube `iframe` embed:
+
+```html
+<iframe id="hyperplayer" data-player-type="youtube" width="400" height="300" frameborder="no" allow="autoplay"
+    src="https://www.youtube.com/embed/xLcsdc823dg?enablejsapi=1">
+</iframe>
+```
 
 ## :sound: SoundCloud Support 
 
 In addition to supporting the web-native HTML `<audio>` and `<video>` elements we also support a SoundCloud `iframe` embed.
 
-Example of Soundcloud `iframe` embed:
-
-```html
-<iframe id="so" width="100%" height="166" scrolling="no" frameborder="no" allow="autoplay" src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/730479133&color=%23ff5500&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true"></iframe>
-```
-You can get the snippet of code by visiting the page of the SoundCloud file you're interested in, clicking on *Share* and then *Embed*.
-
-You will also need to include the SoundCloud API script at the end of the `<body>`:
+Example of Soundcloud API and `iframe` embed:
 
 ```html
 <script src="https://w.soundcloud.com/player/api.js"></script>
+<iframe id="so" width="100%" height="166" scrolling="no" frameborder="no" allow="autoplay" src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/730479133&color=%23ff5500&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true"></iframe>
 ```
-
-
+You can get the snippet of code by visiting the page of the SoundCloud file you're interested in, clicking on *Share* and then *Embed*.
