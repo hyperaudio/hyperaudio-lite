@@ -19,14 +19,20 @@
     </form>
   </p>
 
-  <!-- Comment out the following line if you are using an alternative player. ie SoundCloud -->
+  <!-- Comment out the following line if you are using an alternative player. ie SoundCloud or YouTube -->
   <video id="hyperplayer" style="z-index: 5000000; position:relative; width:400px" src="https://lab.hyperaud.io/video/BBC/education.mp4" type="audio/mp4" controls></video>
 
-  <!-- Uncomment the following line for SoundCloud compatibility. -->
+  <!-- Uncomment the following lines for SoundCloud compatibility. Keep commented if you are using native or YouTube -->
   <!-- iFrame HTML can be found by clicking the embed button while viewing the audio on SoundCloud -->
-  <!-- <iframe id="hyperplayer" width="100%" height="166" scrolling="no" frameborder="no" allow="autoplay" 
+  <!-- <script src="https://w.soundcloud.com/player/api.js"></script>
+  <iframe id="hyperplayer" data-player-type="soundcloud" width="100%" height="166" scrolling="no" frameborder="no" allow="autoplay" 
         src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/730479133&color=%23ff5500&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true">
-  </iframe>-->
+  </iframe> -->
+
+  <!-- Uncomment the following lines for YouTube compatibility. Keep commented if you are using native or YouTube -->
+  <!-- <iframe id="hyperplayer" data-player-type="youtube" width="400" height="300" frameborder="no" allow="autoplay"
+    src="https://www.youtube.com/embed/xLcsdc823dg?enablejsapi=1">
+  </iframe> -->
 
   <div id="hypertranscript" style="overflow-y:scroll; height:600px; position:relative; border-style:dashed; border-width: 1px; border-color:#999; padding: 8px">
     <article>
@@ -974,9 +980,7 @@
     </section>
     </article>
   </div>
-
-  <!-- Uncomment the following line for soundcloud compatibility. -->
-  <!-- <script src="https://w.soundcloud.com/player/api.js"></script> -->
+  
   <script src="js/hyperaudio-lite.js"></script>
   <script src="js/hyperaudio-lite-wrapper.js"></script>
   <script src="js/share-this.js"></script>
@@ -986,6 +990,7 @@
       sharers: [ ShareThisViaTwitter ],
       selector: "article"
   }).init();
+
   </script>
 
   <!-- Uncomment the following script if you require IE versions less than 10 to be supported or Opera Mini http://caniuse.com/#search=classlist ¯\_(ツ)_/¯ -->
