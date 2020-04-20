@@ -53,36 +53,54 @@ var hyperaudiolite = (function () {
 
     for (var i = 0; i < wordArr.length; ++i) {
       wordArr[i].n.classList.add("unread");
-    };
-
-    //words = transcript.getElementsByTagName('span');
+    }
 
     paras = transcript.getElementsByTagName('p');
 
     player = document.getElementById(mediaElementId);
+    console.log(player.tagName);
     if (player.tagName == "VIDEO" || player.tagName == "AUDIO") { //native HTML media elements
       playerType = "native";
-    } else { //assume it is a SoundCloud iframe 
-      playerType = "soundcloud";
+    } else { //assume it is a SoundCloud or YouTube iframe 
+      playerType = player.getAttribute("data-player-type");
     }
 
     if (playerType == "native") {
       player.addEventListener('pause', clearTimer, false);
       player.addEventListener('play', checkPlayHead, false);
-    } else { 
+    } else if (playerType == "soundcloud"){  // SoundCloud
       player = SC.Widget(mediaElementId);
       player.bind(SC.Widget.Events.PAUSE, clearTimer);
       player.bind(SC.Widget.Events.PLAY, checkPlayHead);
+    } else { // assume YouTube
+      var tag = document.createElement('script');
+      tag.id = 'iframe-demo';
+      tag.src = 'https://www.youtube.com/iframe_api';
+      var firstScriptTag = document.getElementsByTagName('script')[0];
+      firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+      window.onYouTubeIframeAPIReady = function() {
+        player = new YT.Player(mediaElementId, {
+          events: {
+            'onStateChange': onPlayerStateChange
+          }
+        });
+      }
+
+      function onPlayerStateChange(event) {
+        if (event.data == 1) { // playing 
+          checkPlayHead();
+        } else if (event.data == 2) { // paused 
+          clearTimer();
+        }   
+      }
     }
-    
  
     paraIndex = 0;
     words[0].classList.add("active");
     paras[0].classList.add("active");
     transcript.addEventListener('click', setPlayHead, false);
     transcript.addEventListener('click', checkPlayHead, false);
-    //player.addEventListener("timeupdate", checkPlayHead, false);
-    
 
     start = hashArray[0];
 
@@ -90,21 +108,30 @@ var hyperaudiolite = (function () {
 
       if (playerType == "native") {
         player.currentTime = start;
-      } else { // assume soundcloud
-        player.seekTo(start*1000);
-      }
-      
-      var promise = player.play();
-      if (playerType == "native") {
+        //autoplay
+        var promise = player.play();
         if (promise !== undefined) {
           promise.catch(error => {
-              console.log("Auto-play prevented");
+            console.log("Auto-play prevented");
           }).then(() => {
               // Auto-play started
           });
         }
+      } else if (playerType == "soundcloud"){ // SoundCloud
+        player.seekTo(start * 1000);
+      } else { // Assume YouTube
+        window.onYouTubeIframeAPIReady = function() {
+          player = new YT.Player(mediaElementId, {
+            playerVars: { 'autoplay': 1 },
+            events: {
+              'onReady': function() {
+                player.seekTo(start, true);
+                player.playVideo();
+              }
+            }
+          });
+        }
       }
-      
     }
 
     end = hashArray[1];
@@ -184,17 +211,20 @@ var hyperaudiolite = (function () {
 
     var target = (e.target) ? e.target : e.srcElement;
     target.setAttribute("class", "active");
-    var timeSecs = parseInt(target.getAttribute("data-m"))/1000;
+    var timeSecs = parseInt(target.getAttribute("data-m")) / 1000;
 
     if(!isNaN(parseFloat(timeSecs))) {
       end = null;
       if (playerType == "native"){
         player.currentTime = timeSecs;
-      } else { // assume soundcloud
-        player.seekTo(timeSecs*1000);
+        player.play();
+      } else if (playerType == "soundcloud"){ 
+        player.seekTo(timeSecs * 1000);
+        player.play();
+      } else { //assume YouTube
+        player.seekTo(timeSecs, true);
+        player.playVideo();
       }
-      
-      player.play();
     }
   }
 
@@ -208,23 +238,23 @@ var hyperaudiolite = (function () {
 
     if (playerType == "native"){
       currentTime = player.currentTime;
-    } else { // assume soundcloud
+    } else if (playerType == "soundcloud"){ 
       player.getPosition(function(ms) {
         currentTime = ms / 1000;
       });
+    } else { // assume YouTube
+      currentTime = player.getCurrentTime();
     }
 
     //check for end time of shared piece
 
     if (end && (end < currentTime)) {
+      console.log("end of piece");
       player.pause();
       end = null;
-
     } else {
       var newPara = false;
-
       var interval; // used to establish next checkPlayHead
-
       var index = 0;
       var words = wordArr.length - 1;
 
