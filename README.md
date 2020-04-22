@@ -150,7 +150,7 @@ Example of YouTube `iframe` embed:
 
 ## :sound: SoundCloud Support 
 
-In addition to supporting the web-native HTML `<audio>` and `<video>` elements we also support a SoundCloud `iframe` embed.
+We also support a SoundCloud `iframe` embed.
 
 Example of Soundcloud API and `iframe` embed:
 
