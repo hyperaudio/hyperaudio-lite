@@ -6,7 +6,7 @@ Hyperaudio Lite - è un visualizzatore di [Interactive Transcripts](https://en.w
 
 È possibile utilizzare Hyperaudio Lite per fornire Interactive Transcripts, questo file readme spiega perché e come.
 
-* leggero (< 20kb)
+* leggero (sotto 7kb minified)
 * nessuna dipendenza dal framework
 * Licenza MIT
 
