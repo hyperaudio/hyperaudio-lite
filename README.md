@@ -136,7 +136,7 @@ and at the end of the `<body>`:
 
 View the source code to [http://hyperaud.io/lab/halite/v18/](https://hyperaud.io/lab/halite/v18/) for a complete example.
 
-## :tv: YouTube Support 
+## :tv: YouTube Support :tv: 
 
 In addition to supporting the web-native HTML `<audio>` and `<video>` elements we also support a YouTube `iframe` embed.
 
@@ -148,7 +148,7 @@ Example of YouTube `iframe` embed:
 </iframe>
 ```
 
-## :sound: SoundCloud Support 
+## :sound: SoundCloud Support :sound:
 
 We also support a SoundCloud `iframe` embed.
 
