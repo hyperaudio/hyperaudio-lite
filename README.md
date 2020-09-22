@@ -30,7 +30,7 @@ Find words and phrases inside your transcript and make your media search-engine 
 Selecting part of a transcript creates a URL with timing data which when shared will take people directly to the corresponding piece of audio where the highlighted words are spoken.
 
 
-## :vhs: Data Formats
+## :vhs: Data Formats :vhs:
 
 Hypertranscripts contain the following data:
 * Paragraphs
@@ -93,7 +93,7 @@ This currently takes 4 possible inputs:
 
 *JavaScript Object Notation - a common data format
 
-## :floppy_disk: Hyperaudio Lite Code
+## :floppy_disk: Hyperaudio Lite Code :floppy_disk:
 
 Essentially the Hyperaudio Lite library is made from 4 JavaScript files:
 
