@@ -12,7 +12,7 @@ You can user Hyperaudio Lite to provide Interactive Transcripts, this readme det
 
 ## :tiger: Hyperaudio Lite in the Wild
 
-As demonstrated [http://hyperaud.io/lab/halite/v19/](http://hyperaud.io/lab/halite/v20/)
+As demonstrated [http://hyperaud.io/lab/halite/v20/](http://hyperaud.io/lab/halite/v20/)
 
 SoundCloud Integration [https://lab.hyperaud.io/demos/scitranscript/v02/](https://lab.hyperaud.io/demos/scitranscript/v02/)
 
