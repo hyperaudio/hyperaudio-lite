@@ -1,68 +1,68 @@
 /*! (C) The Hyperaudio Project. MIT @license: en.wikipedia.org/wiki/MIT_License. */
 
-#hypertranscript .strikethrough {
+.hyperaudio-transcript .strikethrough {
   text-decoration: line-through;
 }
 
-#hypertranscript .annotation, #hypertranscript .parannotation{
+.hyperaudio-transcript .annotation, .hyperaudio-transcript .parannotation{
   opacity: 0.7;
 }
 
-#hypertranscript .highlight {
+.hyperaudio-transcript .highlight {
   background-color: yellow !important;
 }
 
-#hypertranscript .highlight.active {
+.hyperaudio-transcript .highlight.active {
   background-color: lightGreen !important;
 }
 
-#hypertranscript  header {
+.hyperaudio-transcript  header {
   font-size: 200%;
 }
 
-/*#hypertranscript a {
+/*.hyperaudio-transcript a {
   cursor: pointer;
   color: #000;
 }*/
 /*
-#hypertranscript .active ~ span {
+.hyperaudio-transcript .active ~ span {
   color: #999;
 }
 
-#hypertranscript p.active ~ p span {
+.hyperaudio-transcript p.active ~ p span {
   color: #999;
 }
 */
 
-#hypertranscript a, a.link {
+.hyperaudio-transcript a, a.link {
   border: 0px;
 }
 
-#hypertranscript .read {
+.hyperaudio-transcript .read {
   color: #000 !important;
 }
 
-#hypertranscript .unread {
+.hyperaudio-transcript .unread {
   color: #999 !important;
 }
 
-#hypertranscript .search-match {
+.hyperaudio-transcript .search-match {
   background-color: pink !important;
 }
 
-#hypertranscript .share-match {
+.hyperaudio-transcript .share-match {
   background-color: #66ffad !important;
 }
 
-#hypertranscript sub:before {
+.hyperaudio-transcript sub:before {
   content: '\231C';
 }
 
-#hypertranscript sub.highlight-duration:before {
+.hyperaudio-transcript sub.highlight-duration:before {
   content: '\231D';
 }
 
-#hypertranscript h5 {
+.hyperaudio-transcript h5 {
   font-size: 130%;
 }
 

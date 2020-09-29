@@ -1,11 +1,9 @@
 /*! (C) The Hyperaudio Project. MIT @license: en.wikipedia.org/wiki/MIT_License. */
-/*! Version 1.0.0 */
+/*! Version 1.1.0 */
 
 'use strict';
 
 var hyperaudiolite = (function () {
-
-  var hashArray = window.location.hash.substr(3).split(',');
 
   var hal = {},
     transcript,
@@ -20,11 +18,25 @@ var hyperaudiolite = (function () {
     minimizedMode,
     wordArr = [],
     playerType,
-    currentTime;
+    currentTime,
+    windowHash,
+    hashArray,
+    hashVar;
+
 
   function init(mediaElementId, m) {
 
-    window.addEventListener('mouseup', function() {
+    windowHash = window.location.hash;
+    
+    hashVar = windowHash.substring(1,windowHash.indexOf("="));
+
+    if (hashVar === transcript.id) {
+      hashArray = windowHash.substr(transcript.id.length+2).split(',');
+    } else {
+      hashArray = [];
+    }
+
+    transcript.addEventListener('mouseup', function() {
 
       var mediaFragment = getSelectionMediaFragment();
 
@@ -39,7 +51,8 @@ var hyperaudiolite = (function () {
 
     //Create the array of timed elements (wordArr)
 
-    var words = document.querySelectorAll('[data-m]');
+    var words = transcript.querySelectorAll('[data-m]');
+
     for (var i = 0; i < words.length; ++i) {
       var m = parseInt(words[i].getAttribute('data-m'));
       var p = words[i].parentNode;
@@ -59,7 +72,7 @@ var hyperaudiolite = (function () {
     paras = transcript.getElementsByTagName('p');
 
     player = document.getElementById(mediaElementId);
-    console.log(player.tagName);
+
     if (player.tagName == "VIDEO" || player.tagName == "AUDIO") { //native HTML media elements
       playerType = "native";
     } else { //assume it is a SoundCloud or YouTube iframe 
@@ -202,7 +215,7 @@ var hyperaudiolite = (function () {
         nodeDuration = 10; // arbitary for now
       }
 
-      fragment = "#t=" + nodeStart + "," + (Math.round((nodeStart + nodeDuration) * 10) / 10);
+      fragment = transcript.id+ "=" + nodeStart + "," + (Math.round((nodeStart + nodeDuration) * 10) / 10);
     }
 
     return (fragment);
@@ -250,7 +263,6 @@ var hyperaudiolite = (function () {
     //check for end time of shared piece
 
     if (end && (end < currentTime)) {
-      console.log("end of piece");
       player.pause();
       end = null;
     } else {
@@ -335,7 +347,7 @@ var hyperaudiolite = (function () {
 
         if (currentParaIndex != paraIndex) {
           Velocity(scrollNode, "scroll", {
-            container: hypertranscript,
+            container: transcript,
             duration: 800,
             delay: 0
           });
@@ -350,7 +362,7 @@ var hyperaudiolite = (function () {
 
       if (minimizedMode) {
 
-        var elements = document.querySelectorAll('[data-m]');
+        var elements = transcript.querySelectorAll('[data-m]');
         var currentWord = "";
         var lastWordIndex = wordIndex;
 
@@ -387,4 +399,4 @@ var hyperaudiolite = (function () {
 
   return hal;
 
-})();
+});

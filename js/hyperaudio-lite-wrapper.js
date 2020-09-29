@@ -80,19 +80,16 @@ var searchPhrase = function (phrase) {
 
 window.onload = function() {
 
-  // minimizedMode is still experimental - it aims to show the current words in the title, which can be seen on the browser tab.
-  var minimizedMode = false;
-
-  hyperaudiolite.init("hypertranscript", "hyperplayer", minimizedMode);
-
   // playbackRate listener
 	var p = document.getElementById('pbr');
 	var cp = document.getElementById('currentPbr');
 
-	p.addEventListener('input', function(){
-		cp.innerHTML = p.value;
-		hyperplayer.playbackRate = p.value;
-	},false);
+  if (p !== null) {
+    p.addEventListener('input', function(){
+      cp.innerHTML = p.value;
+      hyperplayer.playbackRate = p.value;
+    },false);
+  }
 }
 
 
