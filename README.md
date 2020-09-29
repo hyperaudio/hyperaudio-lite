@@ -98,7 +98,7 @@ This currently takes 4 possible inputs:
 Essentially the Hyperaudio Lite library is made from 4 JavaScript files:
 
 1. `hyperaudio-lite.js` - the core that deals with the linking of media to words
-2. `hyperaudio-lite wrapper` - initialises Hyperaudio Lite and adds search, selection and playback rate functionality 
+2. `hyperaudio-lite wrapper` - adds search, selection and playback rate functionality 
 3. `share-this.js` - a fork of [share-this](https://github.com/MaxArt2501/share-this) library 
 4. `share-this.twitter.js` - a fork of the Twitter sharing element of share-this
 
@@ -134,9 +134,11 @@ and at the end of the `<body>`:
 </body>
 ```
 
-View the source code to [http://hyperaud.io/lab/halite/v18/](https://hyperaud.io/lab/halite/v18/) for a complete example.
+View the source code of [http://hyperaud.io/lab/halite/v21/](https://hyperaud.io/lab/halite/v21/) for a complete example.
 
-## :tv: YouTube Support 
+See a version with multiple players in a single page [http://hyperaud.io/lab/halite/v21/multiplayer.html](https://hyperaud.io/lab/halite/v21/multiplayer.html)
+
+## :tv: YouTube Support :tv:
 
 In addition to supporting the web-native HTML `<audio>` and `<video>` elements we also support a YouTube `iframe` embed.
 
@@ -148,7 +150,7 @@ Example of YouTube `iframe` embed:
 </iframe>
 ```
 
-## :sound: SoundCloud Support 
+## :sound: SoundCloud Support :sound:
 
 We also support a SoundCloud `iframe` embed.
 

@@ -10,6 +10,13 @@ Hyperaudio Lite - è un visualizzatore di [Interactive Transcripts](https://en.w
 * nessuna dipendenza dal framework
 * Licenza MIT
 
+## :tiger: Hyperaudio Lite in the Wild
+
+Come dimostrato [http://hyperaud.io/lab/halite/v21/](http://hyperaud.io/lab/halite/v21/)
+
+Versione alternativa [https://github.com/vitorio/hyperaudio-lite](https://github.com/vitorio/hyperaudio-lite)
+
+
 ## :star2: Iper Poteri :star2:
 
 Interactive transcripts sono trascrizioni con poteri speciali. Le trascrizioni interattive di Hyperaudio sono chiamate Hypertranscripts e sono infuse con i seguenti iperpoteri:
@@ -22,7 +29,7 @@ Trova parole e frasi nella tua trascrizione e rendi i tuoi media 'search-engine 
 La selezione di parte di una trascrizione crea un URL con i dati di temporizzazione che, se condivisi, porteranno le persone direttamente al pezzo audio corrispondente dove vengono pronunciate le parole evidenziate.
 
 
-## :vhs: Formati di Dati
+## :vhs: Formati di Dati :vhs:
 
 Gli hypertranscript contengono i seguenti dati::
 * Paragrafi
@@ -84,12 +91,12 @@ Questo richiede attualmente 3 possibili input:
 
 *JavaScript Object Notation - un formato di dati comune
 
-## :floppy_disk: Hyperaudio Lite Codice
+## :floppy_disk: Hyperaudio Lite Codice :floppy_disk:
 
 In sostanza la libreria Hyperaudio Lite è composta da 4 file JavaScript:
 
 1. `hyperaudio-lite.js` - il nucleo che si occupa del collegamento dei media alle parole
-2. `hyperaudio-lite wrapper` - inizializza Hyperaudio Lite e aggiunge funzionalità di ricerca, selezione e velocità di riproduzione 
+2. `hyperaudio-lite wrapper` - aggiunge funzionalità di ricerca, selezione e velocità di riproduzione 
 3. `share-this.js` - un fork della libreria [share-this] (https://github.com/MaxArt2501/share-this)
 4. `share-this.twitter.js` - un fork dell'elemento di condivisione Twitter di share-this
 
@@ -125,11 +132,32 @@ e alla fine di `<body>`:
 </body>
 ```
 
-Visualizza il codice sorgente su [http://hyperaud.io/lab/halite/v18/](https://hyperaud.io/lab/halite/v18/) per un esempio completo.
+Visualizza il codice sorgente su [http://hyperaud.io/lab/halite/v21/](https://hyperaud.io/lab/halite/v21/) per un esempio completo.
+
+Visualizza una versione con più lettori multimediali in una singola pagina [http://hyperaud.io/lab/halite/v21/multiplayer.html](https://hyperaud.io/lab/halite/v21/multiplayer.html)
+
+## :tv: YouTube Support :tv:
+
+Oltre a supportare gli elementi HTML nativi per il web `<audio>` e `<video>`, supportiamo anche un incorporamento di YouTube `iframe`.
+
+Esempio di incorporamento di `iframe` di YouTube:
+
+```html
+<iframe id="hyperplayer" data-player-type="youtube" width="400" height="300" frameborder="no" allow="autoplay"
+    src="https://www.youtube.com/embed/xLcsdc823dg?enablejsapi=1">
+</iframe>
+```
+
+## :sound: SoundCloud Support :sound:
+
+Supportiamo anche un incorporamento di SoundCloud `iframe`.
+
+Esempio di API Soundcloud e incorporamento di `iframe`:
+
+```html
+<script src="https://w.soundcloud.com/player/api.js"></script>
+<iframe id="so" width="100%" height="166" scrolling="no" frameborder="no" allow="autoplay" src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/730479133&color=%23ff5500&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true"></iframe>
+```
+Puoi ottenere lo snippet di codice visitando la pagina del file SoundCloud che ti interessa, facendo clic su *Share* e poi *Embed*.
 
 
-## :tiger: Hyperaudio Lite in the Wild
-
-Come dimostrato [http://hyperaud.io/lab/halite/v18/](http://hyperaud.io/lab/halite/v18/)
-
-Versione alternativa [https://github.com/vitorio/hyperaudio-lite](https://github.com/vitorio/hyperaudio-lite)
