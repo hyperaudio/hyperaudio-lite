@@ -20,7 +20,7 @@
   </p>
 
   <!-- Comment out the following line if you are using an alternative player. ie SoundCloud or YouTube -->
-  <video id="hyperplayer" style="z-index: 5000000; position:relative; width:400px" src="https://lab.hyperaud.io/video/BBC/education.mp4" type="audio/mp4" controls></video>
+  <video id="hyperplayer" class="hyperaudio-player" style="z-index: 5000000; position:relative; width:400px" src="https://lab.hyperaud.io/video/BBC/education.mp4" type="audio/mp4" controls></video>
 
   <!-- Uncomment the following lines for SoundCloud compatibility. Keep commented if you are using native or YouTube -->
   <!-- iFrame HTML can be found by clicking the embed button while viewing the audio on SoundCloud -->
@@ -34,7 +34,7 @@
     src="https://www.youtube.com/embed/xLcsdc823dg?enablejsapi=1">
   </iframe> -->
 
-  <div id="hypertranscript" style="overflow-y:scroll; height:600px; position:relative; border-style:dashed; border-width: 1px; border-color:#999; padding: 8px">
+  <div id="hypertranscript" class="hyperaudio-transcript" style="overflow-y:scroll; height:600px; position:relative; border-style:dashed; border-width: 1px; border-color:#999; padding: 8px">
     <article>
       <header></header>
       <section class="active">
@@ -990,6 +990,12 @@
       sharers: [ ShareThisViaTwitter ],
       selector: "article"
   }).init();
+
+  // minimizedMode is still experimental - it aims to show the current words in the title, which can be seen on the browser tab.
+  var minimizedMode = false;
+
+  var ht1 = hyperaudiolite();
+  ht1.init("hypertranscript", "hyperplayer", minimizedMode);
 
   </script>
 
