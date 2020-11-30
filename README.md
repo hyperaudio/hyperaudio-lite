@@ -134,9 +134,9 @@ and at the end of the `<body>`:
 </body>
 ```
 
-View the source code of [http://hyperaud.io/lab/halite/v21/](https://hyperaud.io/lab/halite/v21/) for a complete example.
+View the source code of [http://hyperaud.io/lab/halite/v22/](https://hyperaud.io/lab/halite/v22/) for a complete example.
 
-See a version with multiple players in a single page [http://hyperaud.io/lab/halite/v21/multiplayer.html](https://hyperaud.io/lab/halite/v21/multiplayer.html)
+See a version with multiple players in a single page [http://hyperaud.io/lab/halite/v22/multiplayer.html](https://hyperaud.io/lab/halite/v22/multiplayer.html)
 
 ## :tv: YouTube Support :tv:
 
