@@ -21,7 +21,8 @@ var hyperaudiolite = (function () {
     currentTime,
     windowHash,
     hashArray,
-    hashVar;
+    hashVar,
+    velocity;
 
 
   function init(mediaElementId, m) {
@@ -160,6 +161,8 @@ var hyperaudiolite = (function () {
         }
       }
     }
+
+    velocity = Velocity || jQuery.Velocity || window.jQuery.Velocity;
   }
 
   function getSelectionMediaFragment() {
@@ -346,11 +349,14 @@ var hyperaudiolite = (function () {
         }
 
         if (currentParaIndex != paraIndex) {
-          Velocity(scrollNode, "scroll", {
-            container: transcript,
-            duration: 800,
-            delay: 0
-          });
+
+          if (typeof velocity !== 'undefined') {
+            velocity(scrollNode, "scroll", {
+              container: transcript,
+              duration: 800,
+              delay: 0
+            });
+          }
 
           newPara = true;
 
