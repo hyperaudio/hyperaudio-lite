@@ -1,5 +1,5 @@
 /*! (C) The Hyperaudio Project. MIT @license: en.wikipedia.org/wiki/MIT_License. */
-/*! Version 1.1.2 */
+/*! Version 1.1.3 */
 
 'use strict';
 
@@ -37,7 +37,7 @@ var hyperaudiolite = (function () {
       hashArray = [];
     }
 
-    transcript.addEventListener('mouseup', function() {
+    document.addEventListener('selectionchange', function() {
 
       var mediaFragment = getSelectionMediaFragment();
 
