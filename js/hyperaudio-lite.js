@@ -22,7 +22,11 @@ var hyperaudiolite = (function () {
     windowHash,
     hashArray,
     hashVar,
-    velocity,
+    scroller,
+    scrollerContainer,
+    scrollerDuration,
+    scrollerDelay,
+    scrollerOffset,
     autoscroll;
 
 
@@ -50,7 +54,12 @@ var hyperaudiolite = (function () {
     minimizedMode = m;
     textShot = "";
     wordIndex = 0;
+
     autoscroll = a;
+    scrollerContainer = transcript;
+    scrollerOffset = 0;
+    scrollerDuration = 800;
+    scrollerDelay = 0;
 
     //Create the array of timed elements (wordArr)
 
@@ -164,8 +173,10 @@ var hyperaudiolite = (function () {
       }
     }
 
-    velocity = window.Velocity || window.jQuery.Velocity;
+    scroller = window.Velocity || window.jQuery.Velocity;
   }
+
+  
 
   function getSelectionMediaFragment() {
 
@@ -352,12 +363,23 @@ var hyperaudiolite = (function () {
 
         if (currentParaIndex != paraIndex) {
 
-          if (typeof velocity !== 'undefined' && autoscroll === true) {
-            velocity(scrollNode, "scroll", {
-              container: transcript,
-              duration: 800,
-              delay: 0
-            });
+          if (typeof scroller !== 'undefined' && autoscroll === true) {
+
+            if (typeof(scrollerContainer) !== 'undefined' && scrollerContainer !== null) {
+
+              scroller(scrollNode, "scroll", {
+                container: scrollerContainer,
+                duration: scrollerDuration,
+                delay: scrollerDelay,
+                offset: scrollerOffset
+              });
+            } else {
+              scroller(scrollNode, "scroll", {
+                duration: scrollerDuration,
+                delay: scrollerDelay,
+                offset: scrollerOffset
+              });
+            }
           }
 
           newPara = true;
@@ -403,6 +425,13 @@ var hyperaudiolite = (function () {
     transcript = document.getElementById(transcriptId);
     init(mediaElementId, minimizedMode, autoscroll);
     //set minimizedMode is an experimental feature
+  }
+
+  hal.setScrollParameters = function(duration, delay, offset, container) {
+    scrollerContainer = container;
+    scrollerDuration = duration;
+    scrollerDelay = delay;
+    scrollerOffset = offset;
   }
 
   return hal;
