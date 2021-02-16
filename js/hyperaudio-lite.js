@@ -37,7 +37,7 @@ var hyperaudiolite = (function () {
       hashArray = [];
     }
 
-    transcript.addEventListener('mouseup', function() {
+    document.addEventListener('selectionchange', function() {
 
       var mediaFragment = getSelectionMediaFragment();
 
