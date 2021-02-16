@@ -1,5 +1,5 @@
 /*! (C) The Hyperaudio Project. MIT @license: en.wikipedia.org/wiki/MIT_License. */
-/*! Version 1.1.2 */
+/*! Version 1.1.3 */
 
 'use strict';
 
