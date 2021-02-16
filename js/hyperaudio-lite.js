@@ -1,5 +1,5 @@
 /*! (C) The Hyperaudio Project. MIT @license: en.wikipedia.org/wiki/MIT_License. */
-/*! Version 1.1.3 */
+/*! Version 1.1.4 */
 
 'use strict';
 
@@ -22,10 +22,11 @@ var hyperaudiolite = (function () {
     windowHash,
     hashArray,
     hashVar,
-    velocity;
+    velocity,
+    autoscroll;
 
 
-  function init(mediaElementId, m) {
+  function init(mediaElementId, m, a) {
 
     windowHash = window.location.hash;
     
@@ -49,6 +50,7 @@ var hyperaudiolite = (function () {
     minimizedMode = m;
     textShot = "";
     wordIndex = 0;
+    autoscroll = a;
 
     //Create the array of timed elements (wordArr)
 
@@ -350,7 +352,7 @@ var hyperaudiolite = (function () {
 
         if (currentParaIndex != paraIndex) {
 
-          if (typeof velocity !== 'undefined') {
+          if (typeof velocity !== 'undefined' && autoscroll === true) {
             velocity(scrollNode, "scroll", {
               container: transcript,
               duration: 800,
@@ -397,9 +399,9 @@ var hyperaudiolite = (function () {
 
   }
 
-  hal.init = function(transcriptId, mediaElementId, minimizedMode) {
+  hal.init = function(transcriptId, mediaElementId, minimizedMode, autoscroll) {
     transcript = document.getElementById(transcriptId);
-    init(mediaElementId, minimizedMode);
+    init(mediaElementId, minimizedMode, autoscroll);
     //set minimizedMode is an experimental feature
   }
 
