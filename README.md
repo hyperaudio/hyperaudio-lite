@@ -6,17 +6,19 @@ Hyperaudio Lite - is an [Interactive Transcript](https://en.wikipedia.org/wiki/I
 
 You can user Hyperaudio Lite to provide Interactive Transcripts, this readme details why and how.
 
-* lightweight (less than 7Kb minified)
+* lightweight (less than 8Kb minified)
 * no framework dependencies
 * MIT Licensed
 
 ## :tiger: Hyperaudio Lite in the Wild :tiger:
 
-As demonstrated [http://hyperaud.io/lab/halite/v20/](http://hyperaud.io/lab/halite/v20/)
+As demonstrated [http://hyperaud.io/lab/halite/v23/](http://hyperaud.io/lab/halite/v23/)
+
+Alternatively styled version [https://lab.hyperaud.io/mozfest2021/interviews/lance_weiler/](https://lab.hyperaud.io/mozfest2021/interviews/lance_weiler/)
 
 SoundCloud Integration [https://lab.hyperaud.io/demos/scitranscript/v02/](https://lab.hyperaud.io/demos/scitranscript/v02/)
 
-Alternative version [https://github.com/vitorio/hyperaudio-lite](https://github.com/vitorio/hyperaudio-lite)
+Vitorio's version [https://github.com/vitorio/hyperaudio-lite](https://github.com/vitorio/hyperaudio-lite)
 
 ## :star2: Hyper Powers :star2:
 
