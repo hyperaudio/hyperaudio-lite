@@ -1,5 +1,5 @@
 /*! (C) The Hyperaudio Project. MIT @license: en.wikipedia.org/wiki/MIT_License. */
-/*! Version 1.1.4 */
+/*! Version 1.1.5 */
 
 'use strict';
 
@@ -432,6 +432,14 @@ var hyperaudiolite = (function () {
     scrollerDuration = duration;
     scrollerDelay = delay;
     scrollerOffset = offset;
+  }
+
+  hal.toggleAutoScroll = function() {
+    autoscroll = !autoscroll;
+  }
+
+  hal.setAutoScroll = function(on) {
+    autoscroll = on;
   }
 
   return hal;
