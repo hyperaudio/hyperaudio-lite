@@ -20,7 +20,9 @@
   </p>
 
   <!-- Comment out the following line if you are using an alternative player. ie SoundCloud or YouTube -->
-  <video id="hyperplayer" class="hyperaudio-player" style="z-index: 5000000; position:relative; width:400px" src="https://lab.hyperaud.io/video/BBC/education.mp4" type="audio/mp4" controls></video>
+  <video id="hyperplayer" class="hyperaudio-player" style="z-index: 5000000; position:relative; width:400px" src="https://lab.hyperaud.io/video/BBC/education.mp4" type="audio/mp4" controls>
+    <track id="hyperplayer-vtt" label="English" kind="subtitles" srclang="en" src="" default>
+  </video>
 
   <!-- Uncomment the following lines for SoundCloud compatibility. Keep commented if you are using native or YouTube -->
   <!-- iFrame HTML can be found by clicking the embed button while viewing the audio on SoundCloud -->
@@ -985,6 +987,7 @@
   <script src="js/hyperaudio-lite-wrapper.js"></script>
   <script src="js/share-this.js"></script>
   <script src="js/share-this-twitter.js"></script>
+  <script src="js/caption.js"></script>
   <script>
   ShareThis({
       sharers: [ ShareThisViaTwitter ],
@@ -999,6 +1002,10 @@
   ht1.init("hypertranscript", "hyperplayer", minimizedMode, autoScroll);
   //ht1.setScrollParameters(<duration>, <delay>, <offset>, <container>);
 
+  // this should create captions  
+  var cap1 = caption();
+  cap1.init("hypertranscript", "hyperplayer", '37' , '21'); // transcript Id, player Id, max chars, min chars for caption line
+  
   </script>
 
   <!-- Uncomment the following script if you require IE versions less than 10 to be supported or Opera Mini http://caniuse.com/#search=classlist ¯\_(ツ)_/¯ -->
