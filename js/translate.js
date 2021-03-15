@@ -399,6 +399,25 @@ var translate = (function () {
       return splitArray;
     }
 
+    function insertLineBreak(str) {
+      var newStr = "";
+      var split = false;
+      str = str.trim();
+      if (str.length > maxLineLength) {
+        var words = str.split(" ");
+        words.forEach(function(word){
+          if ((newStr + word).length > maxLineLength && split === false) {
+            newStr += "\n";
+            split = true;
+          }
+          newStr += word + " ";
+        });
+        return newStr.trim();
+      } else {
+        return str;
+      }
+    }
+
 
     var transCaptionsVtt = "";
 
@@ -457,7 +476,7 @@ var translate = (function () {
 
             if (intersection === 1){ // exact match - sentence matches caption
 
-              transCaptionsVtt += "\n" + caption.start + "-->" + caption.stop + "\n" + thisTransSentence + "\n";
+              transCaptionsVtt += "\n" + caption.start + "-->" + caption.stop + "\n" + insertLineBreak(thisTransSentence) + "\n";
               
               remainingSentence = null;
               remainingTransSentence = null;
@@ -476,7 +495,7 @@ var translate = (function () {
 
               if (intersection === 1){ // exact match - next sentence matches remains of caption
                 captionSentence += transSentences[i+1];
-                transCaptionsVtt += "\n" + caption.start + "-->" + caption.stop + "\n" + captionSentence + "\n";
+                transCaptionsVtt += "\n" + caption.start + "-->" + caption.stop + "\n" + insertLineBreak(captionSentence) + "\n";
               } else if (intersection < 1) { // sentence is smaller than remaining caption
                 captionSentence += transSentences[i+1];
                 intersection = stringsIntersect(captionText.replace(sentence[i+1],""), sentences[i+2]);
@@ -543,7 +562,7 @@ var translate = (function () {
 
                 if (fitSentence.trim() === captionText.trim()) { // if the chunk matches the text exactly we can add the translated version
                   
-                  transCaptionsVtt += "\n" + caption.start + "-->" + caption.stop + "\n" + captionSentence + "\n";
+                  transCaptionsVtt += "\n" + caption.start + "-->" + caption.stop + "\n" + insertLineBreak(captionSentence) + "\n";
                   remainingSentence = thisSentence.substr(fitSentence.length + 1);
                   remainingTransSentence = thisTransSentence.substr(captionSentence.length + 1);
 
@@ -585,7 +604,7 @@ var translate = (function () {
                     }
                   });
   
-                  transCaptionsVtt += "\n" + caption.start + "-->" + caption.stop + "\n" + buildingTransSentence + "\n";
+                  transCaptionsVtt += "\n" + caption.start + "-->" + caption.stop + "\n" + insertLineBreak(buildingTransSentence) + "\n";
   
                   console.log("constructing the remaining sentences .........");
                   console.log("thisSentence = "+thisSentence);
@@ -626,7 +645,7 @@ var translate = (function () {
                   }
                 });
 
-                transCaptionsVtt += "\n" + caption.start + "-->" + caption.stop + "\n" + buildingTransSentence + "\n";
+                transCaptionsVtt += "\n" + caption.start + "-->" + caption.stop + "\n" + insertLineBreak(buildingTransSentence) + "\n";
 
                 console.log("constructing the remaining sentences .........");
                 console.log("thisSentence = "+thisSentence);
