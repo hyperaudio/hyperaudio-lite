@@ -406,7 +406,6 @@ var translate = (function () {
     var remainingSentence = null;
     var remainingTransSentence = null;
     captions.forEach(function(caption, c) {
-      //console.log(caption.stop);
 
       alert("caption "+c);
       var textToCheck = ""; 
@@ -447,12 +446,8 @@ var translate = (function () {
           console.log("------------");
           console.log("intersection");
           console.log(intersection);
-
-          console.log("match quotient = "+ ((intersection / captionText.length) + matchTolerance));
-
-          
-
-
+          console.log("to be a match it should be > "+(1 - matchTolerance));
+    
           
           if ((intersection > (1 - matchTolerance))) { // looks like a match
             console.log(captionText);
@@ -463,7 +458,7 @@ var translate = (function () {
             if (intersection === 1){ // exact match - sentence matches caption
 
               transCaptionsVtt += "\n" + caption.start + "-->" + caption.stop + "\n" + thisTransSentence + "\n";
-              console.log(caption.start + "-->" + caption.stop + "\n" + thisTransSentence + "\n");
+              
               remainingSentence = null;
               remainingTransSentence = null;
               sentenceIndex++;
@@ -494,42 +489,42 @@ var translate = (function () {
               sentenceIndex++;
 
             } else if (intersection > 1) {// sentence is larger than caption
+              
               console.log("sentence is larger than caption");
               // figure out where to split sentence
               // first see if splitting by mid-sentence delimiters give us the same number of splits in both languages
               var sentenceSplit; 
               var transSentenceSplit; 
 
-              console.log("<=====>");
+              console.log("<== spliting sentences into smaller chunks ===>");
               sentenceSplit = inclusiveSplit(thisSentence, midSentenceDelimiter);
               transSentenceSplit = inclusiveSplit(thisTransSentence, midSentenceDelimiter);
-
               console.log(sentenceSplit);
               console.log(transSentenceSplit);
-              console.log("<=====>");
+              console.log("<=============================================>");
 
-              if (sentenceSplit.length === transSentenceSplit.length) {
-                console.log("same number of sentence splits");
-              }
-
-              // figure out where original sentence split
+ 
               var testSentence = "";
               var fitSentence = "";
               var fitTransSentence = "";
               var chunkIndex = 0;
 
-              sentenceSplit.forEach(function(chunk, i) {
-                testSentence += chunk;
-                //if (i === 0 || captionText.indexOf(testSentence) >= 0) {
-                if (captionText.indexOf(testSentence) >= 0) {
-                  fitSentence = testSentence;
-                  fitTransSentence += transSentenceSplit[chunkIndex];
-                  chunkIndex++;
-                }
-              });
+              if (sentenceSplit.length === transSentenceSplit.length) {
+                // figure out where original sentence split
+                console.log("same number of sentence chunks...");
 
-              console.log("part of sentence that fits = "+ fitSentence);
-              console.log("chunk index = "+ chunkIndex);
+                sentenceSplit.forEach(function(chunk, i) {
+                  testSentence += chunk;
+                  if (captionText.indexOf(testSentence) >= 0) {
+                    fitSentence = testSentence;
+                    fitTransSentence += transSentenceSplit[chunkIndex];
+                    chunkIndex++;
+                  }
+                });
+  
+                console.log("part of sentence that fits = "+ fitSentence);
+                console.log("chunk index = "+ chunkIndex);
+              }
 
               captionSentence = "";
 
@@ -539,33 +534,34 @@ var translate = (function () {
                 for (var i=0; i < chunkIndex; i++) {
                   captionSentence += transSentenceSplit[i];
                 }
-
-                console.log("fitSentence = "+fitSentence);
+                
                 console.log("testSentence = "+testSentence);
+                console.log("fitSentence = "+fitSentence);
                 console.log("captionText = "+captionText);
 
                 // trim() removes whitespace from both ends of a string
+
                 if (fitSentence.trim() === captionText.trim()) { // if the chunk matches the text exactly we can add the translated version
+                  
                   transCaptionsVtt += "\n" + caption.start + "-->" + caption.stop + "\n" + captionSentence + "\n";
                   remainingSentence = thisSentence.substr(fitSentence.length + 1);
                   remainingTransSentence = thisTransSentence.substr(captionSentence.length + 1);
+
                 } else {
                   // add remaining text to matching chunk until we fit the caption text
                   // split next chunk into words
+
                   var thisSentenceWords = sentenceSplit[chunkIndex].trim().split(" ");
                   var thisTransSentenceWords = transSentenceSplit[chunkIndex].trim().split(" ");
 
                   console.log(thisSentenceWords);
                   console.log(thisTransSentenceWords);
-                  
 
                   var buildIndex = 0;
                 
                   var testingSentence = "";
                   var buildingSentence = fitSentence + " ";
                   var buildingTransSentence = fitTransSentence + " ";
-
-                  console.log("HERE");
 
                   thisSentenceWords.forEach(function(word, i) {
                     //add spaces between words
@@ -579,9 +575,13 @@ var translate = (function () {
   
                     if (captionText.indexOf(testingSentence) >= 0) {
                       buildingSentence += thisSentenceWords[i] + " ";
-                      buildingTransSentence += thisTransSentenceWords[i] + " ";
-                      console.log("thisTransSentenceWords["+i+"] = " + thisTransSentenceWords[i]);
-                      console.log("buildingTransSentence = "+buildingTransSentence);
+
+                      if (typeof thisTransSentenceWords[i] !== 'undefined') {
+                        buildingTransSentence += thisTransSentenceWords[i] + " ";
+                      }
+                      
+                      //console.log("thisTransSentenceWords["+i+"] = " + thisTransSentenceWords[i]);
+                      //console.log("buildingTransSentence = "+buildingTransSentence);
                     }
                   });
   
@@ -595,10 +595,8 @@ var translate = (function () {
                   remainingTransSentence = thisTransSentence.substr(buildingTransSentence.length);
                 }
 
-                
-                
+              } else { // assume that chunk is longer than caption text or chunks couldn't be matched, split into wordds
 
-              } else { // assume that chunk is longer than caption text, split another way
                 var thisSentenceWords = thisSentence.split(" ");
                 var thisTransSentenceWords = thisTransSentence.split(" ");
                 // build up matching partial sentence
@@ -607,10 +605,7 @@ var translate = (function () {
                 
                 var testingSentence = "";
                 var buildingSentence = "";
-                var buildingTransSentence = "";
-
-                //console.log("thisTransSentenceWords ="+thisTransSentenceWords);
-                
+                var buildingTransSentence = "";                
 
                 thisSentenceWords.forEach(function(word, i) {
                   //add spaces between words
@@ -620,13 +615,14 @@ var translate = (function () {
 
                   testingSentence += thisSentenceWords[i];
 
-                  //console.log("testingSentence = "+testingSentence);
-
                   if (captionText.indexOf(testingSentence) >= 0) {
                     buildingSentence += thisSentenceWords[i] + " ";
-                    buildingTransSentence += thisTransSentenceWords[i] + " ";
-                    console.log("thisTransSentenceWords["+i+"] = " + thisTransSentenceWords[i]);
-                    console.log("buildingTransSentence = "+buildingTransSentence);
+
+                    if (typeof thisTransSentenceWords[i] !== 'undefined') {
+                      buildingTransSentence += thisTransSentenceWords[i] + " ";
+                    }
+                    //console.log("thisTransSentenceWords["+i+"] = " + thisTransSentenceWords[i]);
+                    //console.log("buildingTransSentence = "+buildingTransSentence);
                   }
                 });
 
@@ -640,16 +636,13 @@ var translate = (function () {
                 remainingTransSentence = thisTransSentence.substr(buildingTransSentence.length);
               }
 
-              console.log("vtt when sentence longer than caption ...");
-              console.log(transCaptionsVtt);
-
-              //remainingSentence = thisSentence.substr(testSentence.length);
-              //remainingTransSentence = thisTransSentence.substr(captionSentence.length);
+              
               console.log("remainingSentence = "+remainingSentence);
               console.log("remainingTransSentence = "+remainingTransSentence);
             }
             
-            //sentenceIndex++;
+            console.log(transCaptionsVtt);
+
             console.log("================================================================");
             console.log("moving on to next caption, starting from sentence "+sentenceIndex);
             break;
