@@ -36,6 +36,8 @@ var translate = (function () {
       this.text = text;
     }
 
+
+
     var thisWordMeta;
     var thisSegmentMeta = null;
 
@@ -56,7 +58,9 @@ var translate = (function () {
       minLineLength = minLength;
     }
 
-   var translation = "Come rendiamo le persone più consapevoli dei loro dati personali? Abbiamo due sé nel mondo in un dato momento adesso. Abbiamo il sé fisico, la nostra carne e il sangue, la nostra voce, la nostra presenza nel mondo che si estende oltre i nostri corpi ma vive in questo spazio fisico. C'è quest'altro spazio, abbiamo iniziato a chiamare cyberspazio molto tempo fa, ma è una cosa reale. È uno spazio dati. Come persone molto spesso siamo analfabeti in materia di dati. Non ci rendiamo conto dell'impatto di ciò che i dati hanno sulle nostre vite, non ci rendiamo conto di ciò che stiamo dando e perché non ci rendiamo conto dei meccanismi che ci consentiranno di dare nuovo potere a noi stessi in questo ambiente. Sicurezza e privacy, sono problemi che le persone si preoccupano di loro e dobbiamo affrontarli. Penso che sfortunatamente al momento rendiamo le persone consapevoli dei loro dati personali quando accadono cose terribili. Ci vorranno esperienze personali di caduta, una sorta di esperienza davvero orribile prima che le persone si sentano davvero costrette a essere istruite su questo. E penso che ci siano due pezzi di dati. Le persone si sentono molto a cuore, uno è l'assistenza sanitaria e l'altro è bancario. Quindi, se tocchi queste due aree, la reazione è estremamente forte perché sentono che tocca qualcosa di cui dovrebbero avere il completo controllo. Internet è creato dall'uomo e tutto ciò che metti online è recuperabile. Ci sono esperti di sicurezza di livello mondiale, ma ci sono ancora persone che rubano denaro da conti bancari. Come tecnologi, abbiamo il dovere di cercare di spiegare queste cose alle persone e cercare di farle capire, sai, trovare modi per renderle reali e avere un senso e abbiamo bisogno di più esempi e di una migliore educazione. Dobbiamo creare un dibattito più informato sui dati, in particolare sul valore dei dati. Il valore dei dati come individui e il valore dei dati aggregati. Quali sono gli svantaggi della gestione dei propri dati? In questo momento si parla più che mai di possedere i propri dati, perché ci sono così tante aziende là fuori che stanno raccogliendo dati su di noi, che non possediamo affatto, che non controlliamo affatto. Quindi, se stiamo cercando di gestire i tuoi dati, uno dei problemi è che non sai necessariamente quali dati stai fornendo ad altre persone. Quindi mancano di informazioni e mancano in alcun modo per scoprirle. Quindi in realtà voglio che sia nelle mani di agenzie che faranno del bene con ciò che possono forse utilizzare i miei dati rispetto a milioni di dati di altre persone per trovare tendenze o per trovare dettagli su di me. Quindi sì, avevamo bisogno che fosse là fuori per farlo funzionare, ed è qui che entra in gioco la tensione perché non appena accetto che sia là fuori e permetto che venga lavorato è un po 'come avere una casa festa quando avevo diciassette anni e dissi, tutti sono i benvenuti. Beh, lo erano fino a quando non è sfuggito un po 'di mano e sai con quella storia va. Penso che, penso che ci siano pochissime persone disposte a sacrificare tanto quanto mi ci vorrebbe effettivamente per non essere monitorato e sorvegliato affatto. Che tipo di aiuto è disponibile per le persone per gestire i propri dati? Dobbiamo spostare il dibattito oltre una discussione su ciò che può essere in un regno commerciale in attività nel normale ruolo domestico. Penso che dovremmo educare le persone sui dati costruendo partnership con le aziende coinvolte nella vendita di quei prodotti. Penso che abbiamo già un intermediario per gli open data in un'istituzione che è stata recentemente creata l'Open Data Institute, co-fondata da Tim Berners-Lee e Gavin Starkson, ci sono alcune persone fantastiche che hanno creato un sistema di accreditamento. Quello che succederà a lungo termine è che le persone avranno il controllo sui propri dati personali perché sapranno meglio cosa farne e gli strumenti esisteranno per farne di più, con quei dati rispetto a questi altri le aziende potrebbero. È proprio come con i personal computer. E quando mobiliti una task force mondiale di fanatici della carta ti piace fare cose. Non credo che abbiamo bisogno che le aziende tecnologiche si siedano lì e garantiscano i dati delle persone. Mi sembra un vecchio modo di fare le cose, penso che un approccio open source con accreditamento a cinque stelle da parte dell'ODI sembri un buon modo per andare avanti. La trappola in cui non cadere è la trappola della paura in questo momento, e siamo al culmine della paura grazie a Edward Snowden, grazie alla scoperta di cosa hanno fatto la NSA e gli Stati Uniti, e cosa è stato il GCHQ qui facendo. Se riesci a creare una funzione subdola in un dispositivo e decidi di non dire all'utente che decidi di infrangere un po 'la legge, sicuramente in termini di protezione dei dati, c'è un rischio reale che venga scoperto. Questo è un potere che possiamo usare per il bene o il male e probabilmente entrambi, ma noi, è presente nel mondo adesso e dobbiamo capire come usarlo.";
+  var translation = "Cum îi facem pe oameni mai conștienți de datele lor personale? Avem doi euri în lume la un moment dat acum. Avem sinele fizic, carnea și sângele nostru, vocea noastră, prezența noastră în lume care se extinde dincolo de corpurile noastre, dar care trăiește în acest spațiu fizic. Există acest alt spațiu, am început să apelăm la spațiul cibernetic cu mult timp în urmă, dar este un lucru real. Este un spațiu de date. Suntem ca oameni destul de des date analfabeți. Nu ne dăm seama de impactul pe care îl au datele asupra vieții noastre, nu ne dăm seama ce oferim și de ce nu realizăm mecanismele care ne vor permite să ne împuternicim din nou în acest mediu. Securitate și confidențialitate, acestea sunt probleme pe care oamenii le pasă de ele și trebuie, ar trebui să le abordăm. Cred că, din păcate, la momentul respectiv îi facem pe oameni conștienți de datele lor personale atunci când se întâmplă lucruri teribile. Va fi nevoie de experiențe personale de cădere, un fel de experiență cu adevărat oribilă înainte ca oamenii să simtă de fapt că sunt obligați să fie educați cu privire la acest lucru. Și cred că există două date. Oamenii se simt foarte puternici, unul este îngrijirea sănătății, iar celălalt este bancar. Așadar, dacă atingeți aceste două zone, reacția este extrem de puternică, deoarece ei simt că atinge ceva ce ar trebui să fie în deplin control. Internetul este creat de om și tot ceea ce puneți online este recuperabil. Există experți în securitate de talie mondială, dar există încă oameni care fură bani din conturi bancare. În calitate de tehnologi, avem datoria de a încerca să explicăm aceste lucruri oamenilor și de a încerca să traversăm, știi, să găsim modalități de a-l face real și să-l facă să aibă sens și avem nevoie de mai multe exemple și de o educație mai bună. Trebuie să creăm o dezbatere mai informată despre date, în special despre valoarea datelor. Valoarea datelor ca indivizi și valoarea datelor agregate. Care sunt dezavantajele gestionării propriilor date? În acest moment se vorbește mai mult decât oricând despre deținerea propriilor date, pentru că sunt atât de multe companii acolo care colectează date despre noi, pe care nu le deținem deloc, pe care nu le controlăm deloc. Deci, dacă încercăm să vă gestionăm propriile date, una dintre problemele legate de acest lucru este că nu știți neapărat ce date le oferiți altor persoane. Deci, lipsit de informații și lipsit de orice mod de a afla informațiile respective. Deci, de fapt, vreau să fie în mâinile agențiilor care vor face bine cu asta, care poate să folosească datele mele în comparație cu datele altor milioane de oameni pentru a găsi tendințe sau pentru a găsi informații despre mine. Așa că da, aveam nevoie să fie acolo pentru a-l face să funcționeze și de aici vine tensiunea, pentru că de îndată ce sunt de acord să fie acolo și să-i permit să se lucreze, este cam ca și cum ai avea o casă petrecem la vârsta de șaptesprezece ani și am spus, toată lumea este binevenită. Ei bine, au fost până când a scăpat puțin din mână și știi că povestea asta merge. Cred că, cred că sunt foarte puțini oameni care sunt dispuși să sacrifice atât cât mi-ar lua de fapt să nu fiu deloc monitorizat și supravegheat. Ce fel de ajutor este disponibil pentru ca oamenii să își gestioneze propriile date? Trebuie să mutăm dezbaterea dincolo de o discuție despre ceea ce poate fi într-un domeniu comercial în activitate în rolul intern obișnuit. Cred că ar trebui să educăm oamenii despre date prin construirea de parteneriate cu companiile implicate în vânzarea acestor produse. Cred că avem deja un intermediar pentru date deschise într-o instituție recent creată Open Data Institute, cofondată de Tim Berners-Lee și Gavin Starkson, există niște oameni fantastici care au creat un sistem de acreditare. Ceea ce se va întâmpla pe termen lung este că oamenii vor avea controlul asupra datelor lor personale, deoarece vor ști mai bine ce să facă cu acestea și vor exista instrumentele pentru ca ei să facă mai mult cu ei, cu acele date decât ar putea aceste alte companii. Este la fel ca în cazul calculelor personale. și atunci când mobilizați un grup de lucru mondial de geeks de hârtie, vă place să creați lucruri. Nu cred că avem nevoie de companii de tehnologie care să stea acolo și să garanteze datele oamenilor. Mi se pare un mod vechi de a face lucrurile, cred că o abordare open source cu acreditare de cinci stele de la ODI pare o cale bună de urmat. Capcana pentru a nu cădea este capcana fricii chiar acum și suntem la un moment culminant de frică datorită lui Edward Snowden, datorită descoperirii a ceea ce au făcut NSA și SUA și a ceea ce a făcut GCHQ aici. Dacă puteți construi o caracteristică ascunsă într-un dispozitiv și decideți să nu spuneți utilizatorului că decideți să încălcați legea, cu siguranță în termeni de protecție a datelor, există un risc real ca aceasta să fie aflată. Aceasta este o putere pe care o putem folosi pentru bine sau rău și probabil pentru amândouă, dar noi, este prezentă în lume acum și trebuie să ne dăm seama cum să o folosim."
+
+  // var translation = "Come rendiamo le persone più consapevoli dei loro dati personali? Abbiamo due sé nel mondo in un dato momento adesso. Abbiamo il sé fisico, la nostra carne e il sangue, la nostra voce, la nostra presenza nel mondo che si estende oltre i nostri corpi ma vive in questo spazio fisico. C'è quest'altro spazio, abbiamo iniziato a chiamare cyberspazio molto tempo fa, ma è una cosa reale. È uno spazio dati. Come persone molto spesso siamo analfabeti in materia di dati. Non ci rendiamo conto dell'impatto di ciò che i dati hanno sulle nostre vite, non ci rendiamo conto di ciò che stiamo dando e perché non ci rendiamo conto dei meccanismi che ci consentiranno di dare nuovo potere a noi stessi in questo ambiente. Sicurezza e privacy, sono problemi che le persone si preoccupano di loro e dobbiamo affrontarli. Penso che sfortunatamente al momento rendiamo le persone consapevoli dei loro dati personali quando accadono cose terribili. Ci vorranno esperienze personali di caduta, una sorta di esperienza davvero orribile prima che le persone si sentano davvero costrette a essere istruite su questo. E penso che ci siano due pezzi di dati. Le persone si sentono molto a cuore, uno è l'assistenza sanitaria e l'altro è bancario. Quindi, se tocchi queste due aree, la reazione è estremamente forte perché sentono che tocca qualcosa di cui dovrebbero avere il completo controllo. Internet è creato dall'uomo e tutto ciò che metti online è recuperabile. Ci sono esperti di sicurezza di livello mondiale, ma ci sono ancora persone che rubano denaro da conti bancari. Come tecnologi, abbiamo il dovere di cercare di spiegare queste cose alle persone e cercare di farle capire, sai, trovare modi per renderle reali e avere un senso e abbiamo bisogno di più esempi e di una migliore educazione. Dobbiamo creare un dibattito più informato sui dati, in particolare sul valore dei dati. Il valore dei dati come individui e il valore dei dati aggregati. Quali sono gli svantaggi della gestione dei propri dati? In questo momento si parla più che mai di possedere i propri dati, perché ci sono così tante aziende là fuori che stanno raccogliendo dati su di noi, che non possediamo affatto, che non controlliamo affatto. Quindi, se stiamo cercando di gestire i tuoi dati, uno dei problemi è che non sai necessariamente quali dati stai fornendo ad altre persone. Quindi mancano di informazioni e mancano in alcun modo per scoprirle. Quindi in realtà voglio che sia nelle mani di agenzie che faranno del bene con ciò che possono forse utilizzare i miei dati rispetto a milioni di dati di altre persone per trovare tendenze o per trovare dettagli su di me. Quindi sì, avevamo bisogno che fosse là fuori per farlo funzionare, ed è qui che entra in gioco la tensione perché non appena accetto che sia là fuori e permetto che venga lavorato è un po 'come avere una casa festa quando avevo diciassette anni e dissi, tutti sono i benvenuti. Beh, lo erano fino a quando non è sfuggito un po 'di mano e sai con quella storia va. Penso che, penso che ci siano pochissime persone disposte a sacrificare tanto quanto mi ci vorrebbe effettivamente per non essere monitorato e sorvegliato affatto. Che tipo di aiuto è disponibile per le persone per gestire i propri dati? Dobbiamo spostare il dibattito oltre una discussione su ciò che può essere in un regno commerciale in attività nel normale ruolo domestico. Penso che dovremmo educare le persone sui dati costruendo partnership con le aziende coinvolte nella vendita di quei prodotti. Penso che abbiamo già un intermediario per gli open data in un'istituzione che è stata recentemente creata l'Open Data Institute, co-fondata da Tim Berners-Lee e Gavin Starkson, ci sono alcune persone fantastiche che hanno creato un sistema di accreditamento. Quello che succederà a lungo termine è che le persone avranno il controllo sui propri dati personali perché sapranno meglio cosa farne e gli strumenti esisteranno per farne di più, con quei dati rispetto a questi altri le aziende potrebbero. È proprio come con i personal computer. E quando mobiliti una task force mondiale di fanatici della carta ti piace fare cose. Non credo che abbiamo bisogno che le aziende tecnologiche si siedano lì e garantiscano i dati delle persone. Mi sembra un vecchio modo di fare le cose, penso che un approccio open source con accreditamento a cinque stelle da parte dell'ODI sembri un buon modo per andare avanti. La trappola in cui non cadere è la trappola della paura in questo momento, e siamo al culmine della paura grazie a Edward Snowden, grazie alla scoperta di cosa hanno fatto la NSA e gli Stati Uniti, e cosa è stato il GCHQ qui facendo. Se riesci a creare una funzione subdola in un dispositivo e decidi di non dire all'utente che decidi di infrangere un po 'la legge, sicuramente in termini di protezione dei dati, c'è un rischio reale che venga scoperto. Questo è un potere che possiamo usare per il bene o il male e probabilmente entrambi, ma noi, è presente nel mondo adesso e dobbiamo capire come usarlo.";
 
     //var translation = "Come rendiamo le persone più consapevoli dei loro dati personali? Doc: Abbiamo due sé nel mondo in un dato momento adesso. Abbiamo il sé fisico, la nostra carne e il sangue, la nostra voce, la nostra presenza nel mondo che si estende oltre i nostri corpi ma vive in questo spazio fisico. C'è quest'altro spazio, abbiamo iniziato a chiamare cyberspazio molto tempo fa, ma è una cosa reale. È uno spazio dati. Julian: Come persone molto spesso siamo analfabeti in materia di dati. Non ci rendiamo conto dell'impatto di ciò che i dati hanno sulle nostre vite, non ci rendiamo conto di ciò che stiamo dando e perché non ci rendiamo conto dei meccanismi che ci consentiranno di dare nuovo potere a noi stessi in questo ambiente. Adrian: Sicurezza e privacy, sono problemi che le persone si preoccupano di loro e dobbiamo affrontarli. Alexandra: Penso che sfortunatamente al momento rendiamo le persone consapevoli dei loro dati personali quando accadono cose terribili. Aleks: Ci vorranno esperienze personali di caduta, una sorta di esperienza davvero orribile prima che le persone si sentano davvero costrette a essere istruite su questo. Alexandra: E penso che ci siano due pezzi di dati. Le persone si sentono molto a cuore, uno è l'assistenza sanitaria e l'altro è bancario. Quindi, se tocchi queste due aree, la reazione è estremamente forte perché sentono che tocca qualcosa di cui dovrebbero avere il completo controllo. Doug: Internet è creato dall'uomo e tutto ciò che metti online è recuperabile. Ci sono esperti di sicurezza di livello mondiale, ma ci sono ancora persone che rubano denaro da conti bancari. Adrian: Come tecnologi, abbiamo il dovere di cercare di spiegare queste cose alle persone e cercare di farle capire, sai, trovare modi per renderle reali e avere un senso e abbiamo bisogno di più esempi e di una migliore educazione. Julian: Dobbiamo creare un dibattito più informato sui dati, in particolare sul valore dei dati. Il valore dei dati come individui e il valore dei dati aggregati. Quali sono gli svantaggi della gestione dei propri dati? Doc: In questo momento si parla più che mai di possedere i propri dati, perché ci sono così tante aziende là fuori che stanno raccogliendo dati su di noi, che non possediamo affatto, che non controlliamo affatto. Glyn: Quindi, se stiamo cercando di gestire i tuoi dati, uno dei problemi è che non sai necessariamente quali dati stai fornendo ad altre persone. Quindi mancano di informazioni e mancano in alcun modo per scoprirle. Jon: Quindi in realtà voglio che sia nelle mani di agenzie che faranno del bene con ciò che possono forse utilizzare i miei dati rispetto a milioni di dati di altre persone per trovare tendenze o per trovare dettagli su di me. Quindi sì, avevamo bisogno che fosse là fuori per farlo funzionare, ed è qui che entra in gioco la tensione perché non appena accetto che sia là fuori e permetto che venga lavorato è un po 'come avere una casa festa quando avevo diciassette anni e dissi, tutti sono i benvenuti. Beh, lo erano fino a quando non è sfuggito un po 'di mano e sai con quella storia va. Jeni: Penso che, penso che ci siano pochissime persone disposte a sacrificare tanto quanto mi ci vorrebbe effettivamente per non essere monitorato e sorvegliato affatto. Che tipo di aiuto è disponibile per le persone per gestire i propri dati? Jon: Dobbiamo spostare il dibattito oltre una discussione su ciò che può essere in un regno commerciale in attività nel normale ruolo domestico. Alexandra: Penso che dovremmo educare le persone sui dati costruendo partnership con le aziende coinvolte nella vendita di quei prodotti. Doug: Penso che abbiamo già un intermediario per gli open data in un'istituzione che è stata recentemente creata l'Open Data Institute, co-fondata da Tim Berners-Lee e Gavin Starkson, ci sono alcune persone fantastiche che hanno creato un sistema di accreditamento. Doc: Quello che succederà a lungo termine è che le persone avranno il controllo sui propri dati personali perché sapranno meglio cosa farne e gli strumenti esisteranno per farne di più, con quei dati rispetto a questi altri le aziende potrebbero. È proprio come con i personal computer. Jon: e quando mobiliti una task force mondiale di fanatici della carta ti piace fare cose. Doug: Non credo che abbiamo bisogno che le aziende tecnologiche si siedano lì e garantiscano i dati delle persone. Mi sembra un vecchio modo di fare le cose, penso che un approccio open source con accreditamento a cinque stelle da parte dell'ODI sembri un buon modo per andare avanti. Doc: La trappola in cui non cadere è la trappola della paura in questo momento, e siamo al culmine della paura grazie a Edward Snowden, grazie alla scoperta di cosa hanno fatto la NSA e gli Stati Uniti, e cosa è stato il GCHQ qui facendo. Jason: Se riesci a creare una funzione subdola in un dispositivo e decidi di non dire all'utente che decidi di infrangere un po 'la legge, sicuramente in termini di protezione dei dati, c'è un rischio reale che venga scoperto. Doc: Questo è un potere che possiamo usare per il bene o il male e probabilmente entrambi, ma noi, è presente nel mondo adesso e dobbiamo capire come usarlo.";
 
@@ -94,6 +98,8 @@ var translate = (function () {
     var sentenceIndex = 0;
     var sentencesIndexes = [];
 
+    var cleanTranscript = "";
+
     words.forEach(function(word, i) {
 
       var lastChar = word.innerText.replace(/\s/g, '').slice(-1);
@@ -107,13 +113,20 @@ var translate = (function () {
       if (lastChar.match(endSentenceDelimiter) && penultimateChar.toUpperCase() !== penultimateChar && penultimateChar.match(midSentenceDelimiter) !== true)  {
         //console.log(sentence);
         sentences.push(sentence);
+        cleanTranscript += sentence + " ";
         sentence = "";
         sentencesIndexes.push(sentenceIndex);
+        
       }
     });
 
     console.log(sentences);
     console.log(sentencesIndexes);
+    console.log("==============");
+    console.log(cleanTranscript);
+    console.log("==============");
+
+
 
     // if different number of sentences let's try and flag the issue
 
@@ -346,6 +359,11 @@ var translate = (function () {
       }
     });
 
+    /* =============================================== */
+
+
+   
+
     function stringsIntersect(string1, string2) {
 
       console.log("checking intersection for ....");
@@ -424,9 +442,12 @@ var translate = (function () {
     var sentenceIndex = 1;
     var remainingSentence = null;
     var remainingTransSentence = null;
+    var thisTransCaption = null;
+    var transCaptionArr = [];
+
     captions.forEach(function(caption, c) {
 
-      alert("caption "+c);
+      //alert("caption "+c);
       var textToCheck = ""; 
       if (caption.stop !== "00:00:00.000") {
 
@@ -476,6 +497,10 @@ var translate = (function () {
 
             if (intersection === 1){ // exact match - sentence matches caption
 
+
+              thisTransCaption = new captionMeta(caption.start, caption.stop, thisTransSentence);
+              transCaptionArr.push(thisTransCaption);
+
               transCaptionsVtt += "\n" + caption.start + "-->" + caption.stop + "\n" + insertLineBreak(thisTransSentence) + "\n";
               
               remainingSentence = null;
@@ -495,6 +520,9 @@ var translate = (function () {
 
               if (intersection === 1){ // exact match - next sentence matches remains of caption
                 captionSentence += transSentences[i+1];
+
+                thisTransCaption = new captionMeta(caption.start, caption.stop, captionSentence);
+                transCaptionArr.push(thisTransCaption);
                 transCaptionsVtt += "\n" + caption.start + "-->" + caption.stop + "\n" + insertLineBreak(captionSentence) + "\n";
               } else if (intersection < 1) { // sentence is smaller than remaining caption
                 captionSentence += transSentences[i+1];
@@ -561,6 +589,9 @@ var translate = (function () {
                 // trim() removes whitespace from both ends of a string
 
                 if (fitSentence.trim() === captionText.trim()) { // if the chunk matches the text exactly we can add the translated version
+
+                  thisTransCaption = new captionMeta(caption.start, caption.stop, captionSentence);
+                  transCaptionArr.push(thisTransCaption);
                   
                   transCaptionsVtt += "\n" + caption.start + "-->" + caption.stop + "\n" + insertLineBreak(captionSentence) + "\n";
                   remainingSentence = thisSentence.substr(fitSentence.length + 1);
@@ -603,6 +634,9 @@ var translate = (function () {
                       //console.log("buildingTransSentence = "+buildingTransSentence);
                     }
                   });
+
+                  thisTransCaption = new captionMeta(caption.start, caption.stop, buildingTransSentence);
+                  transCaptionArr.push(thisTransCaption);
   
                   transCaptionsVtt += "\n" + caption.start + "-->" + caption.stop + "\n" + insertLineBreak(buildingTransSentence) + "\n";
   
@@ -645,6 +679,8 @@ var translate = (function () {
                   }
                 });
 
+                thisTransCaption = new captionMeta(caption.start, caption.stop, buildingTransSentence);
+                transCaptionArr.push(thisTransCaption);
                 transCaptionsVtt += "\n" + caption.start + "-->" + caption.stop + "\n" + insertLineBreak(buildingTransSentence) + "\n";
 
                 console.log("constructing the remaining sentences .........");
@@ -673,6 +709,47 @@ var translate = (function () {
     document.getElementById(playerId+'-vtt').setAttribute("src", 'data:text/vtt,'+encodeURIComponent(captionsVtt));
     console.log(captionsVtt);
 
+    createTransTranscript(transCaptionArr);
+
+  }
+
+  function vttTimeToMs(vttTime){
+    var part = vttTime.split(".");
+    var a = part[0].split(":");
+    var seconds = (+a[0]) * 60 * 60 + (+a[1]) * 60 + (+a[2]); 
+    var ms = seconds * 1000 + (+part[1]);
+    return ms;
+  }
+
+  function createTransTranscript(captionArr) {
+
+    var transcriptMarkup = "<article><section>";
+
+    captionArr.forEach(function(caption, i) {
+      var startTime = vttTimeToMs(caption.start);
+      var stopTime = vttTimeToMs(caption.stop);
+      var duration = (+stopTime) - (+startTime);
+      console.log(startTime);
+      var element = document.querySelector('[data-m="'+startTime+'"]');
+      console.log(element);
+      if (element.previousElementSibling === null) {
+        if (i > 0) { //close previous para
+          transcriptMarkup += "</p>\n<p>";
+        } else {
+          transcriptMarkup += "<p>";
+        }
+        console.log("start para");
+      }
+          
+      if (element.classList.contains("speaker")) {
+        transcriptMarkup += '<span class="speaker" data-m="'+startTime+'" data-d="0">'+element.innerText+'</span>\n';
+      } else {
+        transcriptMarkup += '<span data-m="'+startTime+'" data-d="'+duration+'">'+caption.text+'</span>\n';
+      }
+
+    });
+    transcriptMarkup += "</p>\n<section><article>";
+    console.log(transcriptMarkup);
   }
 
   return trans;
