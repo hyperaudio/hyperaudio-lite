@@ -39,7 +39,7 @@
   <div id="hypertranscript" class="hyperaudio-transcript" style="overflow-y:scroll; height:600px; position:relative; border-style:dashed; border-width: 1px; border-color:#999; padding: 8px">
     <article>
       <section>
-        <p><span data-m="880" data-d="539">test </span><span data-m="2560" data-d="459">one </span><span data-m="3240" data-d="370">two </span><span data-m="3950" data-d="410">three </span><span data-m="4750" data-d="459">four </span></p>
+        <p id="p1"><span data-m="880" data-d="539">test </span><span data-m="2560" data-d="459">one </span><span data-m="3240" data-d="370">two </span><span data-m="3950" data-d="410">three </span><span data-m="4750" data-d="459">four </span></p>
         <p><span data-m="6580" data-d="530">test </span><span data-m="8099" data-d="439">five </span><span data-m="8740" data-d="509">six </span><span data-m="9469" data-d="540">seven </span><span data-m="10280" data-d="330">eight </span></p>
       </section>
     </article>
@@ -64,10 +64,7 @@
   //ht1.init("hypertranscript", "hyperplayer", minimizedMode, autoScroll);
 
   let ht1 = new HyperaudioLite("hypertranscript", "hyperplayer", minimizedMode, autoScroll);
-  console.log("----------");
-  //console.log(ht1.add(2,3));
-  console.log(ht1);
-  console.log("----------");
+
   //ht1.setScrollParameters(<duration>, <delay>, <offset>, <container>);
 
   // this should create captions  

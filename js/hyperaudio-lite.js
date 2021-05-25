@@ -19,7 +19,7 @@ class HyperaudioLite {
     const hashVar = windowHash.substring(1,windowHash.indexOf("="));
 
     if (hashVar === this.transcript.id) {
-      this.hashArray = windowHash.substr(transcript.id.length+2).split(',');
+      this.hashArray = windowHash.substr(this.transcript.id.length+2).split(',');
     } else {
       this.hashArray = [];
     }
@@ -144,6 +144,14 @@ class HyperaudioLite {
     if (this.autoscroll === true) {
       this.scroller = window.Velocity || window.jQuery.Velocity;
     }
+
+    //document.getSelection().selectAllChildren(document.getElementById('hypertranscript'));
+    //console.log(document.getElementById('p1'));
+    //document.getSelection().selectAllChildren(document.getElementById('p1').firstChild.lastChild);
+    //document.getSelection().setBaseAndExtent(document.getElementById('p1').firstChild.lastChild, 0, document.getElementById('p1').lastChild.lastChild, 3);
+    
+    
+    //console.log(selection);
     
   }
 
@@ -167,8 +175,6 @@ class HyperaudioLite {
   }
 
   getSelectionMediaFragment = () => {
-
-    console.log("getSelectionMediaFragment");
 
     let fragment = "";
     let selection = null;
@@ -430,4 +436,9 @@ class HyperaudioLite {
 
 }
 
-module.exports = {HyperaudioLite};
+// required for testing
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = {HyperaudioLite};
+}
+
+//export default HyperaudioLite;
