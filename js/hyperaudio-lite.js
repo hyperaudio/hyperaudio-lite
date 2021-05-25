@@ -3,33 +3,150 @@
 
 'use strict';
 
-const hyperaudiolite = (function () {
+//const hyperaudiolite = (function () {
 
-  let hal = {},
-    transcript,
-    player,
-    paraIndex,
-    wordIndex,
-    textShot,
-    paras,
-    start,
-    end,
-    timer,
-    minimizedMode,
-    wordArr = [],
-    playerType,
-    currentTime,
-    windowHash,
-    hashArray,
-    hashVar,
-    scroller,
-    scrollerContainer,
-    scrollerDuration,
-    scrollerDelay,
-    scrollerOffset,
-    autoscroll;
+class HyperaudioLite {
 
-  function createWordArray(words) {
+  constructor(transcriptId, mediaElementId, minimizedMode, autoscroll) {
+    this.transcript = document.getElementById(transcriptId);
+    this.init(mediaElementId, minimizedMode, autoscroll);
+  }
+
+  init = (mediaElementId, m, a) => {
+
+    const windowHash = window.location.hash;
+    
+    const hashVar = windowHash.substring(1,windowHash.indexOf("="));
+
+    if (hashVar === this.transcript.id) {
+      this.hashArray = windowHash.substr(transcript.id.length+2).split(',');
+    } else {
+      this.hashArray = [];
+    }
+
+    document.addEventListener('selectionchange', () => {
+
+      const mediaFragment = this.getSelectionMediaFragment();
+
+      if ( mediaFragment !== "") {
+        document.location.hash = mediaFragment;
+      }
+    }, false);
+
+    this.minimizedMode = m;
+    this.textShot = "";
+    this.wordIndex = 0;
+
+    this.autoscroll = a;
+    this.scrollerContainer = this.transcript;
+    this.scrollerOffset = 0;
+    this.scrollerDuration = 800;
+    this.scrollerDelay = 0;
+
+    //Create the array of timed elements (wordArr)
+
+    const words = this.transcript.querySelectorAll('[data-m]');
+
+    this.wordArr = this.createWordArray(words);
+
+    this.paras = this.transcript.getElementsByTagName('p');
+
+    this.player = document.getElementById(mediaElementId);
+
+    if (this.player.tagName == "VIDEO" || this.player.tagName == "AUDIO") { //native HTML media elements
+      this.playerType = "native";
+    } else { //assume it is a SoundCloud or YouTube iframe 
+      this.playerType = player.getAttribute("data-player-type");
+    }
+
+    if (this.playerType == "native") {
+      this.player.addEventListener('pause', this.clearTimer, false);
+      this.player.addEventListener('play', this.checkPlayHead, false);
+    } else if (playerType == "soundcloud"){  // SoundCloud
+      this.player = SC.Widget(mediaElementId);
+      this.player.bind(SC.Widget.Events.PAUSE, clearTimer);
+      this.player.bind(SC.Widget.Events.PLAY, checkPlayHead);
+    } else { // assume YouTube
+      const tag = document.createElement('script');
+      tag.id = 'iframe-demo';
+      tag.src = 'https://www.youtube.com/iframe_api';
+      const firstScriptTag = document.getElementsByTagName('script')[0];
+      firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+      window.onYouTubeIframeAPIReady = function() {
+        this.player = new YT.Player(mediaElementId, {
+          events: {
+            'onStateChange': onPlayerStateChange
+          }
+        });
+      }
+
+      function onPlayerStateChange(event) {
+        if (event.data == 1) { // playing 
+          checkPlayHead();
+        } else if (event.data == 2) { // paused 
+          clearTimer();
+        }   
+      }
+    }
+ 
+    this.paraIndex = 0;
+    words[0].classList.add("active");
+    this.paras[0].classList.add("active");
+    this.transcript.addEventListener('click', this.setPlayHead, false);
+    this.transcript.addEventListener('click', this.checkPlayHead, false);
+
+    const start = this.hashArray[0];
+
+    if (!isNaN(parseFloat(start))) {
+
+      if (this.playerType == "native") {
+        this.player.currentTime = start;
+        //autoplay
+        const promise = this.player.play();
+        if (promise !== undefined) {
+          promise.catch(error => {
+            console.log("Auto-play prevented");
+          }).then(() => {
+              // Auto-play started
+          });
+        }
+      } else if (playerType == "soundcloud"){ // SoundCloud
+        this.player.seekTo(start * 1000);
+      } else { // Assume YouTube
+        window.onYouTubeIframeAPIReady = function() {
+          this.player = new YT.Player(mediaElementId, {
+            playerVars: { 'autoplay': 1 },
+            events: {
+              'onReady': function() {
+                this.player.seekTo(start, true);
+                this.player.playVideo();
+              }
+            }
+          });
+        }
+      }
+    }
+
+   this.end = this.hashArray[1];
+
+    //TODO convert to binary search for below for quicker startup
+
+    if (start && this.end) {
+      for (let i = 1; i < words.length; i++) {
+        const wordStart = parseInt(words[i].getAttribute("data-m"))/1000;
+        if ( wordStart > start && this.end > wordStart ) {
+          words[i].classList.add("share-match");
+        }
+      }
+    }
+
+    this.scroller = window.Velocity || window.jQuery.Velocity;
+  }
+
+  createWordArray = (words) => {
+    let wordArr = [];
+
     words.forEach((word, i)  => {
       const m = parseInt(word.getAttribute('data-m'));
       let p = word.parentNode;
@@ -46,142 +163,9 @@ const hyperaudiolite = (function () {
     return wordArr;
   }
 
+  getSelectionMediaFragment = () => {
 
-  function init(mediaElementId, m, a) {
-
-    windowHash = window.location.hash;
-    
-    hashVar = windowHash.substring(1,windowHash.indexOf("="));
-
-    if (hashVar === transcript.id) {
-      hashArray = windowHash.substr(transcript.id.length+2).split(',');
-    } else {
-      hashArray = [];
-    }
-
-    document.addEventListener('selectionchange', function() {
-
-      const mediaFragment = getSelectionMediaFragment();
-
-      if ( mediaFragment !== "") {
-        document.location.hash = mediaFragment;
-      }
-    }, false);
-
-    minimizedMode = m;
-    textShot = "";
-    wordIndex = 0;
-
-    autoscroll = a;
-    scrollerContainer = transcript;
-    scrollerOffset = 0;
-    scrollerDuration = 800;
-    scrollerDelay = 0;
-
-    //Create the array of timed elements (wordArr)
-
-    const words = transcript.querySelectorAll('[data-m]');
-
-    wordArr = createWordArray(words);
-
-    paras = transcript.getElementsByTagName('p');
-
-    player = document.getElementById(mediaElementId);
-
-    if (player.tagName == "VIDEO" || player.tagName == "AUDIO") { //native HTML media elements
-      playerType = "native";
-    } else { //assume it is a SoundCloud or YouTube iframe 
-      playerType = player.getAttribute("data-player-type");
-    }
-
-    if (playerType == "native") {
-      player.addEventListener('pause', clearTimer, false);
-      player.addEventListener('play', checkPlayHead, false);
-    } else if (playerType == "soundcloud"){  // SoundCloud
-      player = SC.Widget(mediaElementId);
-      player.bind(SC.Widget.Events.PAUSE, clearTimer);
-      player.bind(SC.Widget.Events.PLAY, checkPlayHead);
-    } else { // assume YouTube
-      const tag = document.createElement('script');
-      tag.id = 'iframe-demo';
-      tag.src = 'https://www.youtube.com/iframe_api';
-      const firstScriptTag = document.getElementsByTagName('script')[0];
-      firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-
-      window.onYouTubeIframeAPIReady = function() {
-        player = new YT.Player(mediaElementId, {
-          events: {
-            'onStateChange': onPlayerStateChange
-          }
-        });
-      }
-
-      function onPlayerStateChange(event) {
-        if (event.data == 1) { // playing 
-          checkPlayHead();
-        } else if (event.data == 2) { // paused 
-          clearTimer();
-        }   
-      }
-    }
- 
-    paraIndex = 0;
-    words[0].classList.add("active");
-    paras[0].classList.add("active");
-    transcript.addEventListener('click', setPlayHead, false);
-    transcript.addEventListener('click', checkPlayHead, false);
-
-    start = hashArray[0];
-
-    if (!isNaN(parseFloat(start))) {
-
-      if (playerType == "native") {
-        player.currentTime = start;
-        //autoplay
-        const promise = player.play();
-        if (promise !== undefined) {
-          promise.catch(error => {
-            console.log("Auto-play prevented");
-          }).then(() => {
-              // Auto-play started
-          });
-        }
-      } else if (playerType == "soundcloud"){ // SoundCloud
-        player.seekTo(start * 1000);
-      } else { // Assume YouTube
-        window.onYouTubeIframeAPIReady = function() {
-          player = new YT.Player(mediaElementId, {
-            playerVars: { 'autoplay': 1 },
-            events: {
-              'onReady': function() {
-                player.seekTo(start, true);
-                player.playVideo();
-              }
-            }
-          });
-        }
-      }
-    }
-
-    end = hashArray[1];
-
-    //TODO convert to binary search for below for quicker startup
-
-    if (start && end) {
-      for (let i = 1; i < words.length; i++) {
-        const wordStart = parseInt(words[i].getAttribute("data-m"))/1000;
-        if ( wordStart > start && end > wordStart ) {
-          words[i].classList.add("share-match");
-        }
-      }
-    }
-
-    scroller = window.Velocity || window.jQuery.Velocity;
-  }
-
-  
-
-  function getSelectionMediaFragment() {
+    console.log("getSelectionMediaFragment");
 
     let fragment = "";
     let selection = null;
@@ -234,66 +218,68 @@ const hyperaudiolite = (function () {
         nodeDuration = 10; // arbitary for now
       }
 
-      fragment = transcript.id+ "=" + nodeStart + "," + (Math.round((nodeStart + nodeDuration) * 10) / 10);
+      fragment = this.transcript.id+ "=" + nodeStart + "," + (Math.round((nodeStart + nodeDuration) * 10) / 10);
     }
 
     return (fragment);
   }
 
-  function setPlayHead(e) {
+
+  setPlayHead = (e) => {
 
     const target = (e.target) ? e.target : e.srcElement;
     target.setAttribute("class", "active");
     const timeSecs = parseInt(target.getAttribute("data-m")) / 1000;
 
     if(!isNaN(parseFloat(timeSecs))) {
-      end = null;
-      if (playerType == "native"){
-        player.currentTime = timeSecs;
-        player.play();
+      this.end = null;
+
+      if (this.playerType == "native"){
+        this.player.currentTime = timeSecs;
+        this.player.play();
       } else if (playerType == "soundcloud"){ 
-        player.seekTo(timeSecs * 1000);
-        player.play();
+        this.player.seekTo(timeSecs * 1000);
+        this.player.play();
       } else { //assume YouTube
-        player.seekTo(timeSecs, true);
-        player.playVideo();
+        this.player.seekTo(timeSecs, true);
+        this.player.playVideo();
       }
     }
   }
 
-  function clearTimer() {
-    if (timer) clearTimeout(timer);
+  clearTimer = () => {
+    if (this.timer) clearTimeout(this.timer);
   }
 
-  function checkPlayHead() {
+  checkPlayHead = () => {
 
-    clearTimer();
+    this.clearTimer();
 
-    if (playerType == "native"){
-      currentTime = player.currentTime;
+    if (this.playerType == "native"){
+      this.currentTime = this.player.currentTime;
     } else if (playerType == "soundcloud"){ 
-      player.getPosition(function(ms) {
-        currentTime = ms / 1000;
+      this.player.getPosition(function(ms) {
+        this.currentTime = ms / 1000;
       });
     } else { // assume YouTube
-      currentTime = player.getCurrentTime();
+      this.currentTime = player.getCurrentTime();
     }
 
     //check for end time of shared piece
 
-    if (end && (end < currentTime)) {
-      player.pause();
-      end = null;
+    if (this.end && (this.end < this.currentTime)) {
+      this.player.pause();
+      this.end = null;
     } else {
       let newPara = false;
       let interval; // used to establish next checkPlayHead
       let index = 0;
-      let words = wordArr.length - 1;
+      let words = this.wordArr.length - 1;
 
       // Binary search https://en.wikipedia.org/wiki/Binary_search_algorithm
       while (index <= words) {
         const guessIndex = index + ((words - index) >> 1); // >> 1 has the effect of halving and rounding down
-        const difference = wordArr[guessIndex].m / 1000 - currentTime; // wordArr[guessIndex].m represents start time of word
+        const difference = this.wordArr[guessIndex].m / 1000 - this.currentTime; // wordArr[guessIndex].m represents start time of word
 
         if (difference < 0) { // comes before the element
           index = guessIndex + 1;
@@ -308,34 +294,21 @@ const hyperaudiolite = (function () {
       }
 
       for (let i = 0; i < index; ++i) {
-        wordArr[i].n.classList.add("read");
-        wordArr[i].n.classList.remove("unread");
-        wordArr[i].n.classList.remove("active");
+        this.wordArr[i].n.classList.add("read");
+        this.wordArr[i].n.classList.remove("unread");
+        this.wordArr[i].n.classList.remove("active");
       }
 
-      for (let i = index; i < wordArr.length; ++i) {
-        wordArr[i].n.classList.add("unread");
-        wordArr[i].n.classList.remove("read");
+      for (let i = index; i < this.wordArr.length; ++i) {
+        this.wordArr[i].n.classList.add("unread");
+        this.wordArr[i].n.classList.remove("read");
       }
 
-      /*for (let i = 0; i < index; ++i) {
-        wordArr[i].n.classList.remove("active");
-      }*/
-
-      paras = transcript.getElementsByTagName('p');
+      this.paras = this.transcript.getElementsByTagName('p');
 
       //remove active class from all paras
 
-      
-
-      /*for (let a = 0; a < paras.length; a++) {
-        console.log(paras[a]);
-        if (paras[a].classList.contains("active")) {
-          paras[a].classList.remove("active");
-        }
-      }*/
-
-      Array.from(paras).forEach(para => {
+      Array.from(this.paras).forEach(para => {
         if (para.classList.contains("active")) {
           para.classList.remove("active");
         }
@@ -344,28 +317,21 @@ const hyperaudiolite = (function () {
       // set current word and para to active
 
       if (index > 0) {
-        wordArr[index - 1].n.classList.add("active");
-        wordArr[index - 1].n.parentNode.classList.add("active");
+        this.wordArr[index - 1].n.classList.add("active");
+        this.wordArr[index - 1].n.parentNode.classList.add("active");
       }
 
-      if (wordArr[index]) {
-        interval = parseInt(wordArr[index].n.getAttribute('data-m') - currentTime * 1000);
+      if (this.wordArr[index]) {
+        this.interval = parseInt(this.wordArr[index].n.getAttribute('data-m') - this.currentTime * 1000);
       } else {
-        interval = 0;
+        this.interval = 0;
       }
 
       // Establish current paragraph index
 
       let currentParaIndex;
 
-      /*for (let a = 0; a < paras.length; a++) {
-        if (paras[a].classList.contains("active")) {
-          currentParaIndex = a;
-          break;
-        }
-      }*/
-
-      Array.from(paras).every((para, i) => {
+      Array.from(this.paras).every((para, i) => {
         if (para.classList.contains("active")) {
           currentParaIndex = i;
           return false;
@@ -373,41 +339,39 @@ const hyperaudiolite = (function () {
         return true;
       });
 
-
-
       let scrollNode = null;
 
       if (index > 0) {
-        scrollNode = wordArr[index-1].n.parentNode;
+        scrollNode = this.wordArr[index-1].n.parentNode;
 
         if (scrollNode.tagName != "P") { // it's not inside a para so just use the element
-          scrollNode = wordArr[index-1].n;
+          scrollNode = this.wordArr[index-1].n;
         }
 
-        if (currentParaIndex != paraIndex) {
+        if (currentParaIndex != this.paraIndex) {
 
-          if (typeof scroller !== 'undefined' && autoscroll === true) {
+          if (typeof this.scroller !== 'undefined' && this.autoscroll === true) {
 
-            if (typeof(scrollerContainer) !== 'undefined' && scrollerContainer !== null) {
+            if (typeof(this.scrollerContainer) !== 'undefined' && this.scrollerContainer !== null) {
 
-              scroller(scrollNode, "scroll", {
-                container: scrollerContainer,
-                duration: scrollerDuration,
-                delay: scrollerDelay,
-                offset: scrollerOffset
+              this.scroller(scrollNode, "scroll", {
+                container: this.scrollerContainer,
+                duration: this.scrollerDuration,
+                delay: this.scrollerDelay,
+                offset: this.scrollerOffset
               });
             } else {
-              scroller(scrollNode, "scroll", {
-                duration: scrollerDuration,
-                delay: scrollerDelay,
-                offset: scrollerOffset
+              this.scroller(scrollNode, "scroll", {
+                duration: this.scrollerDuration,
+                delay: this.scrollerDelay,
+                offset: this.scrollerOffset
               });
             }
           }
 
           newPara = true;
 
-          paraIndex = currentParaIndex;
+          this.paraIndex = currentParaIndex;
         }
       }
 
@@ -417,16 +381,18 @@ const hyperaudiolite = (function () {
 
         const elements = transcript.querySelectorAll('[data-m]');
         let currentWord = "";
-        let lastWordIndex = wordIndex;
+        let lastWordIndex = this.wordIndex;
 
         for (let i = 0; i < elements.length; i++) {
           if((' ' + elements[i].className + ' ').indexOf(' active ') > -1) {
             currentWord = elements[i].innerHTML;
-            wordIndex = i;
+            this.wordIndex = i;
           }
         }
 
-        if (wordIndex != lastWordIndex) {
+        let textShot = "";
+
+        if (this.wordIndex != lastWordIndex) {
           textShot = textShot + currentWord;
         }
 
@@ -437,47 +403,25 @@ const hyperaudiolite = (function () {
         }
       }
 
-      timer = setTimeout(function() {
-        checkPlayHead();
+      this.timer = setTimeout(() => {
+        this.checkPlayHead();
       }, interval+1); // +1 to avoid rounding issues (better to be over than under)
     }
-
   }
 
-  hal.init = function(transcriptId, mediaElementId, minimizedMode, autoscroll) {
-    transcript = document.getElementById(transcriptId);
-    init(mediaElementId, minimizedMode, autoscroll);
-    //set minimizedMode is an experimental feature
-  }
-
-  hal.setScrollParameters = function(duration, delay, offset, container) {
+  setScrollParameters = (duration, delay, offset, container) => {
     scrollerContainer = container;
     scrollerDuration = duration;
     scrollerDelay = delay;
     scrollerOffset = offset;
   }
 
-  hal.toggleAutoScroll = function() {
-    autoscroll = !autoscroll;
+  toggleAutoScroll = () => {
+    this.autoscroll = !this.autoscroll;
   }
 
-  hal.setAutoScroll = function(on) {
-    autoscroll = on;
+  setAutoScroll = (state) => {
+    this.autoscroll = state;
   }
 
-  // for tests
-
-  hal.add = function(a, b) {
-    return add(a, b);
-  }
-
-  hal.createWordArray = function(words) {
-    return createWordArray(words);
-  }
-
-  return hal;
-
-});
-
-
-module.exports = {hyperaudiolite};
+}

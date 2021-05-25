@@ -60,10 +60,13 @@
   var minimizedMode = false;
   var autoScroll = true;
 
-  var ht1 = hyperaudiolite();
-  ht1.init("hypertranscript", "hyperplayer", minimizedMode, autoScroll);
+  //var ht1 = hyperaudiolite();
+  //ht1.init("hypertranscript", "hyperplayer", minimizedMode, autoScroll);
+
+  let ht1 = new HyperaudioLite("hypertranscript", "hyperplayer", minimizedMode, autoScroll);
   console.log("----------");
-  console.log(ht1.add(2,3));
+  //console.log(ht1.add(2,3));
+  console.log(ht1);
   console.log("----------");
   //ht1.setScrollParameters(<duration>, <delay>, <offset>, <container>);
 
