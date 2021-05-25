@@ -141,7 +141,10 @@ class HyperaudioLite {
       }
     }
 
-    this.scroller = window.Velocity || window.jQuery.Velocity;
+    if (this.autoscroll === true) {
+      this.scroller = window.Velocity || window.jQuery.Velocity;
+    }
+    
   }
 
   createWordArray = (words) => {
@@ -424,4 +427,7 @@ class HyperaudioLite {
     this.autoscroll = state;
   }
 
+
 }
+
+module.exports = {HyperaudioLite};
