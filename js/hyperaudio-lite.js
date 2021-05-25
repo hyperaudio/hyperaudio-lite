@@ -386,7 +386,7 @@ class HyperaudioLite {
 
       //minimizedMode is still experimental - it changes document.title upon every new word
 
-      if (minimizedMode) {
+      if (this.minimizedMode) {
 
         const elements = transcript.querySelectorAll('[data-m]');
         let currentWord = "";
@@ -419,10 +419,10 @@ class HyperaudioLite {
   }
 
   setScrollParameters = (duration, delay, offset, container) => {
-    scrollerContainer = container;
-    scrollerDuration = duration;
-    scrollerDelay = delay;
-    scrollerOffset = offset;
+    this.scrollerContainer = container;
+    this.scrollerDuration = duration;
+    this.scrollerDelay = delay;
+    this.scrollerOffset = offset;
   }
 
   toggleAutoScroll = () => {
@@ -432,8 +432,6 @@ class HyperaudioLite {
   setAutoScroll = (state) => {
     this.autoscroll = state;
   }
-
-
 }
 
 // required for testing
