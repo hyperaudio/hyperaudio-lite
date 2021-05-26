@@ -5,7 +5,7 @@ const {HyperaudioLite} = require('../js/hyperaudio-lite');
 
 let wordArr = [];
 
-function createWordArrayMock(words) {
+function createWordArrayResult(words) {
   for (let i = 0; i < words.length; ++i) {
     const m = parseInt(words[i].getAttribute('data-m'));
     let p = words[i].parentNode;
@@ -40,7 +40,7 @@ test('createWordArray', () => {
 
   const words = document.querySelectorAll('[data-m]');
 
-  const expectedResult = createWordArrayMock(words);
+  const expectedResult = createWordArrayResult(words);
 
   let ht = new HyperaudioLite("hypertranscript", "hyperplayer", false, false);
 
