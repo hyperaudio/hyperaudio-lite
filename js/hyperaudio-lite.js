@@ -1,40 +1,38 @@
 /*! (C) The Hyperaudio Project. MIT @license: en.wikipedia.org/wiki/MIT_License. */
-/*! Version 2????? */
+/*! Version 2.0.0 Alpha */
 
 'use strict';
 
-//const hyperaudiolite = (function () {
-
 class HyperaudioLite {
-
   constructor(transcriptId, mediaElementId, minimizedMode, autoscroll) {
     this.transcript = document.getElementById(transcriptId);
     this.init(mediaElementId, minimizedMode, autoscroll);
   }
 
   init = (mediaElementId, m, a) => {
-
     const windowHash = window.location.hash;
-    
-    const hashVar = windowHash.substring(1,windowHash.indexOf("="));
+    const hashVar = windowHash.substring(1, windowHash.indexOf('='));
 
     if (hashVar === this.transcript.id) {
-      this.hashArray = windowHash.substr(this.transcript.id.length+2).split(',');
+      this.hashArray = windowHash.substr(this.transcript.id.length + 2).split(',');
     } else {
       this.hashArray = [];
     }
 
-    document.addEventListener('selectionchange', () => {
+    document.addEventListener(
+      'selectionchange',
+      () => {
+        const mediaFragment = this.getSelectionMediaFragment();
 
-      const mediaFragment = this.getSelectionMediaFragment();
-
-      if ( mediaFragment !== "") {
-        document.location.hash = mediaFragment;
-      }
-    }, false);
+        if (mediaFragment !== '') {
+          document.location.hash = mediaFragment;
+        }
+      },
+      false,
+    );
 
     this.minimizedMode = m;
-    this.textShot = "";
+    this.textShot = '';
     this.wordIndex = 0;
 
     this.autoscroll = a;
@@ -53,90 +51,102 @@ class HyperaudioLite {
 
     this.player = document.getElementById(mediaElementId);
 
-    if (this.player.tagName == "VIDEO" || this.player.tagName == "AUDIO") { //native HTML media elements
-      this.playerType = "native";
-    } else { //assume it is a SoundCloud or YouTube iframe 
-      this.playerType = player.getAttribute("data-player-type");
+    if (this.player.tagName == 'VIDEO' || this.player.tagName == 'AUDIO') {
+      //native HTML media elements
+      this.playerType = 'native';
+    } else {
+      //assume it is a SoundCloud or YouTube iframe
+      this.playerType = player.getAttribute('data-player-type');
     }
 
-    if (this.playerType == "native") {
+    if (this.playerType == 'native') {
       this.player.addEventListener('pause', this.clearTimer, false);
       this.player.addEventListener('play', this.checkPlayHead, false);
-    } else if (playerType == "soundcloud"){  // SoundCloud
+    } else if (playerType == 'soundcloud') {
+      // SoundCloud
       this.player = SC.Widget(mediaElementId);
       this.player.bind(SC.Widget.Events.PAUSE, clearTimer);
       this.player.bind(SC.Widget.Events.PLAY, checkPlayHead);
-    } else { // assume YouTube
+    } else {
+      // assume YouTube
       const tag = document.createElement('script');
       tag.id = 'iframe-demo';
       tag.src = 'https://www.youtube.com/iframe_api';
       const firstScriptTag = document.getElementsByTagName('script')[0];
       firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 
-      window.onYouTubeIframeAPIReady = function() {
+      window.onYouTubeIframeAPIReady = function () {
         this.player = new YT.Player(mediaElementId, {
           events: {
-            'onStateChange': onPlayerStateChange
-          }
+            onStateChange: onPlayerStateChange,
+          },
         });
-      }
+      };
 
-      function onPlayerStateChange(event) {
-        if (event.data == 1) { // playing 
-          checkPlayHead();
-        } else if (event.data == 2) { // paused 
-          clearTimer();
-        }   
-      }
+      onPlayerStateChange = event => {
+        if (event.data == 1) {
+          // playing
+          this.checkPlayHead();
+        } else if (event.data == 2) {
+          // paused
+          this.clearTimer();
+        }
+      };
     }
- 
+
     this.paraIndex = 0;
-    words[0].classList.add("active");
-    this.paras[0].classList.add("active");
+
+    words[0].classList.add('active');
+    this.paras[0].classList.add('active');
+
     this.transcript.addEventListener('click', this.setPlayHead, false);
     this.transcript.addEventListener('click', this.checkPlayHead, false);
 
     const start = this.hashArray[0];
 
     if (!isNaN(parseFloat(start))) {
-
-      if (this.playerType == "native") {
+      if (this.playerType == 'native') {
         this.player.currentTime = start;
         //autoplay
         const promise = this.player.play();
         if (promise !== undefined) {
-          promise.catch(error => {
-            console.log("Auto-play prevented");
-          }).then(() => {
+          promise
+            .catch(error => {
+              console.log('Auto-play prevented');
+            })
+            .then(() => {
               // Auto-play started
-          });
+            });
         }
-      } else if (playerType == "soundcloud"){ // SoundCloud
+      } else if (playerType == 'soundcloud') {
+        // SoundCloud
         this.player.seekTo(start * 1000);
-      } else { // Assume YouTube
-        window.onYouTubeIframeAPIReady = function() {
+      } else {
+        // Assume YouTube
+
+        window.onYouTubeIframeAPIReady = function () {
           this.player = new YT.Player(mediaElementId, {
-            playerVars: { 'autoplay': 1 },
+            playerVars: { autoplay: 1 },
             events: {
-              'onReady': function() {
+              onReady: function () {
                 this.player.seekTo(start, true);
                 this.player.playVideo();
-              }
-            }
+              },
+            },
           });
-        }
+        };
       }
     }
 
-   this.end = this.hashArray[1];
+    this.end = this.hashArray[1];
 
     //TODO convert to binary search for below for quicker startup
 
     if (start && this.end) {
       for (let i = 1; i < words.length; i++) {
-        const wordStart = parseInt(words[i].getAttribute("data-m"))/1000;
-        if ( wordStart > start && this.end > wordStart ) {
-          words[i].classList.add("share-match");
+        const wordStart = parseInt(words[i].getAttribute('data-m')) / 1000;
+        if (wordStart > start && this.end > wordStart) {
+          words[i].classList.add('share-match');
         }
       }
     }
@@ -144,58 +154,51 @@ class HyperaudioLite {
     if (this.autoscroll === true) {
       this.scroller = window.Velocity || window.jQuery.Velocity;
     }
+  };
 
-    //document.getSelection().selectAllChildren(document.getElementById('hypertranscript'));
-    //console.log(document.getElementById('p1'));
-    //document.getSelection().selectAllChildren(document.getElementById('p1').firstChild.lastChild);
-    //document.getSelection().setBaseAndExtent(document.getElementById('p1').firstChild.lastChild, 0, document.getElementById('p1').lastChild.lastChild, 3);
-    
-    
-    //console.log(selection);
-    
-  }
-
-  createWordArray = (words) => {
+  createWordArray = words => {
     let wordArr = [];
 
-    words.forEach((word, i)  => {
+    words.forEach((word, i) => {
       const m = parseInt(word.getAttribute('data-m'));
       let p = word.parentNode;
       while (p !== document) {
-        if (p.tagName.toLowerCase() === 'p' || p.tagName.toLowerCase() === 'figure' || p.tagName.toLowerCase() === 'ul') {
+        if (
+          p.tagName.toLowerCase() === 'p' ||
+          p.tagName.toLowerCase() === 'figure' ||
+          p.tagName.toLowerCase() === 'ul'
+        ) {
           break;
         }
         p = p.parentNode;
       }
-      wordArr[i] = { 'n': words[i], 'm': m, 'p': p };
-      wordArr[i].n.classList.add("unread");
+      wordArr[i] = { n: words[i], m: m, p: p };
+      wordArr[i].n.classList.add('unread');
     });
 
     return wordArr;
-  }
+  };
 
   getSelectionMediaFragment = () => {
-
-    let fragment = "";
+    let fragment = '';
     let selection = null;
 
     if (window.getSelection) {
-       selection = window.getSelection();
+      selection = window.getSelection();
     } else if (document.selection) {
-       selection = document.selection.createRange();
+      selection = document.selection.createRange();
     }
 
     if (selection.toString() !== '') {
-
       let fNode = selection.focusNode.parentNode;
       let aNode = selection.anchorNode.parentNode;
 
-      if (aNode.getAttribute('data-m') == null || aNode.className == "speaker") {
-         aNode = aNode.nextElementSibling;
+      if (aNode.getAttribute('data-m') == null || aNode.className == 'speaker') {
+        aNode = aNode.nextElementSibling;
       }
 
-      if (fNode.getAttribute('data-m') == null || fNode.className == "speaker") {
-         fNode = fNode.previousElementSibling;
+      if (fNode.getAttribute('data-m') == null || fNode.className == 'speaker') {
+        fNode = fNode.previousElementSibling;
       }
 
       let aNodeTime = parseInt(aNode.getAttribute('data-m'), 10);
@@ -227,56 +230,56 @@ class HyperaudioLite {
         nodeDuration = 10; // arbitary for now
       }
 
-      fragment = this.transcript.id+ "=" + nodeStart + "," + (Math.round((nodeStart + nodeDuration) * 10) / 10);
+      fragment = this.transcript.id + '=' + nodeStart + ',' + Math.round((nodeStart + nodeDuration) * 10) / 10;
     }
 
-    return (fragment);
-  }
+    return fragment;
+  };
 
+  setPlayHead = e => {
+    const target = e.target ? e.target : e.srcElement;
+    target.setAttribute('class', 'active');
+    const timeSecs = parseInt(target.getAttribute('data-m')) / 1000;
 
-  setPlayHead = (e) => {
-
-    const target = (e.target) ? e.target : e.srcElement;
-    target.setAttribute("class", "active");
-    const timeSecs = parseInt(target.getAttribute("data-m")) / 1000;
-
-    if(!isNaN(parseFloat(timeSecs))) {
+    if (!isNaN(parseFloat(timeSecs))) {
       this.end = null;
 
-      if (this.playerType == "native"){
+      if (this.playerType == 'native') {
         this.player.currentTime = timeSecs;
         this.player.play();
-      } else if (playerType == "soundcloud"){ 
+      } else if (playerType == 'soundcloud') {
         this.player.seekTo(timeSecs * 1000);
         this.player.play();
-      } else { //assume YouTube
+      } else {
+        //assume YouTube
+
         this.player.seekTo(timeSecs, true);
         this.player.playVideo();
       }
     }
-  }
+  };
 
   clearTimer = () => {
     if (this.timer) clearTimeout(this.timer);
-  }
+  };
 
   checkPlayHead = () => {
-
     this.clearTimer();
 
-    if (this.playerType == "native"){
+    if (this.playerType == 'native') {
       this.currentTime = this.player.currentTime;
-    } else if (playerType == "soundcloud"){ 
-      this.player.getPosition(function(ms) {
+    } else if (playerType == 'soundcloud') {
+      this.player.getPosition(function (ms) {
         this.currentTime = ms / 1000;
       });
-    } else { // assume YouTube
+    } else {
+      // assume YouTube
       this.currentTime = player.getCurrentTime();
     }
 
     //check for end time of shared piece
 
-    if (this.end && (this.end < this.currentTime)) {
+    if (this.end && this.end < this.currentTime) {
       this.player.pause();
       this.end = null;
     } else {
@@ -290,27 +293,28 @@ class HyperaudioLite {
         const guessIndex = index + ((words - index) >> 1); // >> 1 has the effect of halving and rounding down
         const difference = this.wordArr[guessIndex].m / 1000 - this.currentTime; // wordArr[guessIndex].m represents start time of word
 
-        if (difference < 0) { // comes before the element
+        if (difference < 0) {
+          // comes before the element
           index = guessIndex + 1;
-        }
-        else if (difference > 0) { // comes after the element
+        } else if (difference > 0) {
+          // comes after the element
           words = guessIndex - 1;
-        }
-        else { // equals the element
+        } else {
+          // equals the element
           index = guessIndex;
           break;
         }
       }
 
       for (let i = 0; i < index; ++i) {
-        this.wordArr[i].n.classList.add("read");
-        this.wordArr[i].n.classList.remove("unread");
-        this.wordArr[i].n.classList.remove("active");
+        this.wordArr[i].n.classList.add('read');
+        this.wordArr[i].n.classList.remove('unread');
+        this.wordArr[i].n.classList.remove('active');
       }
 
       for (let i = index; i < this.wordArr.length; ++i) {
-        this.wordArr[i].n.classList.add("unread");
-        this.wordArr[i].n.classList.remove("read");
+        this.wordArr[i].n.classList.add('unread');
+        this.wordArr[i].n.classList.remove('read');
       }
 
       this.paras = this.transcript.getElementsByTagName('p');
@@ -318,16 +322,16 @@ class HyperaudioLite {
       //remove active class from all paras
 
       Array.from(this.paras).forEach(para => {
-        if (para.classList.contains("active")) {
-          para.classList.remove("active");
+        if (para.classList.contains('active')) {
+          para.classList.remove('active');
         }
       });
 
       // set current word and para to active
 
       if (index > 0) {
-        this.wordArr[index - 1].n.classList.add("active");
-        this.wordArr[index - 1].n.parentNode.classList.add("active");
+        this.wordArr[index - 1].n.classList.add('active');
+        this.wordArr[index - 1].n.parentNode.classList.add('active');
       }
 
       if (this.wordArr[index]) {
@@ -341,7 +345,7 @@ class HyperaudioLite {
       let currentParaIndex;
 
       Array.from(this.paras).every((para, i) => {
-        if (para.classList.contains("active")) {
+        if (para.classList.contains('active')) {
           currentParaIndex = i;
           return false;
         }
@@ -351,29 +355,27 @@ class HyperaudioLite {
       let scrollNode = null;
 
       if (index > 0) {
-        scrollNode = this.wordArr[index-1].n.parentNode;
+        scrollNode = this.wordArr[index - 1].n.parentNode;
 
-        if (scrollNode.tagName != "P") { // it's not inside a para so just use the element
-          scrollNode = this.wordArr[index-1].n;
+        if (scrollNode.tagName != 'P') {
+          // it's not inside a para so just use the element
+          scrollNode = this.wordArr[index - 1].n;
         }
 
         if (currentParaIndex != this.paraIndex) {
-
           if (typeof this.scroller !== 'undefined' && this.autoscroll === true) {
-
-            if (typeof(this.scrollerContainer) !== 'undefined' && this.scrollerContainer !== null) {
-
-              this.scroller(scrollNode, "scroll", {
+            if (typeof this.scrollerContainer !== 'undefined' && this.scrollerContainer !== null) {
+              this.scroller(scrollNode, 'scroll', {
                 container: this.scrollerContainer,
                 duration: this.scrollerDuration,
                 delay: this.scrollerDelay,
-                offset: this.scrollerOffset
+                offset: this.scrollerOffset,
               });
             } else {
-              this.scroller(scrollNode, "scroll", {
+              this.scroller(scrollNode, 'scroll', {
                 duration: this.scrollerDuration,
                 delay: this.scrollerDelay,
-                offset: this.scrollerOffset
+                offset: this.scrollerOffset,
               });
             }
           }
@@ -387,19 +389,18 @@ class HyperaudioLite {
       //minimizedMode is still experimental - it changes document.title upon every new word
 
       if (this.minimizedMode) {
-
         const elements = transcript.querySelectorAll('[data-m]');
-        let currentWord = "";
+        let currentWord = '';
         let lastWordIndex = this.wordIndex;
 
         for (let i = 0; i < elements.length; i++) {
-          if((' ' + elements[i].className + ' ').indexOf(' active ') > -1) {
+          if ((' ' + elements[i].className + ' ').indexOf(' active ') > -1) {
             currentWord = elements[i].innerHTML;
             this.wordIndex = i;
           }
         }
 
-        let textShot = "";
+        let textShot = '';
 
         if (this.wordIndex != lastWordIndex) {
           textShot = textShot + currentWord;
@@ -407,36 +408,36 @@ class HyperaudioLite {
 
         if (textShot.length > 16 || newPara == true) {
           document.title = textShot;
-          textShot = "";
+          textShot = '';
           newPara = false;
         }
       }
 
       this.timer = setTimeout(() => {
         this.checkPlayHead();
-      }, interval+1); // +1 to avoid rounding issues (better to be over than under)
+      }, interval + 1); // +1 to avoid rounding issues (better to be over than under)
     }
-  }
+  };
 
   setScrollParameters = (duration, delay, offset, container) => {
     this.scrollerContainer = container;
     this.scrollerDuration = duration;
     this.scrollerDelay = delay;
     this.scrollerOffset = offset;
-  }
+  };
 
   toggleAutoScroll = () => {
     this.autoscroll = !this.autoscroll;
-  }
+  };
 
-  setAutoScroll = (state) => {
+  setAutoScroll = state => {
     this.autoscroll = state;
-  }
+  };
 }
 
 // required for testing
 if (typeof module !== 'undefined' && module.exports) {
-  module.exports = {HyperaudioLite};
+  module.exports = { HyperaudioLite };
 }
 
 //export default HyperaudioLite;
