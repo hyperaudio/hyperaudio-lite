@@ -38,21 +38,17 @@ document.body.innerHTML =
 
 test('createWordArray', () => {
 
-    const words = document.querySelectorAll('[data-m]');
+  const words = document.querySelectorAll('[data-m]');
 
-    const expectedResult = createWordArrayMock(words);
+  const expectedResult = createWordArrayMock(words);
 
-    let ht = new HyperaudioLite("hypertranscript", "hyperplayer", false, false);
+  let ht = new HyperaudioLite("hypertranscript", "hyperplayer", false, false);
 
-    expect(ht.createWordArray(words)).toStrictEqual(expectedResult);
+  expect(ht.createWordArray(words)).toStrictEqual(expectedResult);
     
 });
 
 test('getSelectionMediaFragment', () => {
-
-  const words = document.querySelectorAll('[data-m]');
-
-  const expectedResult = createWordArrayMock(words);
 
   let ht = new HyperaudioLite("hypertranscript", "hyperplayer", false, false);
 
