@@ -4,7 +4,6 @@ const {HyperaudioLite} = require('../js/hyperaudio-lite');
 
 
 let wordArr = [];
-
 let ht = null;
 
 function createWordArrayResult(words) {
@@ -27,16 +26,15 @@ function createWordArrayResult(words) {
   return wordArr;
 }
 
-
 function simulateClick (elem) {
 	// Create our event (with options)
-	var evt = new MouseEvent('click', {
+	let evt = new MouseEvent('click', {
 		bubbles: true,
 		cancelable: true,
 		view: window
 	});
 	// If cancelled, don't dispatch our event
-	var canceled = !elem.dispatchEvent(evt);
+	let cancelled = !elem.dispatchEvent(evt);
 };
 
 document.body.innerHTML =
@@ -50,7 +48,7 @@ document.body.innerHTML =
     '</article>' +
   '<div>';
 
-window.HTMLMediaElement.prototype.play = () => { return true };
+window.HTMLMediaElement.prototype.play = () => { /* does nothing */ };
 
 
 test('instantiation', () => {
@@ -77,7 +75,6 @@ test('getSelectionMediaFragment', () => {
 
 test('updateTranscriptVisualState', () => {
 
-  //simulateClick(document.getElementsByTagName("span")[3]);
   const expectedResult = {
     currentWordIndex : 7,
     currentParaIndex: 1
@@ -93,5 +90,5 @@ test('media playback - click on word', () => {
 
   simulateClick(document.getElementsByTagName("span")[3]);
   expect(ht.player.currentTime).toStrictEqual(3.95);
-  
+
 });
