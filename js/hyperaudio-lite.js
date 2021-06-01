@@ -284,75 +284,14 @@ class HyperaudioLite {
       this.end = null;
     } else {
       let newPara = false;
-      let interval; // used to establish next checkPlayHead
-      let index = 0;
-      let words = this.wordArr.length - 1;
+      let interval = 0; // used to establish next checkPlayHead
 
-      // Binary search https://en.wikipedia.org/wiki/Binary_search_algorithm
-      while (index <= words) {
-        const guessIndex = index + ((words - index) >> 1); // >> 1 has the effect of halving and rounding down
-        const difference = this.wordArr[guessIndex].m / 1000 - this.currentTime; // wordArr[guessIndex].m represents start time of word
-
-        if (difference < 0) {
-          // comes before the element
-          index = guessIndex + 1;
-        } else if (difference > 0) {
-          // comes after the element
-          words = guessIndex - 1;
-        } else {
-          // equals the element
-          index = guessIndex;
-          break;
-        }
-      }
-
-      for (let i = 0; i < index; ++i) {
-        this.wordArr[i].n.classList.add('read');
-        this.wordArr[i].n.classList.remove('unread');
-        this.wordArr[i].n.classList.remove('active');
-      }
-
-      for (let i = index; i < this.wordArr.length; ++i) {
-        this.wordArr[i].n.classList.add('unread');
-        this.wordArr[i].n.classList.remove('read');
-      }
-
-      this.paras = this.transcript.getElementsByTagName('p');
-
-      //remove active class from all paras
-
-      Array.from(this.paras).forEach(para => {
-        if (para.classList.contains('active')) {
-          para.classList.remove('active');
-        }
-      });
-
-      // set current word and para to active
-
-      if (index > 0) {
-        this.wordArr[index - 1].n.classList.add('active');
-        this.wordArr[index - 1].n.parentNode.classList.add('active');
-      }
-
-      if (this.wordArr[index]) {
-        this.interval = parseInt(this.wordArr[index].n.getAttribute('data-m') - this.currentTime * 1000);
-      } else {
-        this.interval = 0;
-      }
-
-      // Establish current paragraph index
-
-      let currentParaIndex;
-
-      Array.from(this.paras).every((para, i) => {
-        if (para.classList.contains('active')) {
-          currentParaIndex = i;
-          return false;
-        }
-        return true;
-      });
+      let indices = this.updateTranscriptVisualState();
 
       let scrollNode = null;
+
+      let index = indices.currentWordIndex;
+      let currentParaIndex = indices.currentParaIndex;
 
       if (index > 0) {
         scrollNode = this.wordArr[index - 1].n.parentNode;
@@ -413,10 +352,92 @@ class HyperaudioLite {
         }
       }
 
+      if (this.wordArr[index]) {
+        interval = parseInt(this.wordArr[index].n.getAttribute('data-m') - this.currentTime * 1000);
+      }
+
       this.timer = setTimeout(() => {
         this.checkPlayHead();
       }, interval + 1); // +1 to avoid rounding issues (better to be over than under)
     }
+  };
+
+  updateTranscriptVisualState = () => {
+
+    let index = 0;
+    let words = this.wordArr.length - 1;
+
+    console.log(words);
+    console.log(this.currentTime);
+
+    // Binary search https://en.wikipedia.org/wiki/Binary_search_algorithm
+    while (index <= words) {
+      const guessIndex = index + ((words - index) >> 1); // >> 1 has the effect of halving and rounding down
+      const difference = this.wordArr[guessIndex].m / 1000 - this.currentTime; // wordArr[guessIndex].m represents start time of word
+
+      if (difference < 0) {
+        // comes before the element
+        index = guessIndex + 1;
+      } else if (difference > 0) {
+        // comes after the element
+        words = guessIndex - 1;
+      } else {
+        // equals the element
+        index = guessIndex;
+        break;
+      }
+    }
+
+    console.log(index);
+
+    for (let i = 0; i < index; ++i) {
+      this.wordArr[i].n.classList.add('read');
+      this.wordArr[i].n.classList.remove('unread');
+      this.wordArr[i].n.classList.remove('active');
+    }
+
+    for (let i = index; i < this.wordArr.length; ++i) {
+      this.wordArr[i].n.classList.add('unread');
+      this.wordArr[i].n.classList.remove('read');
+    }
+
+    this.paras = this.transcript.getElementsByTagName('p');
+
+    //remove active class from all paras
+
+    Array.from(this.paras).forEach(para => {
+      if (para.classList.contains('active')) {
+        para.classList.remove('active');
+      }
+    });
+
+    // set current word and para to active
+
+    if (index > 0) {
+      this.wordArr[index - 1].n.classList.add('active');
+      this.wordArr[index - 1].n.parentNode.classList.add('active');
+    }
+
+    // Establish current paragraph index
+
+    let currentParaIndex;
+
+    Array.from(this.paras).every((para, i) => {
+      if (para.classList.contains('active')) {
+        currentParaIndex = i;
+        return false;
+      }
+      return true;
+    });
+
+    let indices = {
+      currentWordIndex : index,
+      currentParaIndex: currentParaIndex
+    };
+
+    console.log(indices);
+
+    return indices;
   };
 
   setScrollParameters = (duration, delay, offset, container) => {
