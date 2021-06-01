@@ -59,10 +59,10 @@ class HyperaudioLite {
       this.playerType = player.getAttribute('data-player-type');
     }
 
-    if (this.playerType == 'native') {
+    if (this.playerType === 'native') {
       this.player.addEventListener('pause', this.clearTimer, false);
       this.player.addEventListener('play', this.checkPlayHead, false);
-    } else if (playerType == 'soundcloud') {
+    } else if (playerType === 'soundcloud') {
       // SoundCloud
       this.player = SC.Widget(mediaElementId);
       this.player.bind(SC.Widget.Events.PAUSE, clearTimer);
@@ -84,10 +84,10 @@ class HyperaudioLite {
       };
 
       onPlayerStateChange = event => {
-        if (event.data == 1) {
+        if (event.data === 1) {
           // playing
           this.checkPlayHead();
-        } else if (event.data == 2) {
+        } else if (event.data === 2) {
           // paused
           this.clearTimer();
         }
@@ -105,7 +105,7 @@ class HyperaudioLite {
     const start = this.hashArray[0];
 
     if (!isNaN(parseFloat(start))) {
-      if (this.playerType == 'native') {
+      if (this.playerType === 'native') {
         this.player.currentTime = start;
         //autoplay
         const promise = this.player.play();
@@ -118,7 +118,7 @@ class HyperaudioLite {
               // Auto-play started
             });
         }
-      } else if (playerType == 'soundcloud') {
+      } else if (playerType === 'soundcloud') {
         // SoundCloud
         this.player.seekTo(start * 1000);
       } else {
@@ -193,11 +193,11 @@ class HyperaudioLite {
       let fNode = selection.focusNode.parentNode;
       let aNode = selection.anchorNode.parentNode;
 
-      if (aNode.getAttribute('data-m') == null || aNode.className == 'speaker') {
+      if (aNode.getAttribute('data-m') === null || aNode.className === 'speaker') {
         aNode = aNode.nextElementSibling;
       }
 
-      if (fNode.getAttribute('data-m') == null || fNode.className == 'speaker') {
+      if (fNode.getAttribute('data-m') === null || fNode.className === 'speaker') {
         fNode = fNode.previousElementSibling;
       }
 
@@ -226,7 +226,7 @@ class HyperaudioLite {
         nodeDuration = Math.round((aNodeTime + aNodeDuration - fNodeTime) * 10) / 10;
       }
 
-      if (nodeDuration == 0 || nodeDuration == null || isNaN(nodeDuration)) {
+      if (nodeDuration === 0 || nodeDuration === null || isNaN(nodeDuration)) {
         nodeDuration = 10; // arbitary for now
       }
 
@@ -244,10 +244,10 @@ class HyperaudioLite {
     if (!isNaN(parseFloat(timeSecs))) {
       this.end = null;
 
-      if (this.playerType == 'native') {
+      if (this.playerType === 'native') {
         this.player.currentTime = timeSecs;
         this.player.play();
-      } else if (playerType == 'soundcloud') {
+      } else if (playerType === 'soundcloud') {
         this.player.seekTo(timeSecs * 1000);
         this.player.play();
       } else {
@@ -266,9 +266,9 @@ class HyperaudioLite {
   checkPlayHead = () => {
     this.clearTimer();
 
-    if (this.playerType == 'native') {
+    if (this.playerType === 'native') {
       this.currentTime = this.player.currentTime;
-    } else if (playerType == 'soundcloud') {
+    } else if (playerType === 'soundcloud') {
       this.player.getPosition(function (ms) {
         this.currentTime = ms / 1000;
       });
@@ -345,7 +345,7 @@ class HyperaudioLite {
           textShot = textShot + currentWord;
         }
 
-        if (textShot.length > 16 || newPara == true) {
+        if (textShot.length > 16 || newPara === true) {
           document.title = textShot;
           textShot = '';
           newPara = false;
