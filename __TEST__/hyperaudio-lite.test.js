@@ -50,6 +50,8 @@ document.body.innerHTML =
     '</article>' +
   '<div>';
 
+window.HTMLMediaElement.prototype.play = () => { return true };
+
 
 test('instantiation', () => {
 
@@ -85,4 +87,11 @@ test('updateTranscriptVisualState', () => {
 
   expect(ht.updateTranscriptVisualState()).toStrictEqual(expectedResult);
 
+});
+
+test('media playback - click on word', () => {
+
+  simulateClick(document.getElementsByTagName("span")[3]);
+  expect(ht.player.currentTime).toStrictEqual(3.95);
+  
 });

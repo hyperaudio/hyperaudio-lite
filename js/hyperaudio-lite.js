@@ -367,8 +367,6 @@ class HyperaudioLite {
     let index = 0;
     let words = this.wordArr.length - 1;
 
-    console.log(words);
-    console.log(this.currentTime);
 
     // Binary search https://en.wikipedia.org/wiki/Binary_search_algorithm
     while (index <= words) {
@@ -387,8 +385,6 @@ class HyperaudioLite {
         break;
       }
     }
-
-    console.log(index);
 
     for (let i = 0; i < index; ++i) {
       this.wordArr[i].n.classList.add('read');
@@ -435,7 +431,6 @@ class HyperaudioLite {
       currentParaIndex: currentParaIndex
     };
 
-    console.log(indices);
 
     return indices;
   };
