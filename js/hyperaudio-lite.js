@@ -4,6 +4,7 @@
 'use strict';
 
 class HyperaudioLite {
+  
   constructor(transcriptId, mediaElementId, minimizedMode, autoscroll) {
     this.transcript = document.getElementById(transcriptId);
     this.init(mediaElementId, minimizedMode, autoscroll);
@@ -386,16 +387,17 @@ class HyperaudioLite {
       }
     }
 
-    for (let i = 0; i < index; ++i) {
-      this.wordArr[i].n.classList.add('read');
-      this.wordArr[i].n.classList.remove('unread');
-      this.wordArr[i].n.classList.remove('active');
-    }
-
-    for (let i = index; i < this.wordArr.length; ++i) {
-      this.wordArr[i].n.classList.add('unread');
-      this.wordArr[i].n.classList.remove('read');
-    }
+    this.wordArr.forEach((word, i) => {
+      let classList = word.n.classList;
+      if (i < index) {
+        classList.add('read');
+        classList.remove('unread');
+        classList.remove('active');
+      } else {
+        classList.add('unread');
+        classList.remove('read');
+      }
+    });
 
     this.paras = this.transcript.getElementsByTagName('p');
 
@@ -430,7 +432,6 @@ class HyperaudioLite {
       currentWordIndex : index,
       currentParaIndex: currentParaIndex
     };
-
 
     return indices;
   };
