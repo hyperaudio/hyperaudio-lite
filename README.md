@@ -136,6 +136,13 @@ and at the end of the `<body>`:
 </body>
 ```
 
+Finally instantiate the Transcript Player:
+
+```javascript
+
+let ht1 = new HyperaudioLite("hypertranscript", "hyperplayer", minimizedMode, autoScroll);
+```
+
 View the source code of [http://hyperaud.io/lab/halite/v22/](https://hyperaud.io/lab/halite/v22/) for a complete example.
 
 See a version with multiple players in a single page [http://hyperaud.io/lab/halite/v22/multiplayer.html](https://hyperaud.io/lab/halite/v22/multiplayer.html)
