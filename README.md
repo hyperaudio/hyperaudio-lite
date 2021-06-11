@@ -140,6 +140,9 @@ Finally instantiate the Transcript Player:
 
 ```javascript
 
+let minimizedMode = false;
+let autoScroll = true;
+
 let ht1 = new HyperaudioLite("hypertranscript", "hyperplayer", minimizedMode, autoScroll);
 ```
 
