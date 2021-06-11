@@ -57,7 +57,7 @@ class HyperaudioLite {
       this.playerType = 'native';
     } else {
       //assume it is a SoundCloud or YouTube iframe
-      this.playerType = player.getAttribute('data-player-type');
+      this.playerType = this.player.getAttribute('data-player-type');
     }
 
     if (this.playerType === 'native') {
