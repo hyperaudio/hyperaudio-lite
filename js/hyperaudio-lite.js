@@ -1,16 +1,28 @@
-/*! (C) The Hyperaudio Project. MIT @license: en.wikipedia.org/wiki/MIT_License. */
-/*! Version 2.0.0 Alpha */
+/*! (C) The Hyperaudio Project. AGPL 3.0 @license: https://www.gnu.org/licenses/agpl-3.0.en.html */
+/*! Hyperaudio Lite Editor - Version 0.0.1 */
+
+/*!  Hyperaudio Lite Editor's source code is provided under a dual license model.
+
+Commercial license
+------------------
+
+If you want to use Hyperaudio Lite Editor to develop commercial sites, tools, and applications, the Commercial License is the appropriate license. With this option, your source code is kept proprietary. To enquire about a Hyperaudio Lite Editor Commercial License please contact info@hyperaud.io
+
+Open source license
+-------------------
+
+If you are creating an open source application under a license compatible with the GNU Affero GPL license v3, you may use Hyperaudio Lite Editor under the terms of the AGPL-3.0 License.
+*/
 
 'use strict';
 
 class HyperaudioLite {
-  
-  constructor(transcriptId, mediaElementId, minimizedMode, autoscroll) {
+  constructor(transcriptId, mediaElementId, minimizedMode, autoscroll, doubleClick) {
     this.transcript = document.getElementById(transcriptId);
-    this.init(mediaElementId, minimizedMode, autoscroll);
+    this.init(mediaElementId, minimizedMode, autoscroll, doubleClick);
   }
 
-  init = (mediaElementId, m, a) => {
+  init = (mediaElementId, m, a, d) => {
     const windowHash = window.location.hash;
     const hashVar = windowHash.substring(1, windowHash.indexOf('='));
 
@@ -41,6 +53,8 @@ class HyperaudioLite {
     this.scrollerOffset = 0;
     this.scrollerDuration = 800;
     this.scrollerDelay = 0;
+
+    this.doubleClick = d;
 
     //Create the array of timed elements (wordArr)
 
@@ -100,8 +114,14 @@ class HyperaudioLite {
     words[0].classList.add('active');
     this.paras[0].classList.add('active');
 
-    this.transcript.addEventListener('click', this.setPlayHead, false);
-    this.transcript.addEventListener('click', this.checkPlayHead, false);
+    let playHeadEvent = 'click';
+
+    if (this.doubleClick === true) {
+      playHeadEvent = 'dblclick';
+    }
+
+    this.transcript.addEventListener(playHeadEvent, this.setPlayHead, false);
+    this.transcript.addEventListener(playHeadEvent, this.checkPlayHead, false);
 
     const start = this.hashArray[0];
 
@@ -297,26 +317,33 @@ class HyperaudioLite {
       if (index > 0) {
         scrollNode = this.wordArr[index - 1].n.parentNode;
 
-        if (scrollNode.tagName != 'P') {
+        if (scrollNode !== null && scrollNode.tagName != 'P') {
           // it's not inside a para so just use the element
           scrollNode = this.wordArr[index - 1].n;
         }
 
         if (currentParaIndex != this.paraIndex) {
           if (typeof this.scroller !== 'undefined' && this.autoscroll === true) {
-            if (typeof this.scrollerContainer !== 'undefined' && this.scrollerContainer !== null) {
-              this.scroller(scrollNode, 'scroll', {
-                container: this.scrollerContainer,
-                duration: this.scrollerDuration,
-                delay: this.scrollerDelay,
-                offset: this.scrollerOffset,
-              });
+            if (scrollNode !== null) {
+              if (typeof this.scrollerContainer !== 'undefined' && this.scrollerContainer !== null) {
+                this.scroller(scrollNode, 'scroll', {
+                  container: this.scrollerContainer,
+                  duration: this.scrollerDuration,
+                  delay: this.scrollerDelay,
+                  offset: this.scrollerOffset,
+                });
+              } else {
+                this.scroller(scrollNode, 'scroll', {
+                  duration: this.scrollerDuration,
+                  delay: this.scrollerDelay,
+                  offset: this.scrollerOffset,
+                });
+              }
             } else {
-              this.scroller(scrollNode, 'scroll', {
-                duration: this.scrollerDuration,
-                delay: this.scrollerDelay,
-                offset: this.scrollerOffset,
-              });
+              // the wordlst needs refreshing
+              let words = this.transcript.querySelectorAll('[data-m]');
+              this.wordArr = this.createWordArray(words);
+              this.paras = this.transcript.getElementsByTagName('p');
             }
           }
 
@@ -364,10 +391,8 @@ class HyperaudioLite {
   };
 
   updateTranscriptVisualState = () => {
-
     let index = 0;
     let words = this.wordArr.length - 1;
-
 
     // Binary search https://en.wikipedia.org/wiki/Binary_search_algorithm
     while (index <= words) {
@@ -413,7 +438,9 @@ class HyperaudioLite {
 
     if (index > 0) {
       this.wordArr[index - 1].n.classList.add('active');
-      this.wordArr[index - 1].n.parentNode.classList.add('active');
+      if (this.wordArr[index - 1].n.parentNode !== null) {
+        this.wordArr[index - 1].n.parentNode.classList.add('active');
+      }
     }
 
     // Establish current paragraph index
@@ -429,8 +456,8 @@ class HyperaudioLite {
     });
 
     let indices = {
-      currentWordIndex : index,
-      currentParaIndex: currentParaIndex
+      currentWordIndex: index,
+      currentParaIndex: currentParaIndex,
     };
 
     return indices;
