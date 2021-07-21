@@ -77,11 +77,11 @@ class HyperaudioLite {
     if (this.playerType === 'native') {
       this.player.addEventListener('pause', this.clearTimer, false);
       this.player.addEventListener('play', this.checkPlayHead, false);
-    } else if (playerType === 'soundcloud') {
+    } else if (this.playerType === 'soundcloud') {
       // SoundCloud
       this.player = SC.Widget(mediaElementId);
-      this.player.bind(SC.Widget.Events.PAUSE, clearTimer);
-      this.player.bind(SC.Widget.Events.PLAY, checkPlayHead);
+      this.player.bind(SC.Widget.Events.PAUSE, this.clearTimer);
+      this.player.bind(SC.Widget.Events.PLAY, this.checkPlayHead);
     } else {
       // assume YouTube
       const tag = document.createElement('script');
@@ -268,7 +268,7 @@ class HyperaudioLite {
       if (this.playerType === 'native') {
         this.player.currentTime = timeSecs;
         this.player.play();
-      } else if (playerType === 'soundcloud') {
+      } else if (this.playerType === 'soundcloud') {
         this.player.seekTo(timeSecs * 1000);
         this.player.play();
       } else {
@@ -289,13 +289,13 @@ class HyperaudioLite {
 
     if (this.playerType === 'native') {
       this.currentTime = this.player.currentTime;
-    } else if (playerType === 'soundcloud') {
+    } else if (this.playerType === 'soundcloud') {
       this.player.getPosition(function (ms) {
         this.currentTime = ms / 1000;
       });
     } else {
       // assume YouTube
-      this.currentTime = player.getCurrentTime();
+      this.currentTime = this.player.getCurrentTime();
     }
 
     //check for end time of shared piece
