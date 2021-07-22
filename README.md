@@ -2,13 +2,13 @@
 
 :high_brightness: To make media on the web more accessible we believe that every piece of spoken-word audio and video should come with an Interactive Transcript.:high_brightness:
 
-Hyperaudio Lite - is an [Interactive Transcript](https://en.wikipedia.org/wiki/Interactive_transcripts) Viewer 
+Hyperaudio Lite - is an [Interactive Transcript](https://en.wikipedia.org/wiki/Interactive_transcripts) Viewer
 
 You can use Hyperaudio Lite to provide Interactive Transcripts, this readme details why and how.
 
-* lightweight (less than 8Kb minified)
-* no framework dependencies
-* MIT Licensed
+- lightweight (less than 8Kb minified)
+- no framework dependencies
+- MIT Licensed
 
 ## :tiger: Hyperaudio Lite in the Wild :tiger:
 
@@ -25,20 +25,25 @@ Vitorio's version [https://github.com/vitorio/hyperaudio-lite](https://github.co
 Interactive transcripts are transcripts with special powers. Hyperaudio's Interactive Transcripts are called Hypertranscripts and are infused with the following hyper-powers:
 
 ### :world_map: Navigate
-Click on the text to navigate directly to the part of the audio where that word was said.
-### :mag_right: Search
-Find words and phrases inside your transcript and make your media search-engine friendly.
-### :couple_with_heart_woman_woman: Share
-Selecting part of a transcript creates a URL with timing data which when shared will take people directly to the corresponding piece of audio where the highlighted words are spoken.
 
+Click on the text to navigate directly to the part of the audio where that word was said.
+
+### :mag_right: Search
+
+Find words and phrases inside your transcript and make your media search-engine friendly.
+
+### :couple_with_heart_woman_woman: Share
+
+Selecting part of a transcript creates a URL with timing data which when shared will take people directly to the corresponding piece of audio where the highlighted words are spoken.
 
 ## :vhs: Data Formats :vhs:
 
 Hypertranscripts contain the following data:
-* Paragraphs
-* Words
-* Word start time (`data-m` milliseconds)
-* Word duration (`data-d` milliseconds)
+
+- Paragraphs
+- Words
+- Word start time (`data-m` milliseconds)
+- Word duration (`data-d` milliseconds)
 
 That's it!
 
@@ -73,14 +78,16 @@ Hyperaudio Lite is "tag agnostic" so for example, you could use other tags inste
 You could also make headings link to chapter points using attributes, like this:
 
 ```html
-<h5 data-m="214800">What kind of help is available for people to manage their own data?</h5>
+<h5 data-m="214800">
+  What kind of help is available for people to manage their own data?
+</h5>
 ```
 
 We can see that a Hypertranscript is really just HTML, this helps keep it:
 
-* :clap: extensible 
-* :clap: accessible  
-* :clap: readable 
+- :clap: extensible
+- :clap: accessible
+- :clap: readable
 
 ### How to make a Hypertranscript
 
@@ -88,20 +95,20 @@ One way is to use the [Hyperaudio Converter](https://hyperaud.io/converter/)
 
 This currently takes 4 possible inputs:
 
-* SRT (Subtitle format)
-* [Speechmatics](https://www.speechmatics.com/) JSON*
-* [Gentle](https://github.com/lowerquality/gentle) JSON
-* [Google Speech-to-Text](https://cloud.google.com/speech-to-text/) JSON
+- SRT (Subtitle format)
+- [Speechmatics](https://www.speechmatics.com/) JSON\*
+- [Gentle](https://github.com/lowerquality/gentle) JSON
+- [Google Speech-to-Text](https://cloud.google.com/speech-to-text/) JSON
 
-*JavaScript Object Notation - a common data format
+\*JavaScript Object Notation - a common data format
 
 ## :floppy_disk: Hyperaudio Lite Code :floppy_disk:
 
 Essentially the Hyperaudio Lite library is made from 4 JavaScript files:
 
 1. `hyperaudio-lite.js` - the core that deals with the linking of media to words
-2. `hyperaudio-lite wrapper` - adds search, selection and playback rate functionality 
-3. `share-this.js` - a fork of [share-this](https://github.com/MaxArt2501/share-this) library 
+2. `hyperaudio-lite wrapper` - adds search, selection and playback rate functionality
+3. `share-this.js` - a fork of [share-this](https://github.com/MaxArt2501/share-this) library
 4. `share-this.twitter.js` - a fork of the Twitter sharing element of share-this
 
 and the associated CSS files:
@@ -120,6 +127,7 @@ Add to your HTML file in the following way:
   <script src="https://platform.twitter.com/widgets.js"></script>
 </head>
 ```
+
 and at the end of the `<body>`:
 
 ```html
@@ -139,11 +147,16 @@ and at the end of the `<body>`:
 Finally instantiate the Transcript Player:
 
 ```javascript
-
 let minimizedMode = false;
 let autoScroll = true;
 
-let ht1 = new HyperaudioLite("hypertranscript", "hyperplayer", minimizedMode, autoScroll);
+let ht1 = new HyperaudioLite(
+  "hypertranscript",
+  "hyperplayer",
+  minimizedMode,
+  autoScroll,
+  doubleClick
+);
 ```
 
 View the source code of [http://hyperaud.io/lab/halite/v22/](https://hyperaud.io/lab/halite/v22/) for a complete example.
@@ -157,8 +170,15 @@ In addition to supporting the web-native HTML `<audio>` and `<video>` elements w
 Example of YouTube `iframe` embed:
 
 ```html
-<iframe id="hyperplayer" data-player-type="youtube" width="400" height="300" frameborder="no" allow="autoplay"
-    src="https://www.youtube.com/embed/xLcsdc823dg?enablejsapi=1">
+<iframe
+  id="hyperplayer"
+  data-player-type="youtube"
+  width="400"
+  height="300"
+  frameborder="no"
+  allow="autoplay"
+  src="https://www.youtube.com/embed/xLcsdc823dg?enablejsapi=1"
+>
 </iframe>
 ```
 
@@ -170,6 +190,28 @@ Example of Soundcloud API and `iframe` embed:
 
 ```html
 <script src="https://w.soundcloud.com/player/api.js"></script>
-<iframe id="so" width="100%" height="166" scrolling="no" frameborder="no" allow="autoplay" src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/730479133&color=%23ff5500&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true"></iframe>
+<iframe
+  id="so"
+  width="100%"
+  height="166"
+  scrolling="no"
+  frameborder="no"
+  allow="autoplay"
+  src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/730479133&color=%23ff5500&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true"
+></iframe>
 ```
-You can get the snippet of code by visiting the page of the SoundCloud file you're interested in, clicking on *Share* and then *Embed*.
+
+You can get the snippet of code by visiting the page of the SoundCloud file you're interested in, clicking on _Share_ and then _Embed_.
+
+## :construction_worker: Testing :construction_worker:
+
+Currently we use [Jest](https://jestjs.io/) for testing.
+
+Install Jest using yarn:
+`yarn add --dev jest`
+
+Or npm:
+`npm install --save-dev jest`
+
+To run the tests:
+`yarn test` or `npm run test`
