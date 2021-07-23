@@ -12,7 +12,7 @@ You can use Hyperaudio Lite to provide Interactive Transcripts, this readme deta
 
 ## :tiger: Hyperaudio Lite in the Wild :tiger:
 
-As demonstrated [http://hyperaud.io/lab/halite/v23/](http://hyperaud.io/lab/halite/v23/)
+As demonstrated here [https://hyperaud.io/lab/halite/v26/](https://hyperaud.io/lab/halite/v26/) plus equivalent [multiplayer version](https://hyperaud.io/lab/halite/v26/multiplayer.html)
 
 Alternatively styled version [https://lab.hyperaud.io/mozfest2021/interviews/lance_weiler/](https://lab.hyperaud.io/mozfest2021/interviews/lance_weiler/)
 
