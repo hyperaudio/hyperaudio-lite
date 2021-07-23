@@ -1,211 +1,218 @@
 /*! (C) The Hyperaudio Project. MIT @license: en.wikipedia.org/wiki/MIT_License. */
-/*! Version 1.1.5 */
+/*! Version 2.0.0 */
 
 'use strict';
 
-var hyperaudiolite = (function () {
+class HyperaudioLite {
+  constructor(transcriptId, mediaElementId, minimizedMode, autoscroll, doubleClick) {
+    this.transcript = document.getElementById(transcriptId);
+    this.init(mediaElementId, minimizedMode, autoscroll, doubleClick);
+  }
 
-  var hal = {},
-    transcript,
-    player,
-    paraIndex,
-    wordIndex,
-    textShot,
-    paras,
-    start,
-    end,
-    timer,
-    minimizedMode,
-    wordArr = [],
-    playerType,
-    currentTime,
-    windowHash,
-    hashArray,
-    hashVar,
-    scroller,
-    scrollerContainer,
-    scrollerDuration,
-    scrollerDelay,
-    scrollerOffset,
-    autoscroll;
+  init = (mediaElementId, m, a, d) => {
+    const windowHash = window.location.hash;
+    const hashVar = windowHash.substring(1, windowHash.indexOf('='));
 
-
-  function init(mediaElementId, m, a) {
-
-    windowHash = window.location.hash;
-    
-    hashVar = windowHash.substring(1,windowHash.indexOf("="));
-
-    if (hashVar === transcript.id) {
-      hashArray = windowHash.substr(transcript.id.length+2).split(',');
+    if (hashVar === this.transcript.id) {
+      this.hashArray = windowHash.substr(this.transcript.id.length + 2).split(',');
     } else {
-      hashArray = [];
+      this.hashArray = [];
     }
 
-    document.addEventListener('selectionchange', function() {
+    document.addEventListener(
+      'selectionchange',
+      () => {
+        const mediaFragment = this.getSelectionMediaFragment();
 
-      var mediaFragment = getSelectionMediaFragment();
+        if (mediaFragment !== '') {
+          document.location.hash = mediaFragment;
+        }
+      },
+      false,
+    );
 
-      if ( mediaFragment !== "") {
-        document.location.hash = mediaFragment;
-      }
-    }, false);
+    this.minimizedMode = m;
+    this.textShot = '';
+    this.wordIndex = 0;
 
-    minimizedMode = m;
-    textShot = "";
-    wordIndex = 0;
+    this.autoscroll = a;
+    this.scrollerContainer = this.transcript;
+    this.scrollerOffset = 0;
+    this.scrollerDuration = 800;
+    this.scrollerDelay = 0;
 
-    autoscroll = a;
-    scrollerContainer = transcript;
-    scrollerOffset = 0;
-    scrollerDuration = 800;
-    scrollerDelay = 0;
+    this.doubleClick = d;
 
     //Create the array of timed elements (wordArr)
 
-    var words = transcript.querySelectorAll('[data-m]');
+    const words = this.transcript.querySelectorAll('[data-m]');
 
-    for (var i = 0; i < words.length; ++i) {
-      var m = parseInt(words[i].getAttribute('data-m'));
-      var p = words[i].parentNode;
+    this.wordArr = this.createWordArray(words);
+
+    this.paras = this.transcript.getElementsByTagName('p');
+
+    this.player = document.getElementById(mediaElementId);
+
+    if (this.player.tagName == 'VIDEO' || this.player.tagName == 'AUDIO') {
+      //native HTML media elements
+      this.playerType = 'native';
+    } else {
+      //assume it is a SoundCloud or YouTube iframe
+      this.playerType = this.player.getAttribute('data-player-type');
+    }
+
+    if (this.playerType === 'native') {
+      this.player.addEventListener('pause', this.clearTimer, false);
+      this.player.addEventListener('play', this.checkPlayHead, false);
+    } else if (this.playerType === 'soundcloud') {
+      // SoundCloud
+      this.player = SC.Widget(mediaElementId);
+      this.player.bind(SC.Widget.Events.PAUSE, this.clearTimer);
+      this.player.bind(SC.Widget.Events.PLAY, this.checkPlayHead);
+    } else {
+      // assume YouTube
+      const tag = document.createElement('script');
+      tag.id = 'iframe-demo';
+      tag.src = 'https://www.youtube.com/iframe_api';
+      const firstScriptTag = document.getElementsByTagName('script')[0];
+      firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+      window.onYouTubeIframeAPIReady = function () {
+        this.player = new YT.Player(mediaElementId, {
+          events: {
+            onStateChange: onPlayerStateChange,
+          },
+        });
+      };
+
+      onPlayerStateChange = event => {
+        if (event.data === 1) {
+          // playing
+          this.checkPlayHead();
+        } else if (event.data === 2) {
+          // paused
+          this.clearTimer();
+        }
+      };
+    }
+
+    this.paraIndex = 0;
+
+    words[0].classList.add('active');
+    this.paras[0].classList.add('active');
+
+    let playHeadEvent = 'click';
+
+    if (this.doubleClick === true) {
+      playHeadEvent = 'dblclick';
+    }
+
+    this.transcript.addEventListener(playHeadEvent, this.setPlayHead, false);
+    this.transcript.addEventListener(playHeadEvent, this.checkPlayHead, false);
+
+    const start = this.hashArray[0];
+
+    if (!isNaN(parseFloat(start))) {
+      if (this.playerType === 'native') {
+        this.player.currentTime = start;
+        //autoplay
+        const promise = this.player.play();
+        if (promise !== undefined) {
+          promise
+            .catch(error => {
+              console.log('Auto-play prevented');
+            })
+            .then(() => {
+              // Auto-play started
+            });
+        }
+      } else if (playerType === 'soundcloud') {
+        // SoundCloud
+        this.player.seekTo(start * 1000);
+      } else {
+        // Assume YouTube
+
+        window.onYouTubeIframeAPIReady = function () {
+          this.player = new YT.Player(mediaElementId, {
+            playerVars: { autoplay: 1 },
+            events: {
+              onReady: function () {
+                this.player.seekTo(start, true);
+                this.player.playVideo();
+              },
+            },
+          });
+        };
+      }
+    }
+
+    this.end = this.hashArray[1];
+
+    //TODO convert to binary search for below for quicker startup
+
+    if (start && this.end) {
+      for (let i = 1; i < words.length; i++) {
+        const wordStart = parseInt(words[i].getAttribute('data-m')) / 1000;
+        if (wordStart > start && this.end > wordStart) {
+          words[i].classList.add('share-match');
+        }
+      }
+    }
+
+    if (this.autoscroll === true) {
+      this.scroller = window.Velocity || window.jQuery.Velocity;
+    }
+  };
+
+  createWordArray = words => {
+    let wordArr = [];
+
+    words.forEach((word, i) => {
+      const m = parseInt(word.getAttribute('data-m'));
+      let p = word.parentNode;
       while (p !== document) {
-        if (p.tagName.toLowerCase() === 'p' || p.tagName.toLowerCase() === 'figure' || p.tagName.toLowerCase() === 'ul') {
+        if (
+          p.tagName.toLowerCase() === 'p' ||
+          p.tagName.toLowerCase() === 'figure' ||
+          p.tagName.toLowerCase() === 'ul'
+        ) {
           break;
         }
         p = p.parentNode;
       }
-      wordArr[i] = { 'n': words[i], 'm': m, 'p': p }
-    }
+      wordArr[i] = { n: words[i], m: m, p: p };
+      wordArr[i].n.classList.add('unread');
+    });
 
-    for (var i = 0; i < wordArr.length; ++i) {
-      wordArr[i].n.classList.add("unread");
-    }
+    return wordArr;
+  };
 
-    paras = transcript.getElementsByTagName('p');
-
-    player = document.getElementById(mediaElementId);
-
-    if (player.tagName == "VIDEO" || player.tagName == "AUDIO") { //native HTML media elements
-      playerType = "native";
-    } else { //assume it is a SoundCloud or YouTube iframe 
-      playerType = player.getAttribute("data-player-type");
-    }
-
-    if (playerType == "native") {
-      player.addEventListener('pause', clearTimer, false);
-      player.addEventListener('play', checkPlayHead, false);
-    } else if (playerType == "soundcloud"){  // SoundCloud
-      player = SC.Widget(mediaElementId);
-      player.bind(SC.Widget.Events.PAUSE, clearTimer);
-      player.bind(SC.Widget.Events.PLAY, checkPlayHead);
-    } else { // assume YouTube
-      var tag = document.createElement('script');
-      tag.id = 'iframe-demo';
-      tag.src = 'https://www.youtube.com/iframe_api';
-      var firstScriptTag = document.getElementsByTagName('script')[0];
-      firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-
-      window.onYouTubeIframeAPIReady = function() {
-        player = new YT.Player(mediaElementId, {
-          events: {
-            'onStateChange': onPlayerStateChange
-          }
-        });
-      }
-
-      function onPlayerStateChange(event) {
-        if (event.data == 1) { // playing 
-          checkPlayHead();
-        } else if (event.data == 2) { // paused 
-          clearTimer();
-        }   
-      }
-    }
- 
-    paraIndex = 0;
-    words[0].classList.add("active");
-    paras[0].classList.add("active");
-    transcript.addEventListener('click', setPlayHead, false);
-    transcript.addEventListener('click', checkPlayHead, false);
-
-    start = hashArray[0];
-
-    if (!isNaN(parseFloat(start))) {
-
-      if (playerType == "native") {
-        player.currentTime = start;
-        //autoplay
-        var promise = player.play();
-        if (promise !== undefined) {
-          promise.catch(error => {
-            console.log("Auto-play prevented");
-          }).then(() => {
-              // Auto-play started
-          });
-        }
-      } else if (playerType == "soundcloud"){ // SoundCloud
-        player.seekTo(start * 1000);
-      } else { // Assume YouTube
-        window.onYouTubeIframeAPIReady = function() {
-          player = new YT.Player(mediaElementId, {
-            playerVars: { 'autoplay': 1 },
-            events: {
-              'onReady': function() {
-                player.seekTo(start, true);
-                player.playVideo();
-              }
-            }
-          });
-        }
-      }
-    }
-
-    end = hashArray[1];
-
-    //TODO convert to binary search for below for quicker startup
-
-    if (start && end) {
-      for (var i = 1; i < words.length; i++) {
-        var wordStart = parseInt(words[i].getAttribute("data-m"))/1000;
-        if ( wordStart > start && end > wordStart ) {
-          words[i].classList.add("share-match");
-        }
-      }
-    }
-
-    scroller = window.Velocity || window.jQuery.Velocity;
-  }
-
-  
-
-  function getSelectionMediaFragment() {
-
-    var fragment = "";
-    var selection = null;
+  getSelectionMediaFragment = () => {
+    let fragment = '';
+    let selection = null;
 
     if (window.getSelection) {
-       selection = window.getSelection();
+      selection = window.getSelection();
     } else if (document.selection) {
-       selection = document.selection.createRange();
+      selection = document.selection.createRange();
     }
 
     if (selection.toString() !== '') {
+      let fNode = selection.focusNode.parentNode;
+      let aNode = selection.anchorNode.parentNode;
 
-      var fNode = selection.focusNode.parentNode;
-      var aNode = selection.anchorNode.parentNode;
-
-      if (aNode.getAttribute('data-m') == null || aNode.className == "speaker") {
-         aNode = aNode.nextElementSibling;
+      if (aNode.getAttribute('data-m') === null || aNode.className === 'speaker') {
+        aNode = aNode.nextElementSibling;
       }
 
-      if (fNode.getAttribute('data-m') == null || fNode.className == "speaker") {
-         fNode = fNode.previousElementSibling;
+      if (fNode.getAttribute('data-m') === null || fNode.className === 'speaker') {
+        fNode = fNode.previousElementSibling;
       }
 
-      var aNodeTime = parseInt(aNode.getAttribute('data-m'), 10);
-      var aNodeDuration = parseInt(aNode.getAttribute('data-d'), 10);
-      var fNodeTime;
-      var fNodeDuration;
+      let aNodeTime = parseInt(aNode.getAttribute('data-m'), 10);
+      let aNodeDuration = parseInt(aNode.getAttribute('data-d'), 10);
+      let fNodeTime;
+      let fNodeDuration;
 
       if (fNode != null && fNode.getAttribute('data-m') != null) {
         fNodeTime = parseInt(fNode.getAttribute('data-m'), 10);
@@ -219,229 +226,249 @@ var hyperaudiolite = (function () {
       fNodeTime = Math.round(fNodeTime / 100) / 10;
       fNodeDuration = Math.round(fNodeDuration / 100) / 10;
 
-      var nodeStart = aNodeTime;
-      var nodeDuration = Math.round((fNodeTime + fNodeDuration - aNodeTime) * 10) / 10;
+      let nodeStart = aNodeTime;
+      let nodeDuration = Math.round((fNodeTime + fNodeDuration - aNodeTime) * 10) / 10;
 
       if (aNodeTime >= fNodeTime) {
         nodeStart = fNodeTime;
         nodeDuration = Math.round((aNodeTime + aNodeDuration - fNodeTime) * 10) / 10;
       }
 
-      if (nodeDuration == 0 || nodeDuration == null || isNaN(nodeDuration)) {
+      if (nodeDuration === 0 || nodeDuration === null || isNaN(nodeDuration)) {
         nodeDuration = 10; // arbitary for now
       }
 
-      fragment = transcript.id+ "=" + nodeStart + "," + (Math.round((nodeStart + nodeDuration) * 10) / 10);
+      fragment = this.transcript.id + '=' + nodeStart + ',' + Math.round((nodeStart + nodeDuration) * 10) / 10;
     }
 
-    return (fragment);
-  }
+    return fragment;
+  };
 
-  function setPlayHead(e) {
+  setPlayHead = e => {
+    const target = e.target ? e.target : e.srcElement;
+    target.setAttribute('class', 'active');
+    const timeSecs = parseInt(target.getAttribute('data-m')) / 1000;
 
-    var target = (e.target) ? e.target : e.srcElement;
-    target.setAttribute("class", "active");
-    var timeSecs = parseInt(target.getAttribute("data-m")) / 1000;
+    if (!isNaN(parseFloat(timeSecs))) {
+      this.end = null;
 
-    if(!isNaN(parseFloat(timeSecs))) {
-      end = null;
-      if (playerType == "native"){
-        player.currentTime = timeSecs;
-        player.play();
-      } else if (playerType == "soundcloud"){ 
-        player.seekTo(timeSecs * 1000);
-        player.play();
-      } else { //assume YouTube
-        player.seekTo(timeSecs, true);
-        player.playVideo();
+      if (this.playerType === 'native') {
+        this.player.currentTime = timeSecs;
+        this.player.play();
+      } else if (this.playerType === 'soundcloud') {
+        this.player.seekTo(timeSecs * 1000);
+        this.player.play();
+      } else {
+        //assume YouTube
+
+        this.player.seekTo(timeSecs, true);
+        this.player.playVideo();
       }
     }
-  }
+  };
 
-  function clearTimer() {
-    if (timer) clearTimeout(timer);
-  }
+  clearTimer = () => {
+    if (this.timer) clearTimeout(this.timer);
+  };
 
-  function checkPlayHead() {
+  checkPlayHead = () => {
+    this.clearTimer();
 
-    clearTimer();
-
-    if (playerType == "native"){
-      currentTime = player.currentTime;
-    } else if (playerType == "soundcloud"){ 
-      player.getPosition(function(ms) {
-        currentTime = ms / 1000;
+    if (this.playerType === 'native') {
+      this.currentTime = this.player.currentTime;
+    } else if (this.playerType === 'soundcloud') {
+      this.player.getPosition(function (ms) {
+        this.currentTime = ms / 1000;
       });
-    } else { // assume YouTube
-      currentTime = player.getCurrentTime();
+    } else {
+      // assume YouTube
+      this.currentTime = this.player.getCurrentTime();
     }
 
     //check for end time of shared piece
 
-    if (end && (end < currentTime)) {
-      player.pause();
-      end = null;
+    if (this.end && this.end < this.currentTime) {
+      this.player.pause();
+      this.end = null;
     } else {
-      var newPara = false;
-      var interval; // used to establish next checkPlayHead
-      var index = 0;
-      var words = wordArr.length - 1;
+      let newPara = false;
+      let interval = 0; // used to establish next checkPlayHead
 
-      // Binary search https://en.wikipedia.org/wiki/Binary_search_algorithm
-      while (index <= words) {
-        var guessIndex = index + ((words - index) >> 1); // >> 1 has the effect of halving and rounding down
-        var difference = wordArr[guessIndex].m / 1000 - currentTime; // wordArr[guessIndex].m represents start time of word
+      let indices = this.updateTranscriptVisualState();
 
-        if (difference < 0) { // comes before the element
-          index = guessIndex + 1;
-        }
-        else if (difference > 0) { // comes after the element
-          words = guessIndex - 1;
-        }
-        else { // equals the element
-          index = guessIndex;
-          break;
-        }
-      }
+      let scrollNode = null;
 
-      for (var i = 0; i < index; ++i) {
-        wordArr[i].n.classList.add("read");
-        wordArr[i].n.classList.remove("unread");
-      }
-
-      for (var i = index; i < wordArr.length; ++i) {
-        wordArr[i].n.classList.add("unread");
-        wordArr[i].n.classList.remove("read");
-      }
-
-      for (var i = 0; i < index; ++i) {
-        wordArr[i].n.classList.remove("active");
-      }
-
-      paras = transcript.getElementsByTagName('p');
-
-      //remove active class from all paras
-
-      for (var a = 0; a < paras.length; a++) {
-        if (paras[a].classList.contains("active")) {
-          paras[a].classList.remove("active");
-        }
-      }
-
-      // set current word and para to active
+      let index = indices.currentWordIndex;
+      let currentParaIndex = indices.currentParaIndex;
 
       if (index > 0) {
-        wordArr[index - 1].n.classList.add("active");
-        wordArr[index - 1].n.parentNode.classList.add("active");
-      }
+        scrollNode = this.wordArr[index - 1].n.parentNode;
 
-      if (wordArr[index]) {
-        interval = parseInt(wordArr[index].n.getAttribute('data-m') - currentTime * 1000);
-      } else {
-        interval = 0;
-      }
-
-      // Establish current paragraph index
-
-      var currentParaIndex;
-
-      for (var a = 0; a < paras.length; a++) {
-        if (paras[a].classList.contains("active")) {
-          currentParaIndex = a;
-          break;
-        }
-      }
-
-      var scrollNode = null;
-
-      if (index > 0) {
-        scrollNode = wordArr[index-1].n.parentNode;
-
-        if (scrollNode.tagName != "P") { // it's not inside a para so just use the element
-          scrollNode = wordArr[index-1].n;
+        if (scrollNode !== null && scrollNode.tagName != 'P') {
+          // it's not inside a para so just use the element
+          scrollNode = this.wordArr[index - 1].n;
         }
 
-        if (currentParaIndex != paraIndex) {
-
-          if (typeof scroller !== 'undefined' && autoscroll === true) {
-
-            if (typeof(scrollerContainer) !== 'undefined' && scrollerContainer !== null) {
-
-              scroller(scrollNode, "scroll", {
-                container: scrollerContainer,
-                duration: scrollerDuration,
-                delay: scrollerDelay,
-                offset: scrollerOffset
-              });
+        if (currentParaIndex != this.paraIndex) {
+          if (typeof this.scroller !== 'undefined' && this.autoscroll === true) {
+            if (scrollNode !== null) {
+              if (typeof this.scrollerContainer !== 'undefined' && this.scrollerContainer !== null) {
+                this.scroller(scrollNode, 'scroll', {
+                  container: this.scrollerContainer,
+                  duration: this.scrollerDuration,
+                  delay: this.scrollerDelay,
+                  offset: this.scrollerOffset,
+                });
+              } else {
+                this.scroller(scrollNode, 'scroll', {
+                  duration: this.scrollerDuration,
+                  delay: this.scrollerDelay,
+                  offset: this.scrollerOffset,
+                });
+              }
             } else {
-              scroller(scrollNode, "scroll", {
-                duration: scrollerDuration,
-                delay: scrollerDelay,
-                offset: scrollerOffset
-              });
+              // the wordlst needs refreshing
+              let words = this.transcript.querySelectorAll('[data-m]');
+              this.wordArr = this.createWordArray(words);
+              this.paras = this.transcript.getElementsByTagName('p');
             }
           }
 
           newPara = true;
 
-          paraIndex = currentParaIndex;
+          this.paraIndex = currentParaIndex;
         }
       }
 
       //minimizedMode is still experimental - it changes document.title upon every new word
 
-      if (minimizedMode) {
+      if (this.minimizedMode) {
+        const elements = transcript.querySelectorAll('[data-m]');
+        let currentWord = '';
+        let lastWordIndex = this.wordIndex;
 
-        var elements = transcript.querySelectorAll('[data-m]');
-        var currentWord = "";
-        var lastWordIndex = wordIndex;
-
-        for (var i = 0; i < elements.length; i++) {
-          if((' ' + elements[i].className + ' ').indexOf(' active ') > -1) {
+        for (let i = 0; i < elements.length; i++) {
+          if ((' ' + elements[i].className + ' ').indexOf(' active ') > -1) {
             currentWord = elements[i].innerHTML;
-            wordIndex = i;
+            this.wordIndex = i;
           }
         }
 
-        if (wordIndex != lastWordIndex) {
+        let textShot = '';
+
+        if (this.wordIndex != lastWordIndex) {
           textShot = textShot + currentWord;
         }
 
-        if (textShot.length > 16 || newPara == true) {
+        if (textShot.length > 16 || newPara === true) {
           document.title = textShot;
-          textShot = "";
+          textShot = '';
           newPara = false;
         }
       }
 
-      timer = setTimeout(function() {
-        checkPlayHead();
-      }, interval+1); // +1 to avoid rounding issues (better to be over than under)
+      if (this.wordArr[index]) {
+        interval = parseInt(this.wordArr[index].n.getAttribute('data-m') - this.currentTime * 1000);
+      }
+
+      this.timer = setTimeout(() => {
+        this.checkPlayHead();
+      }, interval + 1); // +1 to avoid rounding issues (better to be over than under)
+    }
+  };
+
+  updateTranscriptVisualState = () => {
+    let index = 0;
+    let words = this.wordArr.length - 1;
+
+    // Binary search https://en.wikipedia.org/wiki/Binary_search_algorithm
+    while (index <= words) {
+      const guessIndex = index + ((words - index) >> 1); // >> 1 has the effect of halving and rounding down
+      const difference = this.wordArr[guessIndex].m / 1000 - this.currentTime; // wordArr[guessIndex].m represents start time of word
+
+      if (difference < 0) {
+        // comes before the element
+        index = guessIndex + 1;
+      } else if (difference > 0) {
+        // comes after the element
+        words = guessIndex - 1;
+      } else {
+        // equals the element
+        index = guessIndex;
+        break;
+      }
     }
 
-  }
+    this.wordArr.forEach((word, i) => {
+      let classList = word.n.classList;
+      if (i < index) {
+        classList.add('read');
+        classList.remove('unread');
+        classList.remove('active');
+      } else {
+        classList.add('unread');
+        classList.remove('read');
+      }
+    });
 
-  hal.init = function(transcriptId, mediaElementId, minimizedMode, autoscroll) {
-    transcript = document.getElementById(transcriptId);
-    init(mediaElementId, minimizedMode, autoscroll);
-    //set minimizedMode is an experimental feature
-  }
+    this.paras = this.transcript.getElementsByTagName('p');
 
-  hal.setScrollParameters = function(duration, delay, offset, container) {
-    scrollerContainer = container;
-    scrollerDuration = duration;
-    scrollerDelay = delay;
-    scrollerOffset = offset;
-  }
+    //remove active class from all paras
 
-  hal.toggleAutoScroll = function() {
-    autoscroll = !autoscroll;
-  }
+    Array.from(this.paras).forEach(para => {
+      if (para.classList.contains('active')) {
+        para.classList.remove('active');
+      }
+    });
 
-  hal.setAutoScroll = function(on) {
-    autoscroll = on;
-  }
+    // set current word and para to active
 
-  return hal;
+    if (index > 0) {
+      this.wordArr[index - 1].n.classList.add('active');
+      if (this.wordArr[index - 1].n.parentNode !== null) {
+        this.wordArr[index - 1].n.parentNode.classList.add('active');
+      }
+    }
 
-});
+    // Establish current paragraph index
+
+    let currentParaIndex;
+
+    Array.from(this.paras).every((para, i) => {
+      if (para.classList.contains('active')) {
+        currentParaIndex = i;
+        return false;
+      }
+      return true;
+    });
+
+    let indices = {
+      currentWordIndex: index,
+      currentParaIndex: currentParaIndex,
+    };
+
+    return indices;
+  };
+
+  setScrollParameters = (duration, delay, offset, container) => {
+    this.scrollerContainer = container;
+    this.scrollerDuration = duration;
+    this.scrollerDelay = delay;
+    this.scrollerOffset = offset;
+  };
+
+  toggleAutoScroll = () => {
+    this.autoscroll = !this.autoscroll;
+  };
+
+  setAutoScroll = state => {
+    this.autoscroll = state;
+  };
+}
+
+// required for testing
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = { HyperaudioLite };
+}
+
+//export default HyperaudioLite;

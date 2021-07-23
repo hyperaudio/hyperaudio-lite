@@ -134,10 +134,10 @@
         <span data-m="36390" data-d="450">realise </span>
         <span data-m="36840" data-d="150">what </span>
         <span data-m="36990" data-d="120">we're </span>
-        <span data-m="37110" data-d="300">giving </span>
-        <span data-m="37410" data-d="120">and </span>
-        <span data-m="37550" data-d="280">why </span>
-        <span data-m="38430" data-d="120">we </span>
+        <span data-m="37110" data-d="150">giving </span>
+        <span data-m="37260" data-d="150">away </span>
+        <span data-m="38410" data-d="80">and </span>
+        <span data-m="38490" data-d="60">we </span>
         <span data-m="38550" data-d="330">don't </span>
         <span data-m="38880" data-d="660">realise </span>
         <span data-m="39810" data-d="90">the </span>
@@ -160,7 +160,7 @@
         <span data-m="46020" data-d="470">privacy, </span>
         <span data-m="46490" data-d="470">they </span>
         <span data-m="46980" data-d="240">are </span>
-        <span data-m="47220" data-d="390">issues </span>
+        <span data-m="47220" data-d="390">issues –</span>
         <span data-m="47610" data-d="300">people </span>
         <span data-m="47910" data-d="210">do </span>
         <span data-m="48120" data-d="300">care </span>
@@ -984,7 +984,7 @@
   </div>
   
   <script src="js/hyperaudio-lite.js"></script>
-  <script src="js/hyperaudio-lite-wrapper.js"></script>
+  <script src="js/hyperaudio-lite-extension.js"></script>
   <script src="js/share-this.js"></script>
   <script src="js/share-this-twitter.js"></script>
   <script src="js/caption.js"></script>
@@ -995,20 +995,19 @@
   }).init();
 
   // minimizedMode is still experimental - it aims to show the current words in the title, which can be seen on the browser tab.
-  var minimizedMode = false;
-  var autoScroll = true;
+  let minimizedMode = false;
+  let autoScroll = true;
+  let doubleClick = false;
 
-  var ht1 = hyperaudiolite();
-  ht1.init("hypertranscript", "hyperplayer", minimizedMode, autoScroll);
+  new HyperaudioLite("hypertranscript", "hyperplayer", minimizedMode, autoScroll, doubleClick);
+
+  // Override scroll parameters
   //ht1.setScrollParameters(<duration>, <delay>, <offset>, <container>);
 
   // this should create captions  
-  var cap1 = caption();
+  let cap1 = caption();
   cap1.init("hypertranscript", "hyperplayer", '37' , '21'); // transcript Id, player Id, max chars, min chars for caption line
   
   </script>
-
-  <!-- Uncomment the following script if you require IE versions less than 10 to be supported or Opera Mini http://caniuse.com/#search=classlist ¯\_(ツ)_/¯ -->
-  <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/2014.01.31/classList.min.js"></script> -->
 </body>
 </html>
