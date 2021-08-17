@@ -33,9 +33,9 @@ function createWordArrayResult(words) {
   return wordArr;
 }
 
-function simulateClick(elem) {
+function simulateClick(elem, clickType) {
   // Create our event (with options)
-  let evt = new MouseEvent("click", {
+  let evt = new MouseEvent(clickType, {
     bubbles: true,
     cancelable: true,
     view: window,
@@ -49,7 +49,7 @@ document.body.innerHTML =
   '<div id="hypertranscript" class="hyperaudio-transcript">' +
   "<article>" +
   "<section>" +
-  '<p class="" id="p1"><span class="read" data-m="880" data-d="539">test </span><span class="read" data-m="2560" data-d="459">one </span><span class="read" data-m="3240" data-d="370">two </span><span class="read" data-m="3950" data-d="410">three </span><span class="read" data-m="4750" data-d="459">four </span></p>' +
+  '<p id="p1" data-wm="payment-pointer"><span class="read" data-m="880" data-d="539">test </span><span class="read" data-m="2560" data-d="459">one </span><span class="read" data-m="3240" data-d="370">two </span><span class="read" data-m="3950" data-d="410">three </span><span class="read" data-m="4750" data-d="459">four </span></p>' +
   '<p class="active"><span class="read" data-m="6580" data-d="530">test </span><span class="read active" data-m="8099" data-d="439">five </span><span class="unread" data-m="8740" data-d="509">six </span><span class="unread" data-m="9469" data-d="540">seven </span><span class="unread" data-m="10280" data-d="330">eight </span></p>' +
   "</section>" +
   "</article>" +
@@ -59,8 +59,20 @@ window.HTMLMediaElement.prototype.play = () => {
   /* does nothing */
 };
 
-test("instantiation", () => {
-  ht = new HyperaudioLite("hypertranscript", "hyperplayer", false, false);
+test("instantiation - options false", () => {
+  let minimizedMode = false;
+  let autoScroll = false;
+  let doubleClick = false;
+  let webMonetization = false;
+
+  ht = new HyperaudioLite(
+    "hypertranscript",
+    "hyperplayer",
+    minimizedMode,
+    autoScroll,
+    doubleClick,
+    webMonetization
+  );
 });
 
 test("createWordArray", () => {
@@ -96,6 +108,50 @@ test("updateTranscriptVisualState", () => {
 });
 
 test("media playback - click on word", () => {
-  simulateClick(document.getElementsByTagName("span")[3]);
+  simulateClick(document.getElementsByTagName("span")[3], "click");
   expect(ht.player.currentTime).toStrictEqual(3.95);
+});
+
+test("instantiation - doubleClick true", () => {
+  let minimizedMode = false;
+  let autoScroll = false;
+  let doubleClick = true;
+  let webMonetization = false;
+
+  ht = new HyperaudioLite(
+    "hypertranscript",
+    "hyperplayer",
+    minimizedMode,
+    autoScroll,
+    doubleClick,
+    webMonetization
+  );
+});
+
+test("media playback - doubleClick on word", () => {
+  simulateClick(document.getElementsByTagName("span")[4], "dblclick");
+  expect(ht.player.currentTime).toStrictEqual(4.75);
+});
+
+test("instantiation - webMonetization true", () => {
+  let minimizedMode = false;
+  let autoScroll = false;
+  let doubleClick = false;
+  let webMonetization = true;
+
+  ht = new HyperaudioLite(
+    "hypertranscript",
+    "hyperplayer",
+    minimizedMode,
+    autoScroll,
+    doubleClick,
+    webMonetization
+  );
+});
+
+test("media playback - payment pointer inserted", () => {
+  simulateClick(document.getElementsByTagName("span")[4], "click");
+  const paymentPointer = document.querySelector('[name="monetization"]');
+
+  expect(paymentPointer.content).toStrictEqual("payment-pointer");
 });
