@@ -1,5 +1,5 @@
 /*! (C) The Hyperaudio Project. MIT @license: en.wikipedia.org/wiki/MIT_License. */
-/*! Version 2.0.0 */
+/*! Version 2.0.1 */
 
 'use strict';
 
@@ -246,6 +246,13 @@ class HyperaudioLite {
 
   setPlayHead = e => {
     const target = e.target ? e.target : e.srcElement;
+
+    let activeElements = Array.from(this.transcript.getElementsByClassName('active'));
+
+    activeElements.forEach(e => {
+      e.classList.remove('active');
+    });
+
     target.setAttribute('class', 'active');
     const timeSecs = parseInt(target.getAttribute('data-m')) / 1000;
 
