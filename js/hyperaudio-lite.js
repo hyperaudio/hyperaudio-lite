@@ -1,15 +1,15 @@
 /*! (C) The Hyperaudio Project. MIT @license: en.wikipedia.org/wiki/MIT_License. */
-/*! Version 2.0.1 */
+/*! Version 2.0.2 */
 
 'use strict';
 
 class HyperaudioLite {
-  constructor(transcriptId, mediaElementId, minimizedMode, autoscroll, doubleClick) {
+  constructor(transcriptId, mediaElementId, minimizedMode, autoscroll, doubleClick, webMonetization) {
     this.transcript = document.getElementById(transcriptId);
-    this.init(mediaElementId, minimizedMode, autoscroll, doubleClick);
+    this.init(mediaElementId, minimizedMode, autoscroll, doubleClick, webMonetization);
   }
 
-  init = (mediaElementId, m, a, d) => {
+  init = (mediaElementId, m, a, d, w) => {
     const windowHash = window.location.hash;
     const hashVar = windowHash.substring(1, windowHash.indexOf('='));
 
@@ -42,6 +42,7 @@ class HyperaudioLite {
     this.scrollerDelay = 0;
 
     this.doubleClick = d;
+    this.webMonetization = w;
 
     //Create the array of timed elements (wordArr)
 
@@ -247,6 +248,8 @@ class HyperaudioLite {
   setPlayHead = e => {
     const target = e.target ? e.target : e.srcElement;
 
+    // clear elements with class='active'
+
     let activeElements = Array.from(this.transcript.getElementsByClassName('active'));
 
     activeElements.forEach(e => {
@@ -254,6 +257,7 @@ class HyperaudioLite {
     });
 
     target.setAttribute('class', 'active');
+
     const timeSecs = parseInt(target.getAttribute('data-m')) / 1000;
 
     if (!isNaN(parseFloat(timeSecs))) {
@@ -381,6 +385,44 @@ class HyperaudioLite {
       this.timer = setTimeout(() => {
         this.checkPlayHead();
       }, interval + 1); // +1 to avoid rounding issues (better to be over than under)
+    }
+
+    if (this.webMonetization === true) {
+      //check for payment pointer
+
+      let activeElements = this.transcript.getElementsByClassName('active');
+
+      let paymentPointer = this.checkPaymentPointer(activeElements[activeElements.length - 1]);
+
+      if (paymentPointer !== null) {
+        let metaElements = document.getElementsByTagName('meta');
+        let wmMeta = document.querySelector("meta[name='monetization']");
+        if (wmMeta === null) {
+          wmMeta = document.createElement('meta');
+          wmMeta.name = 'monetization';
+          wmMeta.content = paymentPointer;
+          document.getElementsByTagName('head')[0].appendChild(wmMeta);
+        } else {
+          wmMeta.name = 'monetization';
+          wmMeta.content = paymentPointer;
+        }
+      }
+    }
+  };
+
+  checkPaymentPointer = element => {
+    let paymentPointer = element.getAttribute('data-wm');
+
+    if (paymentPointer !== null) {
+      return paymentPointer;
+    } else {
+      let parent = element.parentElement;
+
+      if (parent === null) {
+        return null;
+      } else {
+        return this.checkPaymentPointer(parent);
+      }
     }
   };
 
