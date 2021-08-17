@@ -246,6 +246,13 @@ class HyperaudioLite {
 
   setPlayHead = e => {
     const target = e.target ? e.target : e.srcElement;
+
+    let activeElements = Array.from(this.transcript.getElementsByClassName('active'));
+
+    activeElements.forEach(e => {
+      e.classList.remove('active');
+    });
+
     target.setAttribute('class', 'active');
     const timeSecs = parseInt(target.getAttribute('data-m')) / 1000;
 
