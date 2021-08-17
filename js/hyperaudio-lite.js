@@ -246,7 +246,17 @@ class HyperaudioLite {
 
   setPlayHead = e => {
     const target = e.target ? e.target : e.srcElement;
+
+    // new code for web mon
+
+    let activeElements = Array.from(this.transcript.getElementsByClassName('active'));
+
+    activeElements.forEach(e => {
+      e.classList.remove('active');
+    });
+
     target.setAttribute('class', 'active');
+
     const timeSecs = parseInt(target.getAttribute('data-m')) / 1000;
 
     if (!isNaN(parseFloat(timeSecs))) {
@@ -374,6 +384,51 @@ class HyperaudioLite {
       this.timer = setTimeout(() => {
         this.checkPlayHead();
       }, interval + 1); // +1 to avoid rounding issues (better to be over than under)
+    }
+
+    //check for payment pointer
+
+    let activeElements = this.transcript.getElementsByClassName('active');
+
+    console.log(activeElements);
+    let paymentPointer = this.checkPaymentPointer(activeElements[activeElements.length - 1]);
+
+    console.log('paymentPointer = ' + paymentPointer);
+
+    if (paymentPointer !== null) {
+      console.log('changing payment pointer');
+      console.log('pointer is ' + paymentPointer);
+
+      let metaElements = document.getElementsByTagName('meta');
+      let wmMeta = document.querySelector("meta[name='monetization']");
+      if (wmMeta === null) {
+        console.log('creating');
+        wmMeta = document.createElement('meta');
+        wmMeta.name = 'monetization';
+        wmMeta.content = paymentPointer; //'$ilp.uphold.com/3h66mKZLrgQZ';
+        document.getElementsByTagName('head')[0].appendChild(wmMeta);
+      } else {
+        console.log('modifying');
+        wmMeta.name = 'monetization';
+        wmMeta.content = paymentPointer; //'$ilp.uphold.com/3h66mKZLrgQZ';
+      }
+      //let meta = document.createElement('meta');
+    }
+  };
+
+  checkPaymentPointer = element => {
+    let paymentPointer = element.getAttribute('data-wm');
+
+    if (paymentPointer !== null) {
+      return paymentPointer;
+    } else {
+      let parent = element.parentElement;
+
+      if (parent === null) {
+        return null;
+      } else {
+        return this.checkPaymentPointer(parent);
+      }
     }
   };
 
