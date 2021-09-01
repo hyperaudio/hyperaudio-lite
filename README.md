@@ -191,7 +191,8 @@ Example of Soundcloud API and `iframe` embed:
 ```html
 <script src="https://w.soundcloud.com/player/api.js"></script>
 <iframe
-  id="so"
+  id="hyperplayer"
+  data-player-type="soundcloud"
   width="100%"
   height="166"
   scrolling="no"
