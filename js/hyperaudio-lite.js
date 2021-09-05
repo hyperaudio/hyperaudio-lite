@@ -202,6 +202,14 @@ class HyperaudioLite {
       let fNode = selection.focusNode.parentNode;
       let aNode = selection.anchorNode.parentNode;
 
+      if(selection.focusNode.textContent == ' '){
+        fNode = selection.focusNode.nextElementSibling;
+      }
+
+      if(selection.anchorNode.textContent == ' '){
+        aNode = selection.anchorNode.previousElementSibling;
+      }
+      
       if (aNode.getAttribute('data-m') === null || aNode.className === 'speaker') {
         aNode = aNode.nextElementSibling;
       }
