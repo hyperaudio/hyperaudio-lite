@@ -288,7 +288,7 @@ class HyperaudioLite {
     if (this.playerType === 'native') {
       this.currentTime = this.player.currentTime;
     } else if (this.playerType === 'soundcloud') {
-      this.player.getPosition(function (ms) {
+      this.player.getPosition(ms => {
         this.currentTime = ms / 1000;
       });
     } else {
