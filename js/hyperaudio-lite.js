@@ -1,5 +1,5 @@
 /*! (C) The Hyperaudio Project. MIT @license: en.wikipedia.org/wiki/MIT_License. */
-/*! Version 2.0.2 */
+/*! Version 2.0.3 */
 
 'use strict';
 
@@ -288,7 +288,7 @@ class HyperaudioLite {
     if (this.playerType === 'native') {
       this.currentTime = this.player.currentTime;
     } else if (this.playerType === 'soundcloud') {
-      this.player.getPosition(function (ms) {
+      this.player.getPosition(ms => {
         this.currentTime = ms / 1000;
       });
     } else {
