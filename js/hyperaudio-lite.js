@@ -127,7 +127,7 @@ class HyperaudioLite {
               // Auto-play started
             });
         }
-      } else if (playerType === 'soundcloud') {
+      } else if (this.playerType === 'soundcloud') {
         // SoundCloud
         this.player.seekTo(start * 1000);
       } else {
@@ -201,6 +201,14 @@ class HyperaudioLite {
     if (selection.toString() !== '') {
       let fNode = selection.focusNode.parentNode;
       let aNode = selection.anchorNode.parentNode;
+      
+      if (aNode.tagName === "P") {
+        aNode = selection.anchorNode.nextElementSibling;
+      }
+
+      if (fNode.tagName === "P") {
+        fNode = selection.focusNode.nextElementSibling;
+      }
 
       if (aNode.getAttribute('data-m') === null || aNode.className === 'speaker') {
         aNode = aNode.nextElementSibling;
@@ -287,15 +295,20 @@ class HyperaudioLite {
 
     if (this.playerType === 'native') {
       this.currentTime = this.player.currentTime;
+      this.checkStatus();
     } else if (this.playerType === 'soundcloud') {
       this.player.getPosition(ms => {
         this.currentTime = ms / 1000;
+        this.checkStatus();
       });
     } else {
       // assume YouTube
       this.currentTime = this.player.getCurrentTime();
+      this.checkStatus();
     }
+  }
 
+  checkStatus = () => {
     //check for end time of shared piece
 
     if (this.end && this.end < this.currentTime) {
