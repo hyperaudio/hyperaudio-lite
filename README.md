@@ -12,11 +12,11 @@ You can use Hyperaudio Lite to provide Interactive Transcripts, this readme deta
 
 ## :tiger: Hyperaudio Lite in the Wild :tiger:
 
-As demonstrated here [https://hyperaud.io/lab/halite/v26/](https://hyperaud.io/lab/halite/v26/) plus equivalent [multiplayer version](https://hyperaud.io/lab/halite/v26/multiplayer.html)
+As demonstrated here [https://hyperaud.io/lab/halite/v26/](https://hyperaud.io/lab/halite/v27/) plus equivalent [multiplayer version](https://hyperaud.io/lab/halite/v27/multiplayer.html)
 
 Alternatively styled version [https://lab.hyperaud.io/mozfest2021/interviews/lance_weiler/](https://lab.hyperaud.io/mozfest2021/interviews/lance_weiler/)
 
-SoundCloud Integration [https://lab.hyperaud.io/demos/scitranscript/v02/](https://lab.hyperaud.io/demos/scitranscript/v02/)
+SoundCloud Integration [https://hyperaud.io/lab/halite/v27/soundcloud.html](https://hyperaud.io/lab/halite/v27/soundcloud.html)
 
 Vitorio's version [https://github.com/vitorio/hyperaudio-lite](https://github.com/vitorio/hyperaudio-lite)
 
@@ -149,19 +149,15 @@ Finally instantiate the Transcript Player:
 ```javascript
 let minimizedMode = false;
 let autoScroll = true;
+let doubleClick = false;
+let webMonetization = false;
 
-let ht1 = new HyperaudioLite(
-  "hypertranscript",
-  "hyperplayer",
-  minimizedMode,
-  autoScroll,
-  doubleClick
-);
+new HyperaudioLite("hypertranscript", "hyperplayer", minimizedMode, autoScroll, doubleClick, webMonetization);
 ```
 
-View the source code of [http://hyperaud.io/lab/halite/v22/](https://hyperaud.io/lab/halite/v22/) for a complete example.
+View the source code of [http://hyperaud.io/lab/halite/v27/](https://hyperaud.io/lab/halite/v27/) for a complete example.
 
-See a version with multiple players in a single page [http://hyperaud.io/lab/halite/v22/multiplayer.html](https://hyperaud.io/lab/halite/v22/multiplayer.html)
+See a version with multiple players in a single page [http://hyperaud.io/lab/halite/v27/multiplayer.html](https://hyperaud.io/lab/halite/v27/multiplayer.html)
 
 ## :tv: YouTube Support :tv:
 
@@ -202,6 +198,44 @@ Example of Soundcloud API and `iframe` embed:
 ```
 
 You can get the snippet of code by visiting the page of the SoundCloud file you're interested in, clicking on _Share_ and then _Embed_.
+
+
+## :money_with_wings: Web Monetization Support :money_with_wings:
+
+[Web Monetization](https://webmonetization.org/) is a JavaScript browser API that allows the creation of a payment stream from the user agent to the website and a [proposed](https://discourse.wicg.io/t/proposal-web-monetization-a-new-revenue-model-for-the-web/3785) [W3C](https://www.w3.org/) standard.
+
+You can use this with Hyperaudio Lite to apportion streaming funds (from viewers with Web Monetization compatible wallets and browser extensions) to different sources depending on the transcript or part of the transcript you are currently listening to.
+
+To activate set the Web Monetization parameter when instantiating a new `HyperaudioLite` object to `true`, for example:
+
+```javascript
+let minimizedMode = false;
+let autoScroll = true;
+let doubleClick = false;
+let webMonetization = true;
+
+new HyperaudioLite("hypertranscript", "hyperplayer", minimizedMode, autoScroll, doubleClick, webMonetization);
+```
+
+If you then set the `data-wm` attributes in your transcript streaming will be switched to that payment pointer when encountered.
+
+```html
+   <article data-wm="$ilp.uphold.com/123article">
+
+      <section data-wm="$ilp.uphold.com/123section">
+
+        <h5 data-m="0">How do we make people more aware of their personal data?</h5>
+
+        <p data-tc="00:00:04" data-wm="$ilp.uphold.com/123Doc">
+          <span data-m="4470" data-d="0" class="speaker">Doc: </span>
+          <span data-m="4470" data-d="270">We </span>
+          <span data-m="4740" data-d="240">have </span>
+          <span data-m="5010" data-d="300">two </span>
+          <span data-m="5310" data-d="600">selves </span>
+          ...
+```
+
+*Note* – if a `data-wm` attribute is not present in an element Hyperaudio Lite will check the parent (and parent's parent etc) until it finds one. 
 
 ## :construction_worker: Testing :construction_worker:
 
