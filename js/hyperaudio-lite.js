@@ -115,7 +115,9 @@ class HyperaudioLite {
 
     if (!isNaN(parseFloat(start))) {
       if (this.playerType === 'native') {
-        this.player.currentTime = start;
+        this.player.addEventListener('loadeddata', function(){
+          this.currentTime = start;
+        })    
         //autoplay
         const promise = this.player.play();
         if (promise !== undefined) {
