@@ -264,7 +264,7 @@ class HyperaudioLite {
       e.classList.remove('active');
     });
 
-    target.setAttribute('class', 'active');
+    target.classList.add('active');
 
     const timeSecs = parseInt(target.getAttribute('data-m')) / 1000;
 
