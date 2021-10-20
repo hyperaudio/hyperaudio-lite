@@ -78,7 +78,7 @@ class HyperaudioLite {
       const firstScriptTag = document.getElementsByTagName('script')[0];
       firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 
-      window.onYouTubeIframeAPIReady = function () {
+      window.onYouTubeIframeAPIReady = () => {
         this.player = new YT.Player(mediaElementId, {
           events: {
             onStateChange: onPlayerStateChange,
@@ -86,7 +86,7 @@ class HyperaudioLite {
         });
       };
 
-      onPlayerStateChange = event => {
+      let onPlayerStateChange = event => {
         if (event.data === 1) {
           // playing
           this.checkPlayHead();
@@ -135,7 +135,7 @@ class HyperaudioLite {
       } else {
         // Assume YouTube
 
-        window.onYouTubeIframeAPIReady = function () {
+        window.onYouTubeIframeAPIReady = () => {
           this.player = new YT.Player(mediaElementId, {
             playerVars: { autoplay: 1 },
             events: {
