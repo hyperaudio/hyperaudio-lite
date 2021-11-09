@@ -426,7 +426,11 @@ class HyperaudioLite {
   };
 
   checkPaymentPointer = element => {
-    let paymentPointer = element.getAttribute('data-wm');
+    let paymentPointer = null;
+    
+    if (typeof(element) != "undefined") {
+      paymentPointer = element.getAttribute('data-wm');
+    }
 
     if (paymentPointer !== null) {
       return paymentPointer;
