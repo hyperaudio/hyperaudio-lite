@@ -1,5 +1,5 @@
 /*! (C) The Hyperaudio Project. MIT @license: en.wikipedia.org/wiki/MIT_License. */
-/*! Version 2.0.7 */
+/*! Version 2.0.8 */
 
 'use strict';
 
@@ -43,6 +43,12 @@ class HyperaudioLite {
 
     this.doubleClick = d;
     this.webMonetization = w;
+    this.highlightedText = false;
+    this.start = null;
+
+    if (this.autoscroll === true) {
+      this.scroller = window.Velocity || window.jQuery.Velocity;
+    }
 
     //Create the array of timed elements (wordArr)
 
@@ -111,41 +117,16 @@ class HyperaudioLite {
     this.transcript.addEventListener(playHeadEvent, this.setPlayHead, false);
     this.transcript.addEventListener(playHeadEvent, this.checkPlayHead, false);
 
-    const start = this.hashArray[0];
+    this.start = this.hashArray[0];
 
-    if (!isNaN(parseFloat(start))) {
-      if (this.playerType === 'native') {
-        this.player.addEventListener('loadeddata', function(){
-          this.currentTime = start;
-        })    
-        //autoplay
-        const promise = this.player.play();
-        if (promise !== undefined) {
-          promise
-            .catch(error => {
-              console.log('Auto-play prevented');
-            })
-            .then(() => {
-              // Auto-play started
-            });
-        }
-      } else if (this.playerType === 'soundcloud') {
-        // SoundCloud
-        this.player.seekTo(start * 1000);
-      } else {
-        // Assume YouTube
+    if (!isNaN(parseFloat(this.start))) {
+      this.highlightedText = true;
+            
+      let indices = this.updateTranscriptVisualState(this.start);
+      let index = indices.currentWordIndex;
 
-        window.onYouTubeIframeAPIReady = () => {
-          this.player = new YT.Player(mediaElementId, {
-            playerVars: { autoplay: 1 },
-            events: {
-              onReady: function () {
-                this.player.seekTo(start, true);
-                this.player.playVideo();
-              },
-            },
-          });
-        };
+      if (index > 0) {
+        this.scrollToParagraph(indices.currentParaIndex, index);
       }
     }
 
@@ -153,17 +134,13 @@ class HyperaudioLite {
 
     //TODO convert to binary search for below for quicker startup
 
-    if (start && this.end) {
+    if (this.start && this.end) {
       for (let i = 1; i < words.length; i++) {
         const wordStart = parseInt(words[i].getAttribute('data-m')) / 1000;
-        if (wordStart > start && this.end > wordStart) {
+        if (wordStart > this.start && this.end > wordStart) {
           words[i].classList.add('share-match');
         }
       }
-    }
-
-    if (this.autoscroll === true) {
-      this.scroller = window.Velocity || window.jQuery.Velocity;
     }
   };
 
@@ -258,6 +235,9 @@ class HyperaudioLite {
   setPlayHead = e => {
     const target = e.target ? e.target : e.srcElement;
 
+    // cancel highlight playback
+    this.highlightedText = false;
+
     // clear elements with class='active'
 
     let activeElements = Array.from(this.transcript.getElementsByClassName('active'));
@@ -281,7 +261,6 @@ class HyperaudioLite {
         this.player.play();
       } else {
         //assume YouTube
-
         this.player.seekTo(timeSecs, true);
         this.player.playVideo();
       }
@@ -293,77 +272,114 @@ class HyperaudioLite {
   };
 
   checkPlayHead = () => {
+
     this.clearTimer();
 
     if (this.playerType === 'native') {
       this.currentTime = this.player.currentTime;
+      if (this.highlightedText === true) {
+        this.currentTime = this.start;
+        this.player.currentTime = this.currentTime;
+        this.highlightedText = false;
+      }
       this.checkStatus();
     } else if (this.playerType === 'soundcloud') {
+
       this.player.getPosition(ms => {
         this.currentTime = ms / 1000;
+        if (this.highlightedText === true) {
+          this.currentTime = this.start;
+          this.player.seekTo(this.currentTime * 1000);
+          this.player.playVideo();
+          this.highlightedText = false;
+        }
+
         this.checkStatus();
       });
     } else {
       // assume YouTube
+
+      // Note – there is an issue when the video is already cached
+      // and we're attempting to play a highlighted section,
+      // where it jumps to the buffered point before seeking to
+      // the correct place – but doesn't play.
+      // May have to detect a suitable event before seeking.
+
       this.currentTime = this.player.getCurrentTime();
+
+      if (this.highlightedText === true) {
+        this.currentTime = this.start;
+        this.player.seekTo(this.start, true);
+        this.highlightedText = false;
+      }
       this.checkStatus();
     }
+  }
+
+  scrollToParagraph = (currentParaIndex, index) => {
+    let newPara = false;
+    let scrollNode = this.wordArr[index - 1].n.parentNode;
+
+    if (scrollNode !== null && scrollNode.tagName != 'P') {
+      // it's not inside a para so just use the element
+      scrollNode = this.wordArr[index - 1].n;
+    }
+
+    if (currentParaIndex != this.paraIndex) {
+
+      if (typeof this.scroller !== 'undefined' && this.autoscroll === true) {
+        if (scrollNode !== null) {
+          if (typeof this.scrollerContainer !== 'undefined' && this.scrollerContainer !== null) {
+            this.scroller(scrollNode, 'scroll', {
+              container: this.scrollerContainer,
+              duration: this.scrollerDuration,
+              delay: this.scrollerDelay,
+              offset: this.scrollerOffset,
+            });
+          } else {
+            this.scroller(scrollNode, 'scroll', {
+              duration: this.scrollerDuration,
+              delay: this.scrollerDelay,
+              offset: this.scrollerOffset,
+            });
+          }
+        } else {
+          // the wordlst needs refreshing
+          let words = this.transcript.querySelectorAll('[data-m]');
+          this.wordArr = this.createWordArray(words);
+          this.paras = this.transcript.getElementsByTagName('p');
+        }
+      }
+
+      newPara = true;
+
+      this.paraIndex = currentParaIndex;
+    }
+    return(newPara);
   }
 
   checkStatus = () => {
     //check for end time of shared piece
 
     if (this.end && this.end < this.currentTime) {
-      this.player.pause();
+      if (this.playerType === 'native') {
+        this.player.pause();
+      } else if (this.playerType === 'soundcloud') {
+        this.player.pause();
+      } else {
+        // assume YouTube
+        this.player.pauseVideo();
+      }
       this.end = null;
     } else {
       let newPara = false;
       let interval = 0; // used to establish next checkPlayHead
 
-      let indices = this.updateTranscriptVisualState();
-
-      let scrollNode = null;
-
+      let indices = this.updateTranscriptVisualState(this.currentTime);
       let index = indices.currentWordIndex;
-      let currentParaIndex = indices.currentParaIndex;
 
       if (index > 0) {
-        scrollNode = this.wordArr[index - 1].n.parentNode;
-
-        if (scrollNode !== null && scrollNode.tagName != 'P') {
-          // it's not inside a para so just use the element
-          scrollNode = this.wordArr[index - 1].n;
-        }
-
-        if (currentParaIndex != this.paraIndex) {
-          if (typeof this.scroller !== 'undefined' && this.autoscroll === true) {
-            if (scrollNode !== null) {
-              if (typeof this.scrollerContainer !== 'undefined' && this.scrollerContainer !== null) {
-                this.scroller(scrollNode, 'scroll', {
-                  container: this.scrollerContainer,
-                  duration: this.scrollerDuration,
-                  delay: this.scrollerDelay,
-                  offset: this.scrollerOffset,
-                });
-              } else {
-                this.scroller(scrollNode, 'scroll', {
-                  duration: this.scrollerDuration,
-                  delay: this.scrollerDelay,
-                  offset: this.scrollerOffset,
-                });
-              }
-            } else {
-              // the wordlst needs refreshing
-              let words = this.transcript.querySelectorAll('[data-m]');
-              this.wordArr = this.createWordArray(words);
-              this.paras = this.transcript.getElementsByTagName('p');
-            }
-          }
-
-          newPara = true;
-
-          this.paraIndex = currentParaIndex;
-        }
+        newPara = this.scrollToParagraph(indices.currentParaIndex, index);
       }
 
       //minimizedMode is still experimental - it changes document.title upon every new word
@@ -445,14 +461,14 @@ class HyperaudioLite {
     }
   };
 
-  updateTranscriptVisualState = () => {
+  updateTranscriptVisualState = (currentTime) => {
     let index = 0;
     let words = this.wordArr.length - 1;
 
     // Binary search https://en.wikipedia.org/wiki/Binary_search_algorithm
     while (index <= words) {
       const guessIndex = index + ((words - index) >> 1); // >> 1 has the effect of halving and rounding down
-      const difference = this.wordArr[guessIndex].m / 1000 - this.currentTime; // wordArr[guessIndex].m represents start time of word
+      const difference = this.wordArr[guessIndex].m / 1000 - currentTime; // wordArr[guessIndex].m represents start time of word
 
       if (difference < 0) {
         // comes before the element
