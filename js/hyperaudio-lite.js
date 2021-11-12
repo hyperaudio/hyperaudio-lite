@@ -1,5 +1,5 @@
 /*! (C) The Hyperaudio Project. MIT @license: en.wikipedia.org/wiki/MIT_License. */
-/*! Version 2.0.8 */
+/*! Version 2.0.9 */
 
 'use strict';
 
@@ -290,7 +290,6 @@ class HyperaudioLite {
         if (this.highlightedText === true) {
           this.currentTime = this.start;
           this.player.seekTo(this.currentTime * 1000);
-          this.player.playVideo();
           this.highlightedText = false;
         }
 
