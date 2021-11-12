@@ -12,11 +12,13 @@ You can use Hyperaudio Lite to provide Interactive Transcripts, this readme deta
 
 ## :tiger: Hyperaudio Lite in the Wild :tiger:
 
-As demonstrated here [https://hyperaud.io/lab/halite/v27/](https://hyperaud.io/lab/halite/v27/) plus equivalent [multiplayer version](https://hyperaud.io/lab/halite/v27/multiplayer.html)
+As demonstrated here [https://hyperaud.io/lab/halite/v28/](https://hyperaud.io/lab/halite/v28/) plus equivalent [multiplayer version](https://hyperaud.io/lab/halite/v28/multiplayer.html)
 
 Alternatively styled version [https://lab.hyperaud.io/mozfest2021/interviews/lance_weiler/](https://lab.hyperaud.io/mozfest2021/interviews/lance_weiler/)
 
-SoundCloud Integration [https://hyperaud.io/lab/halite/v27/soundcloud.html](https://hyperaud.io/lab/halite/v27/soundcloud.html)
+YouTube Integration [https://hyperaud.io/lab/halite/v28/youtube.html](https://hyperaud.io/lab/halite/v28/youtube.html)
+
+SoundCloud Integration [https://hyperaud.io/lab/halite/v28/soundcloud.html](https://hyperaud.io/lab/halite/v28/soundcloud.html)
 
 Vitorio's version [https://github.com/vitorio/hyperaudio-lite](https://github.com/vitorio/hyperaudio-lite)
 
@@ -155,9 +157,9 @@ let webMonetization = false;
 new HyperaudioLite("hypertranscript", "hyperplayer", minimizedMode, autoScroll, doubleClick, webMonetization);
 ```
 
-View the source code of [http://hyperaud.io/lab/halite/v27/](https://hyperaud.io/lab/halite/v27/) for a complete example.
+View the source code of [http://hyperaud.io/lab/halite/v28/](https://hyperaud.io/lab/halite/v28/) for a complete example.
 
-See a version with multiple players in a single page [http://hyperaud.io/lab/halite/v27/multiplayer.html](https://hyperaud.io/lab/halite/v27/multiplayer.html)
+See a version with multiple players in a single page [http://hyperaud.io/lab/halite/v28/multiplayer.html](https://hyperaud.io/lab/halite/v28/multiplayer.html)
 
 ## :tv: YouTube Support :tv:
 
