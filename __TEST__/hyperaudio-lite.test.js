@@ -1,5 +1,7 @@
 /**
  * @jest-environment jsdom
+ * 
+ * Tests updated for version 2.0.8
  */
 
 const { test } = require("@jest/globals");
@@ -104,7 +106,7 @@ test("updateTranscriptVisualState", () => {
 
   ht.currentTime = 8.106641;
 
-  expect(ht.updateTranscriptVisualState()).toStrictEqual(expectedResult);
+  expect(ht.updateTranscriptVisualState(ht.currentTime)).toStrictEqual(expectedResult);
 });
 
 test("media playback - click on word", () => {
