@@ -271,8 +271,9 @@ var caption = function () {
     if (trackElement !== null) {
       trackElement.setAttribute("src", 'data:text/vtt,'+encodeURIComponent(captionsVtt));
     }
-    
-    console.log(captionsVtt);
+
+    //console.log(captionsVtt);
+    return captionsVtt;
   };
 
   return cap;
