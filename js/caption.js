@@ -266,7 +266,12 @@ var caption = function () {
       captionsVtt += '\n' + caption.start + ' --> ' + caption.stop + '\n' + caption.text + '\n';
     });
 
-    document.getElementById(playerId + '-vtt').setAttribute('src', 'data:text/vtt,' + encodeURIComponent(captionsVtt));
+    var trackElement = document.getElementById(playerId+'-vtt');
+
+    if (trackElement !== null) {
+      trackElement.setAttribute("src", 'data:text/vtt,'+encodeURIComponent(captionsVtt));
+    }
+    
     console.log(captionsVtt);
   };
 
