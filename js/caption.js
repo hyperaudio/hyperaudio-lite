@@ -179,7 +179,7 @@ var caption = function () {
               // We're on the second line ... we're over the minimum chars and in a good place to split – let's push the caption
 
               thisCaption.stop = formatSeconds(wordMeta.start + wordMeta.duration);
-              thisCaption.text += lineText + wordMeta.text + '\n';
+              thisCaption.text += lineText + wordMeta.text;
               //console.log("2. pushing because we're on the second line and have a good place to split");
               //console.log(thisCaption);
               captions.push(thisCaption);
@@ -216,7 +216,7 @@ var caption = function () {
                 // We're on the second line and since we're over the maximum with the next word we should push this caption!
 
                 thisCaption.stop = formatSeconds(lastOutTime);
-                thisCaption.text += lineText + '\n';
+                thisCaption.text += lineText;
 
                 captions.push(thisCaption);
 
@@ -244,7 +244,7 @@ var caption = function () {
         if (thisCaption !== null) {
           // The caption had been started, time to add whatever text we have and add a stop point
           thisCaption.stop = formatSeconds(lastOutTime);
-          thisCaption.text += lineText + '\n';
+          thisCaption.text += lineText;
           //console.log("3. pushing at end of segment when new caption HAS BEEN created");
           //console.log(thisCaption);
           captions.push(thisCaption);
