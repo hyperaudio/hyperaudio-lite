@@ -47,11 +47,11 @@ var caption = function () {
     var endSentenceDelimiter = /[\.。?؟!]/g;
     var midSentenceDelimiter = /[,、–，،و:，…‥]/g;
 
-    if (!isNaN(maxLength)) {
+    if (!isNaN(maxLength) && maxLength != null) {
       maxLineLength = maxLength;
     }
 
-    if (!isNaN(minLength)) {
+    if (!isNaN(minLength) && minLength != null) {
       minLineLength = minLength;
     }
 
