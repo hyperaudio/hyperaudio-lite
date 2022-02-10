@@ -5,13 +5,17 @@ var caption = function () {
   var cap = {};
 
   function formatSeconds(seconds) {
-    //console.log("seconds = "+seconds);
     if (typeof seconds == 'number') {
-      return new Date(seconds.toFixed(3) * 1000).toISOString().substr(11, 12);
+      return new Date(seconds.toFixed(3) * 1000).toISOString().substring(11,23);
     } else {
       console.log('warning - attempting to format the non number: ' + seconds);
       return null;
     }
+  }
+
+  function convertTimecodeToSrt(timecode) {
+    //the same as VTT format but milliseconds separated by a comma
+    return timecode.substring(0,8) + "," + timecode.substring(9,12);
   }
 
   cap.init = function (transcriptId, playerId, maxLength, minLength) {
@@ -43,6 +47,7 @@ var caption = function () {
     var minLineLength = 21;
 
     var captionsVtt = 'WEBVTT\n';
+    var captionsSrt = '';
 
     var endSentenceDelimiter = /[\.。?؟!]/g;
     var midSentenceDelimiter = /[,、–，،و:，…‥]/g;
@@ -262,8 +267,9 @@ var caption = function () {
       }
     });
 
-    captions.forEach(function (caption) {
+    captions.forEach(function (caption, i) {
       captionsVtt += '\n' + caption.start + ' --> ' + caption.stop + '\n' + caption.text + '\n';
+      captionsSrt += '\n' + i + '\n' + convertTimecodeToSrt(caption.start) + ' --> ' + convertTimecodeToSrt(caption.stop) + '\n' + caption.text + '\n';
     });
 
     var trackElement = document.getElementById(playerId+'-vtt');
@@ -272,8 +278,12 @@ var caption = function () {
       trackElement.setAttribute("src", 'data:text/vtt,'+encodeURIComponent(captionsVtt));
     }
 
-    //console.log(captionsVtt);
-    return captionsVtt;
+    function captionsObj(vtt, srt) {
+      this.vtt = vtt;
+      this.srt = srt;
+    }
+
+    return new captionsObj(captionsVtt, captionsSrt);
   };
 
   return cap;
