@@ -263,7 +263,7 @@ var caption = function () {
     });
 
     captions.forEach(function (caption) {
-      captionsVtt += '\n' + caption.start + '-->' + caption.stop + '\n' + caption.text + '\n';
+      captionsVtt += '\n' + caption.start + ' --> ' + caption.stop + '\n' + caption.text + '\n';
     });
 
     document.getElementById(playerId + '-vtt').setAttribute('src', 'data:text/vtt,' + encodeURIComponent(captionsVtt));
