@@ -5,13 +5,17 @@ var caption = function () {
   var cap = {};
 
   function formatSeconds(seconds) {
-    //console.log("seconds = "+seconds);
     if (typeof seconds == 'number') {
-      return new Date(seconds.toFixed(3) * 1000).toISOString().substr(11, 12);
+      return new Date(seconds.toFixed(3) * 1000).toISOString().substring(11,23);
     } else {
       console.log('warning - attempting to format the non number: ' + seconds);
       return null;
     }
+  }
+
+  function convertTimecodeToSrt(timecode) {
+    //the same as VTT format but milliseconds separated by a comma
+    return timecode.substring(0,8) + "," + timecode.substring(9,12);
   }
 
   cap.init = function (transcriptId, playerId, maxLength, minLength) {
@@ -43,15 +47,16 @@ var caption = function () {
     var minLineLength = 21;
 
     var captionsVtt = 'WEBVTT\n';
+    var captionsSrt = '';
 
     var endSentenceDelimiter = /[\.。?؟!]/g;
     var midSentenceDelimiter = /[,、–，،و:，…‥]/g;
 
-    if (!isNaN(maxLength)) {
+    if (!isNaN(maxLength) && maxLength != null) {
       maxLineLength = maxLength;
     }
 
-    if (!isNaN(minLength)) {
+    if (!isNaN(minLength) && minLength != null) {
       minLineLength = minLength;
     }
 
@@ -179,7 +184,7 @@ var caption = function () {
               // We're on the second line ... we're over the minimum chars and in a good place to split – let's push the caption
 
               thisCaption.stop = formatSeconds(wordMeta.start + wordMeta.duration);
-              thisCaption.text += lineText + wordMeta.text + '\n';
+              thisCaption.text += lineText + wordMeta.text;
               //console.log("2. pushing because we're on the second line and have a good place to split");
               //console.log(thisCaption);
               captions.push(thisCaption);
@@ -216,7 +221,7 @@ var caption = function () {
                 // We're on the second line and since we're over the maximum with the next word we should push this caption!
 
                 thisCaption.stop = formatSeconds(lastOutTime);
-                thisCaption.text += lineText + '\n';
+                thisCaption.text += lineText;
 
                 captions.push(thisCaption);
 
@@ -244,7 +249,7 @@ var caption = function () {
         if (thisCaption !== null) {
           // The caption had been started, time to add whatever text we have and add a stop point
           thisCaption.stop = formatSeconds(lastOutTime);
-          thisCaption.text += lineText + '\n';
+          thisCaption.text += lineText;
           //console.log("3. pushing at end of segment when new caption HAS BEEN created");
           //console.log(thisCaption);
           captions.push(thisCaption);
@@ -262,12 +267,23 @@ var caption = function () {
       }
     });
 
-    captions.forEach(function (caption) {
-      captionsVtt += '\n' + caption.start + '-->' + caption.stop + '\n' + caption.text + '\n';
+    captions.forEach(function (caption, i) {
+      captionsVtt += '\n' + caption.start + ' --> ' + caption.stop + '\n' + caption.text + '\n';
+      captionsSrt += '\n' + i + '\n' + convertTimecodeToSrt(caption.start) + ' --> ' + convertTimecodeToSrt(caption.stop) + '\n' + caption.text + '\n';
     });
 
-    document.getElementById(playerId + '-vtt').setAttribute('src', 'data:text/vtt,' + encodeURIComponent(captionsVtt));
-    console.log(captionsVtt);
+    var trackElement = document.getElementById(playerId+'-vtt');
+
+    if (trackElement !== null) {
+      trackElement.setAttribute("src", 'data:text/vtt,'+encodeURIComponent(captionsVtt));
+    }
+
+    function captionsObj(vtt, srt) {
+      this.vtt = vtt;
+      this.srt = srt;
+    }
+
+    return new captionsObj(captionsVtt, captionsSrt);
   };
 
   return cap;
