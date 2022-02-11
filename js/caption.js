@@ -269,7 +269,7 @@ var caption = function () {
 
     captions.forEach(function (caption, i) {
       captionsVtt += '\n' + caption.start + ' --> ' + caption.stop + '\n' + caption.text + '\n';
-      captionsSrt += '\n' + i + '\n' + convertTimecodeToSrt(caption.start) + ' --> ' + convertTimecodeToSrt(caption.stop) + '\n' + caption.text + '\n';
+      captionsSrt += '\n' + (i + 1) + '\n' + convertTimecodeToSrt(caption.start) + ' --> ' + convertTimecodeToSrt(caption.stop) + '\n' + caption.text + '\n';
     });
 
     var trackElement = document.getElementById(playerId+'-vtt');
