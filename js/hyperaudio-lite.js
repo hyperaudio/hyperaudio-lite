@@ -84,7 +84,13 @@ class HyperaudioLite {
       const firstScriptTag = document.getElementsByTagName('script')[0];
       firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 
+      const previousYTEvent = window.onYouTubeIframeAPIReady;
       window.onYouTubeIframeAPIReady = () => {
+
+        if (typeof previousYTEvent !== 'undefined') { // used for multiple YouTube players
+          previousYTEvent();
+        }
+        
         this.player = new YT.Player(mediaElementId, {
           events: {
             onStateChange: onPlayerStateChange,
