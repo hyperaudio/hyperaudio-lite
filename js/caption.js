@@ -1,4 +1,5 @@
 /*! (C) The Hyperaudio Project. MIT @license: en.wikipedia.org/wiki/MIT_License. */
+/*! Version 2.0.12 */
 'use strict';
 
 var caption = function () {
@@ -6,6 +7,7 @@ var caption = function () {
 
   function formatSeconds(seconds) {
     if (typeof seconds == 'number') {
+      //console.log("seconds = "+seconds);
       return new Date(seconds.toFixed(3) * 1000).toISOString().substring(11,23);
     } else {
       console.log('warning - attempting to format the non number: ' + seconds);
@@ -23,7 +25,6 @@ var caption = function () {
     var words = transcript.querySelectorAll('[data-m]');
     var data = {};
     data.segments = [];
-    var segmentIndex = 0;
 
     function segmentMeta(speaker, start, duration, chars) {
       this.speaker = speaker;
@@ -45,6 +46,7 @@ var caption = function () {
     // defaults
     var maxLineLength = 37;
     var minLineLength = 21;
+    var maxWordDuration = 2; //seconds
 
     var captionsVtt = 'WEBVTT\n';
     var captionsSrt = '';
@@ -86,9 +88,23 @@ var caption = function () {
           thisStart = 0;
         }
 
+        // data-d (duration) is an optional attribute, if it doesn't exist 
+        // use the start time of the next word (if it exists) or for the last word
+        // pick a sensible duration.  
+
         if (isNaN(thisDuration)) {
-          thisDuration = 0;
+          if (i < (words.length - 1)) {
+            thisDuration = (parseInt(words[i+1].getAttribute('data-m') - 1) / 1000) - thisStart;
+            if (thisDuration > maxWordDuration) {
+              thisDuration = maxWordDuration;
+            }
+          } else {
+            thisDuration = 5; // sensible default for the last word
+          }
         }
+
+        //console.log("thisStart = " + thisStart);
+        //console.log("thisDuration = " + thisDuration);
 
         var thisText = word.innerText;
 
@@ -125,9 +141,18 @@ var caption = function () {
     var captions = [];
     var thisCaption = null;
 
-    data.segments.map(function (segment) {
+    data.segments.map(function (segment, i, arr) {
       // If the entire segment fits on a line, add it to the captions.
       if (segment.chars < maxLineLength) {
+
+        if (segment.duration === 0){
+          if (i < arr.length) {
+            segment.duration = arr[i+1].start - segment.start; 
+          } else {
+            segment.duration = 5 * 1000;
+          }
+        } 
+
         thisCaption = new captionMeta(
           formatSeconds(segment.start),
           formatSeconds(segment.start + segment.duration),
@@ -267,16 +292,27 @@ var caption = function () {
       }
     });
 
+    //console.log("start creating captions");
+
     captions.forEach(function (caption, i) {
       captionsVtt += '\n' + caption.start + ' --> ' + caption.stop + '\n' + caption.text + '\n';
+      //console.log(caption.start + ' --> ' + caption.stop + '\n' + caption.text);
       captionsSrt += '\n' + (i + 1) + '\n' + convertTimecodeToSrt(caption.start) + ' --> ' + convertTimecodeToSrt(caption.stop) + '\n' + caption.text + '\n';
     });
 
-    var trackElement = document.getElementById(playerId+'-vtt');
+    var video = document.getElementById(playerId);
 
-    if (trackElement !== null) {
-      trackElement.setAttribute("src", 'data:text/vtt,'+encodeURIComponent(captionsVtt));
-    }
+    video.addEventListener("loadedmetadata", function() {
+      //var track = document.createElement("track");
+      var track = document.getElementById(playerId+'-vtt');
+      track.kind = "captions";
+      track.label = "English";
+      track.srclang = "en";
+      track.src = "data:text/vtt,"+encodeURIComponent(captionsVtt);
+      video.textTracks[0].mode = "showing";
+    });
+
+    video.textTracks[0].mode = "showing";
 
     function captionsObj(vtt, srt) {
       this.vtt = vtt;
