@@ -1,5 +1,5 @@
 /*! (C) The Hyperaudio Project. MIT @license: en.wikipedia.org/wiki/MIT_License. */
-/*! Version 2.0.11 */
+/*! Version 2.0.13 */
 
 'use strict';
 
@@ -45,6 +45,7 @@ class HyperaudioLite {
     this.webMonetization = w;
     this.highlightedText = false;
     this.start = null;
+    
 
     if (this.autoscroll === true) {
       this.scroller = window.Velocity || window.jQuery.Velocity;
@@ -56,7 +57,9 @@ class HyperaudioLite {
 
     this.wordArr = this.createWordArray(words);
 
-    this.paras = this.transcript.getElementsByTagName('p');
+    this.parentTag = words[0].parentElement.tagName;
+    this.parentElements = this.transcript.getElementsByTagName(this.parentTag);
+    
 
     this.player = document.getElementById(mediaElementId);
 
@@ -109,10 +112,10 @@ class HyperaudioLite {
       };
     }
 
-    this.paraIndex = 0;
+    this.parentElementIndex = 0;
 
     words[0].classList.add('active');
-    this.paras[0].classList.add('active');
+    this.parentElements[0].classList.add('active');
 
     let playHeadEvent = 'click';
 
@@ -132,7 +135,7 @@ class HyperaudioLite {
       let index = indices.currentWordIndex;
 
       if (index > 0) {
-        this.scrollToParagraph(indices.currentParaIndex, index);
+        this.scrollToParagraph(indices.currentParentElementIndex, index);
       }
     }
 
@@ -321,7 +324,7 @@ class HyperaudioLite {
     }
   }
 
-  scrollToParagraph = (currentParaIndex, index) => {
+  scrollToParagraph = (currentParentElementIndex, index) => {
     let newPara = false;
     let scrollNode = this.wordArr[index - 1].n.parentNode;
 
@@ -330,7 +333,7 @@ class HyperaudioLite {
       scrollNode = this.wordArr[index - 1].n;
     }
 
-    if (currentParaIndex != this.paraIndex) {
+    if (currentParentElementIndex != this.parentElementIndex) {
 
       if (typeof this.scroller !== 'undefined' && this.autoscroll === true) {
         if (scrollNode !== null) {
@@ -352,13 +355,13 @@ class HyperaudioLite {
           // the wordlst needs refreshing
           let words = this.transcript.querySelectorAll('[data-m]');
           this.wordArr = this.createWordArray(words);
-          this.paras = this.transcript.getElementsByTagName('p');
+          this.parentElements = this.transcript.getElementsByTagName(this.parentTag);
         }
       }
 
       newPara = true;
 
-      this.paraIndex = currentParaIndex;
+      this.parentElementIndex = currentParentElementIndex;
     }
     return(newPara);
   }
@@ -384,7 +387,7 @@ class HyperaudioLite {
       let index = indices.currentWordIndex;
 
       if (index > 0) {
-        newPara = this.scrollToParagraph(indices.currentParaIndex, index);
+        newPara = this.scrollToParagraph(indices.currentParentElementIndex, index);
       }
 
       //minimizedMode is still experimental - it changes document.title upon every new word
@@ -500,13 +503,13 @@ class HyperaudioLite {
       }
     });
 
-    this.paras = this.transcript.getElementsByTagName('p');
+    this.parentElements = this.transcript.getElementsByTagName(this.parentTag);
 
     //remove active class from all paras
 
-    Array.from(this.paras).forEach(para => {
-      if (para.classList.contains('active')) {
-        para.classList.remove('active');
+    Array.from(this.parentElements).forEach(el => {
+      if (el.classList.contains('active')) {
+        el.classList.remove('active');
       }
     });
 
@@ -514,6 +517,7 @@ class HyperaudioLite {
 
     if (index > 0) {
       this.wordArr[index - 1].n.classList.add('active');
+
       if (this.wordArr[index - 1].n.parentNode !== null) {
         this.wordArr[index - 1].n.parentNode.classList.add('active');
       }
@@ -521,11 +525,11 @@ class HyperaudioLite {
 
     // Establish current paragraph index
 
-    let currentParaIndex;
+    let currentParentElementIndex;
 
-    Array.from(this.paras).every((para, i) => {
-      if (para.classList.contains('active')) {
-        currentParaIndex = i;
+    Array.from(this.parentElements).every((el, i) => {
+      if (el.classList.contains('active')) {
+        currentParentElementIndex = i;
         return false;
       }
       return true;
@@ -533,7 +537,7 @@ class HyperaudioLite {
 
     let indices = {
       currentWordIndex: index,
-      currentParaIndex: currentParaIndex,
+      currentParentElementIndex: currentParentElementIndex,
     };
 
     return indices;
