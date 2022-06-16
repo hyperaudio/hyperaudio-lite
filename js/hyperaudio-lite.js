@@ -11,7 +11,7 @@ class HyperaudioLite {
 
   init = (mediaElementId, m, a, d, w) => {
     const windowHash = window.location.hash;
-    const hashVar = windowHash.substring(1, windowHash.indexOf('='));
+    const hashVar = windowHash.ing(1, windowHash.indexOf('='));
 
     if (hashVar === this.transcript.id) {
       this.hashArray = windowHash.substr(this.transcript.id.length + 2).split(',');
