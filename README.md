@@ -252,3 +252,5 @@ Or npm:
 
 To run the tests:
 `yarn test` or `npm run test`
+
+Note: If you have issues runing the tests, try a more recent version of node. (node v16.0.0 should work).
