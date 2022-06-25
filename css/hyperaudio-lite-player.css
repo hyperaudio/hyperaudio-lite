@@ -9,11 +9,11 @@
 }
 
 .hyperaudio-transcript .highlight {
-  background-color: yellow !important;
+  background-color: yellow;
 }
 
 .hyperaudio-transcript .highlight.active {
-  background-color: lightGreen !important;
+  background-color: lightGreen;
 }
 
 .hyperaudio-transcript  header {
@@ -39,19 +39,19 @@
 }
 
 .hyperaudio-transcript .read {
-  color: #000 !important;
+  color: #000;
 }
 
 .hyperaudio-transcript .unread {
-  color: #999 !important;
+  color: #999;
 }
 
 .hyperaudio-transcript .search-match {
-  background-color: pink !important;
+  background-color: pink;
 }
 
 .hyperaudio-transcript .share-match {
-  background-color: #66ffad !important;
+  background-color: #66ffad;
 }
 
 .hyperaudio-transcript sub:before {
