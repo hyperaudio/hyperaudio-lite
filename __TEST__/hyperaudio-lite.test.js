@@ -98,7 +98,6 @@ test("getSelectionMediaFragment", () => {
   );
 });
 
-
 test("updateTranscriptVisualState", () => {
   const expectedResult = {
     currentWordIndex: 7,
