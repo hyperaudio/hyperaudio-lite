@@ -459,7 +459,11 @@ class HyperaudioLite {
     if (paymentPointer !== null) {
       return paymentPointer;
     } else {
-      let parent = element.parentElement;
+      let parent = null;
+
+      if (typeof element !== 'undefined') {
+        parent = element.parentElement;
+      }
 
       if (parent === null) {
         return null;
