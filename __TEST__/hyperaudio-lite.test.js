@@ -98,10 +98,11 @@ test("getSelectionMediaFragment", () => {
   );
 });
 
+
 test("updateTranscriptVisualState", () => {
   const expectedResult = {
     currentWordIndex: 7,
-    currentParaIndex: 1,
+    currentParentElementIndex: 1,
   };
 
   ht.currentTime = 8.106641;
