@@ -1,5 +1,5 @@
 /*! (C) The Hyperaudio Project. MIT @license: en.wikipedia.org/wiki/MIT_License. */
-/*! Version 2.0.16 */
+/*! Version 2.0.16 (patch) */
 'use strict';
 
 var caption = function () {
@@ -315,8 +315,6 @@ var caption = function () {
   
       video.textTracks[0].mode = "showing";
     }
-
-    video.textTracks[0].mode = "showing";
 
     function captionsObj(vtt, srt) {
       this.vtt = vtt;
