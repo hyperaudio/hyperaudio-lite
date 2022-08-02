@@ -1,5 +1,5 @@
 /*! (C) The Hyperaudio Project. MIT @license: en.wikipedia.org/wiki/MIT_License. */
-/*! Version 2.0.12 */
+/*! Version 2.0.16 */
 'use strict';
 
 var caption = function () {
@@ -25,6 +25,13 @@ var caption = function () {
     var words = transcript.querySelectorAll('[data-m]');
     var data = {};
     data.segments = [];
+
+    console.log(words.length); 
+
+    console.log(words[0].innerText); 
+    console.log(words[1].innerText); 
+    console.log(words[2].innerText); 
+    console.log(words[3].innerText); 
 
     function segmentMeta(speaker, start, duration, chars) {
       this.speaker = speaker;
@@ -65,6 +72,16 @@ var caption = function () {
     var lastSpeaker = '';
 
     words.forEach(function (word, i) {
+
+
+      for (var key in word) {
+        if (word.hasOwnProperty(key)) {
+          console.log(key);
+        }
+      }
+
+      console.log("word.innerText = ");
+      console.log(word.innerText);
       if (thisSegmentMeta === null) {
         // create segment meta object
         thisSegmentMeta = new segmentMeta('', null, 0, 0, 0);
@@ -107,6 +124,7 @@ var caption = function () {
         //console.log("thisDuration = " + thisDuration);
 
         var thisText = word.innerText;
+        console.log(thisText);
 
         thisWordMeta = new wordMeta(thisStart, thisDuration, thisText);
 
@@ -328,3 +346,4 @@ var caption = function () {
 
   return cap;
 };
+
