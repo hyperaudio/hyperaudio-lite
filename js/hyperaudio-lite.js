@@ -1,7 +1,126 @@
 /*! (C) The Hyperaudio Project. MIT @license: en.wikipedia.org/wiki/MIT_License. */
-/*! Version 2.0.14 */
+/*! Version 2.0.17 */
 
 'use strict';
+
+function nativePlayer(playerElement, instance) {
+  this.player = playerElement;
+  
+  this.player.addEventListener('pause', instance.clearTimer, false);
+  this.player.addEventListener('play', instance.checkPlayHead, false);
+
+  this.getTime = () => {
+    console.log("native player getTime");
+    return new Promise((resolve) => {
+      resolve(this.player.currentTime);
+    });
+  }
+
+  this.setTime = (seconds) => {
+    console.log("native player setTime");
+    this.player.currentTime = seconds;
+  }
+
+  this.play = () => {
+    console.log("native player play");
+    this.player.play();
+  }
+
+  this.pause = () => {
+    console.log("native player pause");
+    this.player.pause();
+  }
+}
+
+function soundcloudPlayer(playerElement, instance) {
+  this.player = playerElement;
+  
+  this.player = SC.Widget(this.player.id);
+  this.player.bind(SC.Widget.Events.PAUSE, instance.clearTimer);
+  this.player.bind(SC.Widget.Events.PLAY, instance.checkPlayHead);
+
+  this.getTime = () => {
+    console.log("soundcloud player getTime");
+    return new Promise((resolve) => {
+      this.player.getPosition(ms => {
+        console.log("got the time");
+        resolve(ms / 1000);
+      });
+    });
+  }
+
+  this.setTime = (seconds) => {
+    console.log("soundCloud player setTime");
+    this.player.seekTo(seconds * 1000);
+  }
+
+  this.play = () => {
+    console.log("soundCloud player play");
+    this.player.play();
+  }
+
+  this.pause = () => {
+    console.log("native player pause");
+    this.player.pause();
+  }
+}
+
+function youtubePlayer(playerElement, instance) {
+
+  this.player = playerElement;
+
+  const tag = document.createElement('script');
+  tag.id = 'iframe-demo';
+  tag.src = 'https://www.youtube.com/iframe_api';
+  const firstScriptTag = document.getElementsByTagName('script')[0];
+  firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+  const previousYTEvent = window.onYouTubeIframeAPIReady;
+  window.onYouTubeIframeAPIReady = () => {
+
+    if (typeof previousYTEvent !== 'undefined') { // used for multiple YouTube players
+      previousYTEvent();
+    }
+    
+    this.player = new YT.Player(this.player.id, {
+      events: {
+        onStateChange: onPlayerStateChange,
+      },
+    });
+  };
+
+  let onPlayerStateChange = event => {
+    if (event.data === 1) {
+      // playing
+      instance.checkPlayHead();
+    } else if (event.data === 2) {
+      // paused
+      instance.clearTimer();
+    }
+  };
+
+  this.getTime = () => {
+    console.log("youtube player getTime");
+    return new Promise((resolve) => {
+      resolve(this.player.getCurrentTime());
+    });
+  }
+
+  this.setTime = (seconds) => {
+    console.log("youtube player setTime");
+    this.player.seekTo(seconds, true);
+  }
+
+  this.play = () => {
+    console.log("youtube player play");
+    this.player.playVideo();
+  }
+
+  this.pause = () => {
+    console.log("youtube player pause");
+    this.player.pauseVideo();
+  }
+}
 
 class HyperaudioLite {
   constructor(transcriptId, mediaElementId, minimizedMode, autoscroll, doubleClick, webMonetization) {
@@ -10,6 +129,7 @@ class HyperaudioLite {
   }
 
   init = (mediaElementId, m, a, d, w) => {
+
     const windowHash = window.location.hash;
     const hashVar = windowHash.substring(1, windowHash.indexOf('='));
 
@@ -45,6 +165,8 @@ class HyperaudioLite {
     this.webMonetization = w;
     this.highlightedText = false;
     this.start = null;
+
+    this.myPlayer = null;
     
 
     if (this.autoscroll === true) {
@@ -60,7 +182,6 @@ class HyperaudioLite {
     this.parentTag = words[0].parentElement.tagName;
     this.parentElements = this.transcript.getElementsByTagName(this.parentTag);
     
-
     this.player = document.getElementById(mediaElementId);
 
     if (this.player.tagName == 'VIDEO' || this.player.tagName == 'AUDIO') {
@@ -72,44 +193,14 @@ class HyperaudioLite {
     }
 
     if (this.playerType === 'native') {
-      this.player.addEventListener('pause', this.clearTimer, false);
-      this.player.addEventListener('play', this.checkPlayHead, false);
+      // native
+      this.myPlayer = new nativePlayer(this.player, this);
     } else if (this.playerType === 'soundcloud') {
       // SoundCloud
-      this.player = SC.Widget(mediaElementId);
-      this.player.bind(SC.Widget.Events.PAUSE, this.clearTimer);
-      this.player.bind(SC.Widget.Events.PLAY, this.checkPlayHead);
+      this.myPlayer = new soundcloudPlayer(this.player, this);
     } else {
       // assume YouTube
-      const tag = document.createElement('script');
-      tag.id = 'iframe-demo';
-      tag.src = 'https://www.youtube.com/iframe_api';
-      const firstScriptTag = document.getElementsByTagName('script')[0];
-      firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-
-      const previousYTEvent = window.onYouTubeIframeAPIReady;
-      window.onYouTubeIframeAPIReady = () => {
-
-        if (typeof previousYTEvent !== 'undefined') { // used for multiple YouTube players
-          previousYTEvent();
-        }
-        
-        this.player = new YT.Player(mediaElementId, {
-          events: {
-            onStateChange: onPlayerStateChange,
-          },
-        });
-      };
-
-      let onPlayerStateChange = event => {
-        if (event.data === 1) {
-          // playing
-          this.checkPlayHead();
-        } else if (event.data === 2) {
-          // paused
-          this.clearTimer();
-        }
-      };
+      this.myPlayer = new youtubePlayer(this.player, this);
     }
 
     this.parentElementIndex = 0;
@@ -151,7 +242,7 @@ class HyperaudioLite {
         }
       }
     }
-  };
+  }; // end init
 
   createWordArray = words => {
     let wordArr = [];
@@ -261,18 +352,7 @@ class HyperaudioLite {
 
     if (!isNaN(parseFloat(timeSecs))) {
       this.end = null;
-
-      if (this.playerType === 'native') {
-        this.player.currentTime = timeSecs;
-        this.player.play();
-      } else if (this.playerType === 'soundcloud') {
-        this.player.seekTo(timeSecs * 1000);
-        this.player.play();
-      } else {
-        //assume YouTube
-        this.player.seekTo(timeSecs, true);
-        this.player.playVideo();
-      }
+      this.myPlayer.setTime(timeSecs);
     }
   };
 
@@ -282,46 +362,21 @@ class HyperaudioLite {
 
   checkPlayHead = () => {
 
+    console.log("checkPlayHead");
+
     this.clearTimer();
 
-    if (this.playerType === 'native') {
-      this.currentTime = this.player.currentTime;
-      if (this.highlightedText === true) {
-        this.currentTime = this.start;
-        this.player.currentTime = this.currentTime;
-        this.highlightedText = false;
+    (async (instance) => {
+      instance.currentTime = await instance.myPlayer.getTime();
+
+      if (instance.highlightedText === true) {
+        instance.currentTime = instance.start;
+        instance.myPlayer.setTime(instance.currentTime);
+        instance.highlightedText = false;
       }
-      this.checkStatus();
-    } else if (this.playerType === 'soundcloud') {
+      instance.checkStatus();
+    })(this);
 
-      this.player.getPosition(ms => {
-        this.currentTime = ms / 1000;
-        if (this.highlightedText === true) {
-          this.currentTime = this.start;
-          this.player.seekTo(this.currentTime * 1000);
-          this.highlightedText = false;
-        }
-
-        this.checkStatus();
-      });
-    } else {
-      // assume YouTube
-
-      // Note – there is an issue when the video is already cached
-      // and we're attempting to play a highlighted section,
-      // where it jumps to the buffered point before seeking to
-      // the correct place – but doesn't play.
-      // May have to detect a suitable event before seeking.
-
-      this.currentTime = this.player.getCurrentTime();
-
-      if (this.highlightedText === true) {
-        this.currentTime = this.start;
-        this.player.seekTo(this.start, true);
-        this.highlightedText = false;
-      }
-      this.checkStatus();
-    }
   }
 
   scrollToParagraph = (currentParentElementIndex, index) => {
@@ -370,14 +425,7 @@ class HyperaudioLite {
     //check for end time of shared piece
 
     if (this.end && this.end < this.currentTime) {
-      if (this.playerType === 'native') {
-        this.player.pause();
-      } else if (this.playerType === 'soundcloud') {
-        this.player.pause();
-      } else {
-        // assume YouTube
-        this.player.pauseVideo();
-      }
+      this.myPlayer.pause();
       this.end = null;
     } else {
       let newPara = false;
