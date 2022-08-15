@@ -3,9 +3,14 @@
 
 'use strict';
 
+
+function strategyPlayer(concretePlayer, playerElement, instance) {
+  return new concretePlayer(playerElement, instance)
+}
+
 function nativePlayer(playerElement, instance) {
   this.player = playerElement;
-  
+
   this.player.addEventListener('pause', instance.clearTimer, false);
   this.player.addEventListener('play', instance.checkPlayHead, false);
 
@@ -34,7 +39,7 @@ function nativePlayer(playerElement, instance) {
 
 function soundcloudPlayer(playerElement, instance) {
   this.player = playerElement;
-  
+
   this.player = SC.Widget(this.player.id);
   this.player.bind(SC.Widget.Events.PAUSE, instance.clearTimer);
   this.player.bind(SC.Widget.Events.PLAY, instance.checkPlayHead);
@@ -81,7 +86,7 @@ function youtubePlayer(playerElement, instance) {
     if (typeof previousYTEvent !== 'undefined') { // used for multiple YouTube players
       previousYTEvent();
     }
-    
+
     this.player = new YT.Player(this.player.id, {
       events: {
         onStateChange: onPlayerStateChange,
@@ -120,6 +125,13 @@ function youtubePlayer(playerElement, instance) {
     console.log("youtube player pause");
     this.player.pauseVideo();
   }
+}
+
+let strategyPlayerOptions = {
+  "native": nativePlayer,
+  "soundcloud": soundcloudPlayer,
+  "youtube": youtubePlayer
+
 }
 
 class HyperaudioLite {
@@ -167,7 +179,7 @@ class HyperaudioLite {
     this.start = null;
 
     this.myPlayer = null;
-    
+
 
     if (this.autoscroll === true) {
       this.scroller = window.Velocity || window.jQuery.Velocity;
@@ -181,7 +193,7 @@ class HyperaudioLite {
 
     this.parentTag = words[0].parentElement.tagName;
     this.parentElements = this.transcript.getElementsByTagName(this.parentTag);
-    
+
     this.player = document.getElementById(mediaElementId);
 
     if (this.player.tagName == 'VIDEO' || this.player.tagName == 'AUDIO') {
@@ -192,16 +204,8 @@ class HyperaudioLite {
       this.playerType = this.player.getAttribute('data-player-type');
     }
 
-    if (this.playerType === 'native') {
-      // native
-      this.myPlayer = new nativePlayer(this.player, this);
-    } else if (this.playerType === 'soundcloud') {
-      // SoundCloud
-      this.myPlayer = new soundcloudPlayer(this.player, this);
-    } else {
-      // assume YouTube
-      this.myPlayer = new youtubePlayer(this.player, this);
-    }
+
+    this.myPlayer = strategyPlayer(strategyPlayerOptions[this.playerType], this.player, this)
 
     this.parentElementIndex = 0;
 
@@ -221,7 +225,7 @@ class HyperaudioLite {
 
     if (!isNaN(parseFloat(this.start))) {
       this.highlightedText = true;
-            
+
       let indices = this.updateTranscriptVisualState(this.start);
       let index = indices.currentWordIndex;
 
@@ -280,7 +284,7 @@ class HyperaudioLite {
     if (selection.toString() !== '') {
       let fNode = selection.focusNode.parentNode;
       let aNode = selection.anchorNode.parentNode;
-      
+
       if (aNode.tagName === "P") {
         aNode = selection.anchorNode.nextElementSibling;
       }
@@ -499,7 +503,7 @@ class HyperaudioLite {
 
   checkPaymentPointer = element => {
     let paymentPointer = null;
-    
+
     if (typeof(element) != "undefined") {
       paymentPointer = element.getAttribute('data-wm');
     }
