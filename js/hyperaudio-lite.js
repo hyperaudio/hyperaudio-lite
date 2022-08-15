@@ -3,11 +3,6 @@
 
 'use strict';
 
-
-function strategyPlayer(concretePlayer, playerElement, instance) {
-  return new concretePlayer(playerElement, instance)
-}
-
 function nativePlayer(playerElement, instance) {
   this.player = playerElement;
 
@@ -127,11 +122,14 @@ function youtubePlayer(playerElement, instance) {
   }
 }
 
-let strategyPlayerOptions = {
+const hyperaudioPlayerOptions = {
   "native": nativePlayer,
   "soundcloud": soundcloudPlayer,
   "youtube": youtubePlayer
+}
 
+function hyperaudioPlayer(playerType, playerElement, instance) {
+  return new playerType(playerElement, instance)
 }
 
 class HyperaudioLite {
@@ -205,7 +203,7 @@ class HyperaudioLite {
     }
 
 
-    this.myPlayer = strategyPlayer(strategyPlayerOptions[this.playerType], this.player, this)
+    this.myPlayer = hyperaudioPlayer(hyperaudioPlayerOptions[this.playerType], this.player, this)
 
     this.parentElementIndex = 0;
 
