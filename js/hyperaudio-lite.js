@@ -10,24 +10,20 @@ function nativePlayer(playerElement, instance) {
   this.player.addEventListener('play', instance.checkPlayHead, false);
 
   this.getTime = () => {
-    console.log("native player getTime");
     return new Promise((resolve) => {
       resolve(this.player.currentTime);
     });
   }
 
   this.setTime = (seconds) => {
-    console.log("native player setTime");
     this.player.currentTime = seconds;
   }
 
   this.play = () => {
-    console.log("native player play");
     this.player.play();
   }
 
   this.pause = () => {
-    console.log("native player pause");
     this.player.pause();
   }
 }
@@ -40,27 +36,22 @@ function soundcloudPlayer(playerElement, instance) {
   this.player.bind(SC.Widget.Events.PLAY, instance.checkPlayHead);
 
   this.getTime = () => {
-    console.log("soundcloud player getTime");
     return new Promise((resolve) => {
       this.player.getPosition(ms => {
-        console.log("got the time");
         resolve(ms / 1000);
       });
     });
   }
 
   this.setTime = (seconds) => {
-    console.log("soundCloud player setTime");
     this.player.seekTo(seconds * 1000);
   }
 
   this.play = () => {
-    console.log("soundCloud player play");
     this.player.play();
   }
 
   this.pause = () => {
-    console.log("native player pause");
     this.player.pause();
   }
 }
@@ -100,24 +91,20 @@ function youtubePlayer(playerElement, instance) {
   };
 
   this.getTime = () => {
-    console.log("youtube player getTime");
     return new Promise((resolve) => {
       resolve(this.player.getCurrentTime());
     });
   }
 
   this.setTime = (seconds) => {
-    console.log("youtube player setTime");
     this.player.seekTo(seconds, true);
   }
 
   this.play = () => {
-    console.log("youtube player play");
     this.player.playVideo();
   }
 
   this.pause = () => {
-    console.log("youtube player pause");
     this.player.pauseVideo();
   }
 }
@@ -364,8 +351,6 @@ class HyperaudioLite {
 
   checkPlayHead = () => {
 
-    console.log("checkPlayHead");
-
     this.clearTimer();
 
     (async (instance) => {
@@ -378,7 +363,6 @@ class HyperaudioLite {
       }
       instance.checkStatus();
     })(this);
-
   }
 
   scrollToParagraph = (currentParentElementIndex, index) => {

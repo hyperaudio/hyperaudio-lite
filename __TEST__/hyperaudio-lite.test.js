@@ -1,7 +1,7 @@
 /**
  * @jest-environment jsdom
  * 
- * Tests updated for version 2.0.8
+ * Tests updated for version 2.1.7
  */
 
 const { test } = require("@jest/globals");
@@ -153,7 +153,10 @@ test("instantiation - webMonetization true", () => {
 
 test("media playback - payment pointer inserted", () => {
   simulateClick(document.getElementsByTagName("span")[4], "click");
-  const paymentPointer = document.querySelector('[name="monetization"]');
 
-  expect(paymentPointer.content).toStrictEqual("payment-pointer");
+  jest.setTimeout(() => {
+    const paymentPointer = document.querySelector('[name="monetization"]');
+    expect(paymentPointer.content).toStrictEqual("payment-pointer");
+  }, "100")
+
 });
