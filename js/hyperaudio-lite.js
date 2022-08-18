@@ -123,7 +123,7 @@ class HyperaudioLite {
     const hashVar = windowHash.substring(1, windowHash.indexOf('='));
 
     if (hashVar === this.transcript.id) {
-      this.hashArray = windowHash.substr(this.transcript.id.length + 2).split(',');
+      this.hashArray = windowHash.substring(this.transcript.id.length + 2).split(',');
     } else {
       this.hashArray = [];
     }
