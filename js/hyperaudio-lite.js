@@ -3,8 +3,8 @@
 
 'use strict';
 
-function nativePlayer(playerElement, instance) {
-  this.player = playerElement;
+function nativePlayer(instance) {
+  this.player = instance.player;
   this.player.addEventListener('pause', instance.clearTimer, false);
   this.player.addEventListener('play', instance.checkPlayHead, false);
 
@@ -27,9 +27,8 @@ function nativePlayer(playerElement, instance) {
   }
 }
 
-function soundcloudPlayer(playerElement, instance) {
-  this.player = playerElement;
-  this.player = SC.Widget(this.player.id);
+function soundcloudPlayer(instance) {
+  this.player = SC.Widget(instance.player.id);
   this.player.bind(SC.Widget.Events.PAUSE, instance.clearTimer);
   this.player.bind(SC.Widget.Events.PLAY, instance.checkPlayHead);
 
@@ -54,8 +53,7 @@ function soundcloudPlayer(playerElement, instance) {
   }
 }
 
-function youtubePlayer(playerElement, instance) {
-  this.player = playerElement;
+function youtubePlayer(instance) {
   const tag = document.createElement('script');
   tag.id = 'iframe-demo';
   tag.src = 'https://www.youtube.com/iframe_api';
@@ -68,7 +66,7 @@ function youtubePlayer(playerElement, instance) {
       previousYTEvent();
     }
 
-    this.player = new YT.Player(this.player.id, {
+    this.player = new YT.Player(instance.player.id, {
       events: {
         onStateChange: onPlayerStateChange,
       },
@@ -110,8 +108,8 @@ const hyperaudioPlayerOptions = {
   "youtube": youtubePlayer
 }
 
-function hyperaudioPlayer(playerType, playerElement, instance) {
-  return new playerType(playerElement, instance)
+function hyperaudioPlayer(playerType, instance) {
+  return new playerType(instance);
 }
 
 class HyperaudioLite {
@@ -178,7 +176,7 @@ class HyperaudioLite {
       this.playerType = this.player.getAttribute('data-player-type');
     }
 
-    this.myPlayer = hyperaudioPlayer(hyperaudioPlayerOptions[this.playerType], this.player, this);
+    this.myPlayer = hyperaudioPlayer(hyperaudioPlayerOptions[this.playerType], this);
     this.parentElementIndex = 0;
     words[0].classList.add('active');
     this.parentElements[0].classList.add('active');
@@ -507,7 +505,7 @@ class HyperaudioLite {
 
     this.wordArr.forEach((word, i) => {
       let classList = word.n.classList;
-      
+
       if (i < index) {
         classList.add('read');
         classList.remove('unread');
