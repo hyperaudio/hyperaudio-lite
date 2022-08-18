@@ -5,7 +5,6 @@
 
 function nativePlayer(playerElement, instance) {
   this.player = playerElement;
-
   this.player.addEventListener('pause', instance.clearTimer, false);
   this.player.addEventListener('play', instance.checkPlayHead, false);
 
@@ -30,7 +29,6 @@ function nativePlayer(playerElement, instance) {
 
 function soundcloudPlayer(playerElement, instance) {
   this.player = playerElement;
-
   this.player = SC.Widget(this.player.id);
   this.player.bind(SC.Widget.Events.PAUSE, instance.clearTimer);
   this.player.bind(SC.Widget.Events.PLAY, instance.checkPlayHead);
@@ -57,9 +55,7 @@ function soundcloudPlayer(playerElement, instance) {
 }
 
 function youtubePlayer(playerElement, instance) {
-
   this.player = playerElement;
-
   const tag = document.createElement('script');
   tag.id = 'iframe-demo';
   tag.src = 'https://www.youtube.com/iframe_api';
@@ -68,7 +64,6 @@ function youtubePlayer(playerElement, instance) {
 
   const previousYTEvent = window.onYouTubeIframeAPIReady;
   window.onYouTubeIframeAPIReady = () => {
-
     if (typeof previousYTEvent !== 'undefined') { // used for multiple YouTube players
       previousYTEvent();
     }
@@ -126,7 +121,6 @@ class HyperaudioLite {
   }
 
   init = (mediaElementId, m, a, d, w) => {
-
     const windowHash = window.location.hash;
     const hashVar = windowHash.substring(1, windowHash.indexOf('='));
 
@@ -165,20 +159,15 @@ class HyperaudioLite {
 
     this.myPlayer = null;
 
-
     if (this.autoscroll === true) {
       this.scroller = window.Velocity || window.jQuery.Velocity;
     }
 
     //Create the array of timed elements (wordArr)
-
     const words = this.transcript.querySelectorAll('[data-m]');
-
     this.wordArr = this.createWordArray(words);
-
     this.parentTag = words[0].parentElement.tagName;
     this.parentElements = this.transcript.getElementsByTagName(this.parentTag);
-
     this.player = document.getElementById(mediaElementId);
 
     if (this.player.tagName == 'VIDEO' || this.player.tagName == 'AUDIO') {
@@ -189,14 +178,10 @@ class HyperaudioLite {
       this.playerType = this.player.getAttribute('data-player-type');
     }
 
-
-    this.myPlayer = hyperaudioPlayer(hyperaudioPlayerOptions[this.playerType], this.player, this)
-
+    this.myPlayer = hyperaudioPlayer(hyperaudioPlayerOptions[this.playerType], this.player, this);
     this.parentElementIndex = 0;
-
     words[0].classList.add('active');
     this.parentElements[0].classList.add('active');
-
     let playHeadEvent = 'click';
 
     if (this.doubleClick === true) {
@@ -222,7 +207,6 @@ class HyperaudioLite {
     this.end = this.hashArray[1];
 
     //TODO convert to binary search for below for quicker startup
-
     if (this.start && this.end) {
       for (let i = 1; i < words.length; i++) {
         const wordStart = parseInt(words[i].getAttribute('data-m')) / 1000;
@@ -297,7 +281,6 @@ class HyperaudioLite {
       }
 
       // 1 decimal place will do
-
       aNodeTime = Math.round(aNodeTime / 100) / 10;
       aNodeDuration = Math.round(aNodeDuration / 100) / 10;
       fNodeTime = Math.round(fNodeTime / 100) / 10;
@@ -328,7 +311,6 @@ class HyperaudioLite {
     this.highlightedText = false;
 
     // clear elements with class='active'
-
     let activeElements = Array.from(this.transcript.getElementsByClassName('active'));
 
     activeElements.forEach(e => {
@@ -350,7 +332,6 @@ class HyperaudioLite {
   };
 
   checkPlayHead = () => {
-
     this.clearTimer();
 
     (async (instance) => {
@@ -401,7 +382,6 @@ class HyperaudioLite {
       }
 
       newPara = true;
-
       this.parentElementIndex = currentParentElementIndex;
     }
     return(newPara);
@@ -409,7 +389,6 @@ class HyperaudioLite {
 
   checkStatus = () => {
     //check for end time of shared piece
-
     if (this.end && this.end < this.currentTime) {
       this.myPlayer.pause();
       this.end = null;
@@ -425,7 +404,6 @@ class HyperaudioLite {
       }
 
       //minimizedMode is still experimental - it changes document.title upon every new word
-
       if (this.minimizedMode) {
         const elements = transcript.querySelectorAll('[data-m]');
         let currentWord = '';
@@ -462,9 +440,7 @@ class HyperaudioLite {
 
     if (this.webMonetization === true) {
       //check for payment pointer
-
       let activeElements = this.transcript.getElementsByClassName('active');
-
       let paymentPointer = this.checkPaymentPointer(activeElements[activeElements.length - 1]);
 
       if (paymentPointer !== null) {
@@ -531,6 +507,7 @@ class HyperaudioLite {
 
     this.wordArr.forEach((word, i) => {
       let classList = word.n.classList;
+      
       if (i < index) {
         classList.add('read');
         classList.remove('unread');
@@ -544,7 +521,6 @@ class HyperaudioLite {
     this.parentElements = this.transcript.getElementsByTagName(this.parentTag);
 
     //remove active class from all paras
-
     Array.from(this.parentElements).forEach(el => {
       if (el.classList.contains('active')) {
         el.classList.remove('active');
@@ -552,7 +528,6 @@ class HyperaudioLite {
     });
 
     // set current word and para to active
-
     if (index > 0) {
       this.wordArr[index - 1].n.classList.add('active');
 
@@ -562,7 +537,6 @@ class HyperaudioLite {
     }
 
     // Establish current paragraph index
-
     let currentParentElementIndex;
 
     Array.from(this.parentElements).every((el, i) => {
