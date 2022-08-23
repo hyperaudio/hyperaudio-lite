@@ -387,7 +387,7 @@ class HyperaudioLite {
 
   checkStatus = () => {
     //check for end time of shared piece
-    if (this.end && this.end < this.currentTime) {
+    if (this.end && parseInt(this.end) < parseInt(this.currentTime)) {
       this.myPlayer.pause();
       this.end = null;
     } else {
