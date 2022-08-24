@@ -208,7 +208,7 @@ class HyperaudioLite {
     if (this.start && this.end) {
       for (let i = 1; i < words.length; i++) {
         const wordStart = parseInt(words[i].getAttribute('data-m')) / 1000;
-        if (wordStart > this.start && this.end > wordStart) {
+        if (wordStart > parseFloat(this.start) && parseFloat(this.end) > wordStart) {
           words[i].classList.add('share-match');
         }
       }
