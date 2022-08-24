@@ -157,6 +157,6 @@ test("media playback - payment pointer inserted", () => {
   jest.setTimeout(() => {
     const paymentPointer = document.querySelector('[name="monetization"]');
     expect(paymentPointer.content).toStrictEqual("payment-pointer");
-  }, "100")
+  }, 0)
 
 });
