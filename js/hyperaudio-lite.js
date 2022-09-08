@@ -268,18 +268,27 @@ class HyperaudioLite {
         fNode = fNode.previousElementSibling;
       }
 
+      // if the selection starts with a space we want the next element
+      if(selection.toString().charAt(0) == " ") {
+        aNode = aNode.nextElementSibling;
+      }
+
       let aNodeTime = parseInt(aNode.getAttribute('data-m'), 10);
       let aNodeDuration = parseInt(aNode.getAttribute('data-d'), 10);
       let fNodeTime;
       let fNodeDuration;
 
       if (fNode != null && fNode.getAttribute('data-m') != null) {
-        // if the selection ends in a space then we want the previous element
+        // if the selection ends in a space we want the previous element
         if(selection.toString().slice(-1) == " ") {
           fNode = fNode.previousElementSibling;
         }
+
         fNodeTime = parseInt(fNode.getAttribute('data-m'), 10);
         fNodeDuration = parseInt(fNode.getAttribute('data-d'), 10);
+
+        // if the selection starts with a space we want the next element
+
       }
 
       // 1 decimal place will do
