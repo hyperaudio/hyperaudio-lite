@@ -1,7 +1,7 @@
 /**
  * @jest-environment jsdom
  * 
- * Tests updated for version 2.1.7
+ * Tests updated for version 2.0.17
  */
 
 const { test } = require("@jest/globals");
