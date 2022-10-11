@@ -153,8 +153,9 @@ let minimizedMode = false;
 let autoScroll = true;
 let doubleClick = false;
 let webMonetization = false;
+let playOnClick = true;
 
-new HyperaudioLite("hypertranscript", "hyperplayer", minimizedMode, autoScroll, doubleClick, webMonetization);
+new HyperaudioLite("hypertranscript", "hyperplayer", minimizedMode, autoScroll, doubleClick, webMonetization, playOnClick);
 ```
 
 View the source code of [http://hyperaud.io/lab/halite/v28/](https://hyperaud.io/lab/halite/v28/) for a complete example.
