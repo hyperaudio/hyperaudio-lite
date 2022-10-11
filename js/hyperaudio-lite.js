@@ -1,5 +1,5 @@
 /*! (C) The Hyperaudio Project. MIT @license: en.wikipedia.org/wiki/MIT_License. */
-/*! Version 2.0.18 */
+/*! Version 2.0.19 */
 
 'use strict';
 
@@ -143,12 +143,12 @@ function hyperaudioPlayer(playerType, instance) {
 }
 
 class HyperaudioLite {
-  constructor(transcriptId, mediaElementId, minimizedMode, autoscroll, doubleClick, webMonetization) {
+  constructor(transcriptId, mediaElementId, minimizedMode, autoscroll, doubleClick, webMonetization, playOnClick) {
     this.transcript = document.getElementById(transcriptId);
-    this.init(mediaElementId, minimizedMode, autoscroll, doubleClick, webMonetization);
+    this.init(mediaElementId, minimizedMode, autoscroll, doubleClick, webMonetization, playOnClick);
   }
 
-  init = (mediaElementId, m, a, d, w) => {
+  init = (mediaElementId, minimizedMode, autoscroll, doubleClick, webMonetization, playOnClick) => {
     const windowHash = window.location.hash;
     const hashVar = windowHash.substring(1, windowHash.indexOf('='));
 
@@ -170,18 +170,19 @@ class HyperaudioLite {
       false,
     );
 
-    this.minimizedMode = m;
+    this.minimizedMode = minimizedMode;
     this.textShot = '';
     this.wordIndex = 0;
 
-    this.autoscroll = a;
+    this.autoscroll = autoscroll;
     this.scrollerContainer = this.transcript;
     this.scrollerOffset = 0;
     this.scrollerDuration = 800;
     this.scrollerDelay = 0;
 
-    this.doubleClick = d;
-    this.webMonetization = w;
+    this.doubleClick = doubleClick;
+    this.webMonetization = webMonetization;
+    this.playOnClick = playOnClick;
     this.highlightedText = false;
     this.start = null;
 
@@ -365,6 +366,9 @@ class HyperaudioLite {
     if (!isNaN(parseFloat(timeSecs))) {
       this.end = null;
       this.myPlayer.setTime(timeSecs);
+      if (this.playOnClick === true) {
+        this.myPlayer.play();
+      }
     }
   };
 
@@ -373,6 +377,7 @@ class HyperaudioLite {
   };
 
   checkPlayHead = () => {
+
     this.clearTimer();
 
     (async (instance) => {
@@ -383,6 +388,7 @@ class HyperaudioLite {
         instance.myPlayer.setTime(instance.currentTime);
         instance.highlightedText = false;
       }
+
       instance.checkStatus();
     })(this);
   }
