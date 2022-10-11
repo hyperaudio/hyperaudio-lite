@@ -216,8 +216,9 @@ let minimizedMode = false;
 let autoScroll = true;
 let doubleClick = false;
 let webMonetization = true;
+let playOnClick = true;
 
-new HyperaudioLite("hypertranscript", "hyperplayer", minimizedMode, autoScroll, doubleClick, webMonetization);
+new HyperaudioLite("hypertranscript", "hyperplayer", minimizedMode, autoScroll, doubleClick, webMonetization, playOnClick);
 ```
 
 If you then set the `data-wm` attributes in your transcript streaming will be switched to that payment pointer when encountered.
