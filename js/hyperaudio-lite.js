@@ -54,8 +54,6 @@ function soundcloudPlayer(instance) {
 }
 
 function videojsPlayer(instance) {
-  const tag = document.createElement('script');
-
   this.player = videojs.getPlayer(instance.player.id);
 
   this.getTime = () => {
@@ -78,12 +76,10 @@ function videojsPlayer(instance) {
 }
 
 function vimeoPlayer(instance) {
-  const tag = document.createElement('script');
-
   const iframe = document.querySelector('iframe');
-    this.player = new Vimeo.Player(iframe);
-    this.player.setCurrentTime(0)
-    this.player.ready().then(instance.checkPlayHead);
+  this.player = new Vimeo.Player(iframe);
+  this.player.setCurrentTime(0)
+  this.player.ready().then(instance.checkPlayHead);
 
   this.getTime = () => {
     return new Promise((resolve) => {
@@ -103,7 +99,6 @@ function vimeoPlayer(instance) {
     this.player.pause();
   }
 }
-
 
 function youtubePlayer(instance) {
   const tag = document.createElement('script');
