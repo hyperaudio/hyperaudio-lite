@@ -53,9 +53,32 @@ function soundcloudPlayer(instance) {
   }
 }
 
-function vimeoPlayer(instance) {
+function videojsPlayer(instance) {
   const tag = document.createElement('script');
 
+  this.player = videojs.getPlayer(instance.player.id);
+
+  this.getTime = () => {
+    return new Promise((resolve) => {
+      resolve(this.player.currentTime());
+    });
+  }
+
+  this.setTime = (seconds) => {
+    this.player.currentTime(seconds);
+  }
+
+  this.play = () => {
+    this.player.play();
+  }
+
+  this.pause = () => {
+    this.player.pause();
+  }
+}
+
+function vimeoPlayer(instance) {
+  const tag = document.createElement('script');
 
   const iframe = document.querySelector('iframe');
     this.player = new Vimeo.Player(iframe);
@@ -135,6 +158,7 @@ const hyperaudioPlayerOptions = {
   "native": nativePlayer,
   "soundcloud": soundcloudPlayer,
   "youtube": youtubePlayer,
+  "videojs": videojsPlayer,
   "vimeo": vimeoPlayer
 }
 
