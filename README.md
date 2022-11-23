@@ -12,13 +12,17 @@ You can use Hyperaudio Lite to provide Interactive Transcripts, this readme deta
 
 ## :tiger: Hyperaudio Lite in the Wild :tiger:
 
-As demonstrated here [https://hyperaud.io/lab/halite/v28/](https://hyperaud.io/lab/halite/v28/) plus equivalent [multiplayer version](https://hyperaud.io/lab/halite/v28/multiplayer.html)
+As demonstrated here [https://hyperaud.io/lab/halite/latest/](https://hyperaud.io/lab/halite/latest/) plus equivalent [multiplayer version](https://hyperaud.io/lab/halite/latest/multiplayer.html)
 
 Alternatively styled version [https://lab.hyperaud.io/mozfest2021/interviews/lance_weiler/](https://lab.hyperaud.io/mozfest2021/interviews/lance_weiler/)
 
-YouTube Integration [https://hyperaud.io/lab/halite/v28/youtube.html](https://hyperaud.io/lab/halite/v28/youtube.html)
+YouTube Integration [https://hyperaud.io/lab/halite/latest/youtube.html](https://hyperaud.io/lab/halite/latest/youtube.html)
 
-SoundCloud Integration [https://hyperaud.io/lab/halite/v28/soundcloud.html](https://hyperaud.io/lab/halite/v28/soundcloud.html)
+SoundCloud Integration [https://hyperaud.io/lab/halite/latest/soundcloud.html](https://hyperaud.io/lab/halite/latest/soundcloud.html)
+
+Vimeo Integration [https://hyperaud.io/lab/halite/latest/vimeo.html](https://hyperaud.io/lab/halite/latest/vimeo.html)
+
+VideoJS Integration [https://hyperaud.io/lab/halite/latest/videojs.html](https://hyperaud.io/lab/halite/latest/videojs.html)
 
 Vitorio's version [https://github.com/vitorio/hyperaudio-lite](https://github.com/vitorio/hyperaudio-lite)
 
@@ -158,9 +162,9 @@ let playOnClick = true;
 new HyperaudioLite("hypertranscript", "hyperplayer", minimizedMode, autoScroll, doubleClick, webMonetization, playOnClick);
 ```
 
-View the source code of [http://hyperaud.io/lab/halite/v28/](https://hyperaud.io/lab/halite/v28/) for a complete example.
+View the source code of [http://hyperaud.io/lab/halite/latest/](https://hyperaud.io/lab/halite/latest/) for a complete example.
 
-See a version with multiple players in a single page [http://hyperaud.io/lab/halite/v28/multiplayer.html](https://hyperaud.io/lab/halite/v28/multiplayer.html)
+See a version with multiple players in a single page [http://hyperaud.io/lab/halite/latest/multiplayer.html](https://hyperaud.io/lab/halite/latest/multiplayer.html)
 
 ## :tv: YouTube Support :tv:
 
@@ -205,7 +209,7 @@ You can get the snippet of code by visiting the page of the SoundCloud file you'
 
 ## :heart_eyes: Other Player Support :heart_eyes:
 
-We also now support Vimeo and VideoJS players. Please let us know if their are other types of players you wish us to support by creating an issue.
+We also now support [Vimeo] and VideoJS players. Please let us know if their are other types of players you wish us to support by creating an issue.
 
 
 ## :money_with_wings: Web Monetization Support :money_with_wings:
