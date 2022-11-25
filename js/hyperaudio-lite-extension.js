@@ -3,50 +3,36 @@
 'use strict';
 // Example wrapper for hyperaudio-lite with search and playbackRate included
 
-var searchForm = document.getElementById('searchForm');
+let searchForm = document.getElementById('searchForm');
 
 if (searchForm) {
-  if(searchForm.addEventListener){ //Modern browsers
-    searchForm.addEventListener('submit', function(event){
-      searchPhrase(document.getElementById('search').value);
-      event.preventDefault();
-    }, false);
-  }else if(searchForm.attachEvent){ //Old IE
-    searchForm.attachEvent('onsubmit', function(event){
-      searchPhrase(document.getElementById('search').value);
-      event.preventDefault();
-    });
-  }
+  searchForm.addEventListener('submit', function(event){
+    searchPhrase(document.getElementById('search').value);
+    event.preventDefault();
+  }, false);
 }
 
-var htmlWords, htmlWordsLen;
+const htmlWords = document.querySelectorAll('[data-m]');
+const htmlWordsLen = htmlWords.length;
 
-htmlWords = document.querySelectorAll('[data-m]');
-htmlWordsLen = htmlWords.length;
-
-var searchPhrase = function (phrase) {
-
-  var phraseWords = phrase.split(" ");
-  var phraseWordsLen = phraseWords.length;
-  var matchedTimes = [];
+let searchPhrase = function (phrase) {
+  let phraseWords = phrase.split(" ");
+  let phraseWordsLen = phraseWords.length;
+  let matchedTimes = [];
 
   // clear matched times
+  let searchMatched = document.querySelectorAll('.search-match');
 
-  var searchMatched = document.querySelectorAll('.search-match');
-  var searchMatchedLen = searchMatched.length;
+  searchMatched.forEach((match) => {
+    match.classList.remove('search-match');
+  });
 
-  for (var l = 0; l < searchMatchedLen; l++) {
-    searchMatched[l].classList.remove('search-match');
-  }
+  for (let i = 0; i < htmlWordsLen; i++) {
+    let numWordsMatched = 0;
+    let potentiallyMatched = [];
 
-  for (var i = 0; i < htmlWordsLen; i++) {
-
-    var numWordsMatched = 0;
-    var potentiallyMatched = [];
-
-    for (var j = 0; j < phraseWordsLen; j++) {
-
-      var wordIndex = i + numWordsMatched;
+    for (let j = 0; j < phraseWordsLen; j++) {
+      let wordIndex = i + numWordsMatched;
 
       if (wordIndex >= htmlWordsLen) {
         break;
@@ -62,7 +48,6 @@ var searchPhrase = function (phrase) {
       }
 
       // if the num of words matched equal the search phrase we have a winner!
-
       if (numWordsMatched >= phraseWordsLen) {
         matchedTimes = matchedTimes.concat(potentiallyMatched);
       }
@@ -70,25 +55,19 @@ var searchPhrase = function (phrase) {
   }
 
   // display
-  var matchedTimesLen = matchedTimes.length;
-
-  // only match the first word with that time (assuming times are unique)
-  for (var k = 0; k < matchedTimesLen; k++) {
-    document.querySelectorAll("[data-m='"+matchedTimes[k]+"']")[0].classList.add("search-match");
-  }
+  matchedTimes.forEach(matchedTime => {
+    document.querySelectorAll("[data-m='"+matchedTime+"']")[0].classList.add("search-match");
+  });
 }
 
 window.onload = function() {
+	const playbackRateCtrl = document.getElementById('pbr');
+	const currentPlaybackRate = document.getElementById('currentPbr');
 
-  // playbackRate listener
-	var p = document.getElementById('pbr');
-	var cp = document.getElementById('currentPbr');
-
-  if (p !== null) {
-    p.addEventListener('input', function(){
-      cp.innerHTML = p.value;
-      hyperplayer.playbackRate = p.value;
+  if (playbackRateCtrl !== null) {
+    playbackRateCtrl.addEventListener('input', function(){
+      currentPlaybackRate.innerHTML = playbackRateCtrl.value;
+      hyperplayer.playbackRate = playbackRateCtrl.value;
     },false);
   }
 }
-
