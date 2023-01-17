@@ -223,8 +223,8 @@ class HyperaudioLite {
     // Grab the media source and type from the first section if it exists
     // and add it to the media element.
 
-    const mediaSrc = this.transcript.querySelector('section').getAttribute('data-media-src');
-    const mediaType = this.transcript.querySelector('section').getAttribute('data-media-type');
+    const mediaSrc = this.transcript.querySelector('[data-media-src]').getAttribute('data-media-src');
+    const mediaType = this.transcript.querySelector('[data-media-type]').getAttribute('data-media-type');;
 
     if (mediaSrc !== null &&  mediaSrc !== undefined) {
       this.player.src = mediaSrc;
