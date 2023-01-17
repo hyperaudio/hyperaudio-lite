@@ -1,5 +1,5 @@
 /*! (C) The Hyperaudio Project. MIT @license: en.wikipedia.org/wiki/MIT_License. */
-/*! Version 2.0.20 */
+/*! Version 2.0.21 */
 
 'use strict';
 
@@ -168,6 +168,7 @@ class HyperaudioLite {
   }
 
   init = (mediaElementId, minimizedMode, autoscroll, doubleClick, webMonetization, playOnClick) => {
+
     const windowHash = window.location.hash;
     const hashVar = windowHash.substring(1, windowHash.indexOf('='));
 
@@ -212,11 +213,26 @@ class HyperaudioLite {
     }
 
     //Create the array of timed elements (wordArr)
+
     const words = this.transcript.querySelectorAll('[data-m]');
     this.wordArr = this.createWordArray(words);
     this.parentTag = words[0].parentElement.tagName;
     this.parentElements = this.transcript.getElementsByTagName(this.parentTag);
     this.player = document.getElementById(mediaElementId);
+
+    // Grab the media source and type from the first section if it exists
+    // and add it to the media element.
+
+    const mediaSrc = this.transcript.querySelector('section').getAttribute('data-media-src');
+    const mediaType = this.transcript.querySelector('section').getAttribute('data-media-type');
+
+    if (mediaSrc !== null &&  mediaSrc !== undefined) {
+      this.player.src = mediaSrc;
+    }
+
+    if (mediaType !== null &&  mediaType !== undefined) {
+      this.player.setAttribute('type', mediaType);
+    }
 
     if (this.player.tagName == 'VIDEO' || this.player.tagName == 'AUDIO') {
       //native HTML media elements
