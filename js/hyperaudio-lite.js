@@ -137,6 +137,7 @@ function youtubePlayer(instance) {
         onStateChange: onPlayerStateChange,
       },
     });
+    
   };
 
   let onPlayerStateChange = event => {
@@ -146,7 +147,7 @@ function youtubePlayer(instance) {
       this.paused = false;
     } else if (event.data === 2) {
       // paused
-      instance.pausePlayhead();
+      instance.pausePlayHead();
       this.paused = true;
     }
   };
@@ -420,12 +421,20 @@ class HyperaudioLite {
       e.classList.remove('active');
     });
 
+    console.log("target")
     console.log(target);
+    console.log(target.getAttribute('data-m'));
+    console.log(target.parentNode);
+    console.log(this.myPlayer.paused);
 
-    if (this.myPlayer.paused === true) {
+
+    if (this.myPlayer.paused === true && target.getAttribute('data-m') !== null) {
+      console.log("adding active class");
       target.classList.add('active');
+      console.log(target.parentNode);
       target.parentNode.classList.add('active');
     }
+
 
     const timeSecs = parseInt(target.getAttribute('data-m')) / 1000;
     this.updateTranscriptVisualState(timeSecs);
@@ -607,6 +616,7 @@ class HyperaudioLite {
       }, interval + 1); // +1 to avoid rounding issues (better to be over than under)
     } else {
       this.clearTimer();
+      //this.myPlayer.paused = true;
     }
   };
 
@@ -635,6 +645,7 @@ class HyperaudioLite {
   };
 
   updateTranscriptVisualState = (currentTime) => {
+    
     let index = 0;
     let words = this.wordArr.length - 1;
 
@@ -660,16 +671,19 @@ class HyperaudioLite {
 
     this.wordArr.forEach((word, i) => {
       let classList = word.n.classList;
+      let parentClassList = word.n.parentNode.classList;
 
       if (i < index) {
         classList.add('read');
         classList.remove('unread');
         classList.remove('active');
+        parentClassList.remove('active');
       } else {
         classList.add('unread');
         classList.remove('read');
       }
     });
+
 
     this.parentElements = this.transcript.getElementsByTagName(this.parentTag);
 
@@ -680,15 +694,21 @@ class HyperaudioLite {
       }
     });
 
+    console.log("#######@@@@@@@@@@@@");
+    console.log(index);
+    console.log(this.myPlayer.paused);
+
     // set current word and para to active
-    if (index > 0 &&  this.myPlayer.paused === false) {
-      this.wordArr[index - 1].n.classList.add('active');
-      //this.wordArr[index].n.classList.add('active');
+
+    if (index > 0) {
+      if (this.myPlayer.paused === false) {
+        this.wordArr[index - 1].n.classList.add('active');
+      }
 
       if (this.wordArr[index - 1].n.parentNode !== null) {
         this.wordArr[index - 1].n.parentNode.classList.add('active');
       }
-    }
+    } 
 
     // Establish current paragraph index
     let currentParentElementIndex;
