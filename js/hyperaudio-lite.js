@@ -223,15 +223,15 @@ class HyperaudioLite {
     // Grab the media source and type from the first section if it exists
     // and add it to the media element.
 
-    const mediaSrc = this.transcript.querySelector('[data-media-src]').getAttribute('data-media-src');
-    const mediaType = this.transcript.querySelector('[data-media-type]').getAttribute('data-media-type');;
+    const mediaSrc = this.transcript.querySelector('[data-media-src]');
+    const mediaType = this.transcript.querySelector('[data-media-type]');
 
     if (mediaSrc !== null &&  mediaSrc !== undefined) {
-      this.player.src = mediaSrc;
+      this.player.src = mediaSrc.getAttribute('data-media-src');
     }
 
     if (mediaType !== null &&  mediaType !== undefined) {
-      this.player.setAttribute('type', mediaType);
+      this.player.setAttribute('type', mediaType.getAttribute('data-media-type'));
     }
 
     if (this.player.tagName == 'VIDEO' || this.player.tagName == 'AUDIO') {
