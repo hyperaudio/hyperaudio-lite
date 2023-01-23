@@ -137,7 +137,6 @@ function youtubePlayer(instance) {
         onStateChange: onPlayerStateChange,
       },
     });
-    
   };
 
   let onPlayerStateChange = event => {
@@ -167,6 +166,7 @@ function youtubePlayer(instance) {
   }
 
   this.pause = () => {
+    console.log("pausing");
     this.player.pauseVideo();
   }
 }
