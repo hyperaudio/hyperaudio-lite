@@ -227,7 +227,6 @@ class HyperaudioLite {
     this.start = null;
 
     this.myPlayer = null;
-    this.previousCurrentTime = null;
     this.playerPaused = true;
 
     if (this.autoscroll === true) {
@@ -438,7 +437,6 @@ class HyperaudioLite {
   };
 
   preparePlayHead = () => {
-    this.previousCurrentTime = null;
     this.myPlayer.paused = false;
     this.checkPlayHead();
   }
