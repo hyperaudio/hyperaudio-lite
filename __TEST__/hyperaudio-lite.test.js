@@ -104,6 +104,7 @@ test("updateTranscriptVisualState", () => {
     currentParentElementIndex: 1,
   };
 
+  ht.myPlayer.paused = false;
   ht.currentTime = 8.106641;
 
   expect(ht.updateTranscriptVisualState(ht.currentTime)).toStrictEqual(expectedResult);
