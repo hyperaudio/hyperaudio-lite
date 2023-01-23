@@ -1,12 +1,13 @@
 /*! (C) The Hyperaudio Project. MIT @license: en.wikipedia.org/wiki/MIT_License. */
-/*! Version 2.0.21 */
+/*! Version 2.0.22 */
 
 'use strict';
 
 function nativePlayer(instance) {
   this.player = instance.player;
-  this.player.addEventListener('pause', instance.clearTimer, false);
-  this.player.addEventListener('play', instance.checkPlayHead, false);
+  this.player.addEventListener('pause', instance.pausePlayHead, false);
+  this.player.addEventListener('play', instance.preparePlayHead, false);
+  this.paused = true;
 
   this.getTime = () => {
     return new Promise((resolve) => {
@@ -19,18 +20,23 @@ function nativePlayer(instance) {
   }
 
   this.play = () => {
+    console.log("=========================================>>>>>>>>>>>>>>>>>>>>>>>>>>>");
     this.player.play();
+    console.log("PAUSED IS FALSE");
+    this.paused = false;
   }
 
   this.pause = () => {
     this.player.pause();
+    this.paused = true;
   }
+
 }
 
 function soundcloudPlayer(instance) {
   this.player = SC.Widget(instance.player.id);
-  this.player.bind(SC.Widget.Events.PAUSE, instance.clearTimer);
-  this.player.bind(SC.Widget.Events.PLAY, instance.checkPlayHead);
+  this.player.bind(SC.Widget.Events.PAUSE, instance.pausePlayHead);
+  this.player.bind(SC.Widget.Events.PLAY, instance.preparePlayHead);
 
   this.getTime = () => {
     return new Promise((resolve) => {
@@ -79,7 +85,7 @@ function vimeoPlayer(instance) {
   const iframe = document.querySelector('iframe');
   this.player = new Vimeo.Player(iframe);
   this.player.setCurrentTime(0)
-  this.player.ready().then(instance.checkPlayHead);
+  this.player.ready().then(instance.preparePlayHead);
 
   this.getTime = () => {
     return new Promise((resolve) => {
@@ -123,10 +129,10 @@ function youtubePlayer(instance) {
   let onPlayerStateChange = event => {
     if (event.data === 1) {
       // playing
-      instance.checkPlayHead();
+      instance.preparePlayHead();
     } else if (event.data === 2) {
       // paused
-      instance.clearTimer();
+      instance.pausePlayhead();
     }
   };
 
@@ -171,6 +177,7 @@ class HyperaudioLite {
 
     const windowHash = window.location.hash;
     const hashVar = windowHash.substring(1, windowHash.indexOf('='));
+    
 
     if (hashVar === this.transcript.id) {
       this.hashArray = windowHash.substring(this.transcript.id.length + 2).split(',');
@@ -207,6 +214,8 @@ class HyperaudioLite {
     this.start = null;
 
     this.myPlayer = null;
+    this.previousCurrentTime = null;
+    this.playerPaused = true;
 
     if (this.autoscroll === true) {
       this.scroller = window.Velocity || window.jQuery.Velocity;
@@ -224,7 +233,7 @@ class HyperaudioLite {
     // and add it to the media element.
 
     const mediaSrc = this.transcript.querySelector('[data-media-src]').getAttribute('data-media-src');
-    const mediaType = this.transcript.querySelector('[data-media-type]').getAttribute('data-media-type');;
+    const mediaType = this.transcript.querySelector('[data-media-type]').getAttribute('data-media-type');
 
     if (mediaSrc !== null &&  mediaSrc !== undefined) {
       this.player.src = mediaSrc;
@@ -245,7 +254,7 @@ class HyperaudioLite {
     this.myPlayer = hyperaudioPlayer(hyperaudioPlayerOptions[this.playerType], this);
     this.parentElementIndex = 0;
     words[0].classList.add('active');
-    this.parentElements[0].classList.add('active');
+    //this.parentElements[0].classList.add('active');
     let playHeadEvent = 'click';
 
     if (this.doubleClick === true) {
@@ -382,6 +391,8 @@ class HyperaudioLite {
   };
 
   setPlayHead = e => {
+    console.log("setPlayHead");
+    console.log(e.target);
     const target = e.target ? e.target : e.srcElement;
 
     // cancel highlight playback
@@ -394,9 +405,15 @@ class HyperaudioLite {
       e.classList.remove('active');
     });
 
-    target.classList.add('active');
+    console.log(target);
+
+    if (this.myPlayer.paused === true) {
+      target.classList.add('active');
+      target.parentNode.classList.add('active');
+    }
 
     const timeSecs = parseInt(target.getAttribute('data-m')) / 1000;
+    this.updateTranscriptVisualState(timeSecs);
 
     if (!isNaN(parseFloat(timeSecs))) {
       this.end = null;
@@ -411,7 +428,25 @@ class HyperaudioLite {
     if (this.timer) clearTimeout(this.timer);
   };
 
+  preparePlayHead = () => {
+    console.log("###############");
+    console.log("###############");
+    console.log("preparePlayHead");
+    console.log("###############");
+    console.log("###############");
+    this.previousCurrentTime = null;
+    this.myPlayer.paused = false;
+    this.checkPlayHead();
+  }
+
+  pausePlayHead = () => {
+    this.clearTimer();
+    this.myPlayer.paused = true;
+  }
+
   checkPlayHead = () => {
+
+    console.log("checkPlayHead");
 
     this.clearTimer();
 
@@ -423,8 +458,11 @@ class HyperaudioLite {
         instance.myPlayer.setTime(instance.currentTime);
         instance.highlightedText = false;
       }
-
+      // no need to check status if the currentTime hasn't changed
+      console.log("===========================");
+      
       instance.checkStatus();
+
     })(this);
   }
 
@@ -471,73 +509,89 @@ class HyperaudioLite {
 
   checkStatus = () => {
     //check for end time of shared piece
-    if (this.end && parseInt(this.end) < parseInt(this.currentTime)) {
-      this.myPlayer.pause();
-      this.end = null;
-    } else {
-      let newPara = false;
-      let interval = 0; // used to establish next checkPlayHead
+    console.log("checkStatus");
 
-      let indices = this.updateTranscriptVisualState(this.currentTime);
-      let index = indices.currentWordIndex;
+    let interval = 0;
 
-      if (index > 0) {
-        newPara = this.scrollToParagraph(indices.currentParentElementIndex, index);
-      }
+    console.log("Current = "+this.currentTime);
+    console.log("Previous = "+this.previousCurrentTime);
 
-      //minimizedMode is still experimental - it changes document.title upon every new word
-      if (this.minimizedMode) {
-        const elements = transcript.querySelectorAll('[data-m]');
-        let currentWord = '';
-        let lastWordIndex = this.wordIndex;
+    //if (this.previousCurrentTime !== this.currentTime) {
+      //this.previousCurrentTime = this.currentTime;
 
-        for (let i = 0; i < elements.length; i++) {
-          if ((' ' + elements[i].className + ' ').indexOf(' active ') > -1) {
-            currentWord = elements[i].innerHTML;
-            this.wordIndex = i;
+    console.log(this.myPlayer);  
+    console.log("this.myPlayer.paused = "+this.myPlayer.paused);
+
+    if (this.myPlayer.paused === false) {
+    
+      if (this.end && parseInt(this.end) < parseInt(this.currentTime)) {
+        this.myPlayer.pause();
+        this.end = null;
+      } else {
+        let newPara = false;
+        //interval = 0; // used to establish next checkPlayHead
+
+        let indices = this.updateTranscriptVisualState(this.currentTime);
+        let index = indices.currentWordIndex;
+
+        if (index > 0) {
+          newPara = this.scrollToParagraph(indices.currentParentElementIndex, index);
+        }
+
+        //minimizedMode is still experimental - it changes document.title upon every new word
+        if (this.minimizedMode) {
+          const elements = transcript.querySelectorAll('[data-m]');
+          let currentWord = '';
+          let lastWordIndex = this.wordIndex;
+
+          for (let i = 0; i < elements.length; i++) {
+            if ((' ' + elements[i].className + ' ').indexOf(' active ') > -1) {
+              currentWord = elements[i].innerHTML;
+              this.wordIndex = i;
+            }
+          }
+
+          let textShot = '';
+
+          if (this.wordIndex != lastWordIndex) {
+            textShot = textShot + currentWord;
+          }
+
+          if (textShot.length > 16 || newPara === true) {
+            document.title = textShot;
+            textShot = '';
+            newPara = false;
           }
         }
 
-        let textShot = '';
-
-        if (this.wordIndex != lastWordIndex) {
-          textShot = textShot + currentWord;
-        }
-
-        if (textShot.length > 16 || newPara === true) {
-          document.title = textShot;
-          textShot = '';
-          newPara = false;
+        if (this.wordArr[index]) {
+          interval = parseInt(this.wordArr[index].n.getAttribute('data-m') - this.currentTime * 1000);
         }
       }
-
-      if (this.wordArr[index]) {
-        interval = parseInt(this.wordArr[index].n.getAttribute('data-m') - this.currentTime * 1000);
+      if (this.webMonetization === true) {
+        //check for payment pointer
+        let activeElements = this.transcript.getElementsByClassName('active');
+        let paymentPointer = this.checkPaymentPointer(activeElements[activeElements.length - 1]);
+  
+        if (paymentPointer !== null) {
+          let metaElements = document.getElementsByTagName('meta');
+          let wmMeta = document.querySelector("meta[name='monetization']");
+          if (wmMeta === null) {
+            wmMeta = document.createElement('meta');
+            wmMeta.name = 'monetization';
+            wmMeta.content = paymentPointer;
+            document.getElementsByTagName('head')[0].appendChild(wmMeta);
+          } else {
+            wmMeta.name = 'monetization';
+            wmMeta.content = paymentPointer;
+          }
+        }
       }
-
       this.timer = setTimeout(() => {
         this.checkPlayHead();
       }, interval + 1); // +1 to avoid rounding issues (better to be over than under)
-    }
-
-    if (this.webMonetization === true) {
-      //check for payment pointer
-      let activeElements = this.transcript.getElementsByClassName('active');
-      let paymentPointer = this.checkPaymentPointer(activeElements[activeElements.length - 1]);
-
-      if (paymentPointer !== null) {
-        let metaElements = document.getElementsByTagName('meta');
-        let wmMeta = document.querySelector("meta[name='monetization']");
-        if (wmMeta === null) {
-          wmMeta = document.createElement('meta');
-          wmMeta.name = 'monetization';
-          wmMeta.content = paymentPointer;
-          document.getElementsByTagName('head')[0].appendChild(wmMeta);
-        } else {
-          wmMeta.name = 'monetization';
-          wmMeta.content = paymentPointer;
-        }
-      }
+    } else {
+      this.clearTimer();
     }
   };
 
@@ -568,6 +622,8 @@ class HyperaudioLite {
   updateTranscriptVisualState = (currentTime) => {
     let index = 0;
     let words = this.wordArr.length - 1;
+
+    console.log("updating visual state");
 
     // Binary search https://en.wikipedia.org/wiki/Binary_search_algorithm
     while (index <= words) {
@@ -610,8 +666,9 @@ class HyperaudioLite {
     });
 
     // set current word and para to active
-    if (index > 0) {
+    if (index > 0 &&  this.myPlayer.paused === false) {
       this.wordArr[index - 1].n.classList.add('active');
+      //this.wordArr[index].n.classList.add('active');
 
       if (this.wordArr[index - 1].n.parentNode !== null) {
         this.wordArr[index - 1].n.parentNode.classList.add('active');
