@@ -20,9 +20,7 @@ function nativePlayer(instance) {
   }
 
   this.play = () => {
-    console.log("=========================================>>>>>>>>>>>>>>>>>>>>>>>>>>>");
     this.player.play();
-    console.log("PAUSED IS FALSE");
     this.paused = false;
   }
 
@@ -166,7 +164,6 @@ function youtubePlayer(instance) {
   }
 
   this.pause = () => {
-    console.log("pausing");
     this.player.pauseVideo();
   }
 }
@@ -407,8 +404,6 @@ class HyperaudioLite {
   };
 
   setPlayHead = e => {
-    console.log("setPlayHead");
-    console.log(e.target);
     const target = e.target ? e.target : e.srcElement;
 
     // cancel highlight playback
@@ -421,20 +416,10 @@ class HyperaudioLite {
       e.classList.remove('active');
     });
 
-    console.log("target")
-    console.log(target);
-    console.log(target.getAttribute('data-m'));
-    console.log(target.parentNode);
-    console.log(this.myPlayer.paused);
-
-
     if (this.myPlayer.paused === true && target.getAttribute('data-m') !== null) {
-      console.log("adding active class");
       target.classList.add('active');
-      console.log(target.parentNode);
       target.parentNode.classList.add('active');
     }
-
 
     const timeSecs = parseInt(target.getAttribute('data-m')) / 1000;
     this.updateTranscriptVisualState(timeSecs);
@@ -453,11 +438,6 @@ class HyperaudioLite {
   };
 
   preparePlayHead = () => {
-    console.log("###############");
-    console.log("###############");
-    console.log("preparePlayHead");
-    console.log("###############");
-    console.log("###############");
     this.previousCurrentTime = null;
     this.myPlayer.paused = false;
     this.checkPlayHead();
@@ -470,8 +450,6 @@ class HyperaudioLite {
 
   checkPlayHead = () => {
 
-    console.log("checkPlayHead");
-
     this.clearTimer();
 
     (async (instance) => {
@@ -483,7 +461,6 @@ class HyperaudioLite {
         instance.highlightedText = false;
       }
       // no need to check status if the currentTime hasn't changed
-      console.log("===========================");
       
       instance.checkStatus();
 
@@ -533,18 +510,8 @@ class HyperaudioLite {
 
   checkStatus = () => {
     //check for end time of shared piece
-    console.log("checkStatus");
 
     let interval = 0;
-
-    console.log("Current = "+this.currentTime);
-    console.log("Previous = "+this.previousCurrentTime);
-
-    //if (this.previousCurrentTime !== this.currentTime) {
-      //this.previousCurrentTime = this.currentTime;
-
-    console.log(this.myPlayer);  
-    console.log("this.myPlayer.paused = "+this.myPlayer.paused);
 
     if (this.myPlayer.paused === false) {
     
@@ -616,7 +583,6 @@ class HyperaudioLite {
       }, interval + 1); // +1 to avoid rounding issues (better to be over than under)
     } else {
       this.clearTimer();
-      //this.myPlayer.paused = true;
     }
   };
 
@@ -648,8 +614,6 @@ class HyperaudioLite {
     
     let index = 0;
     let words = this.wordArr.length - 1;
-
-    console.log("updating visual state");
 
     // Binary search https://en.wikipedia.org/wiki/Binary_search_algorithm
     while (index <= words) {
@@ -693,10 +657,6 @@ class HyperaudioLite {
         el.classList.remove('active');
       }
     });
-
-    console.log("#######@@@@@@@@@@@@");
-    console.log(index);
-    console.log(this.myPlayer.paused);
 
     // set current word and para to active
 
