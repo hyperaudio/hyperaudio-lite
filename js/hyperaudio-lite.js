@@ -30,13 +30,13 @@ function nativePlayer(instance) {
     this.player.pause();
     this.paused = true;
   }
-
 }
 
 function soundcloudPlayer(instance) {
   this.player = SC.Widget(instance.player.id);
   this.player.bind(SC.Widget.Events.PAUSE, instance.pausePlayHead);
   this.player.bind(SC.Widget.Events.PLAY, instance.preparePlayHead);
+  this.paused = true;
 
   this.getTime = () => {
     return new Promise((resolve) => {
@@ -52,15 +52,20 @@ function soundcloudPlayer(instance) {
 
   this.play = () => {
     this.player.play();
+    this.paused = false;
   }
 
   this.pause = () => {
     this.player.pause();
+    this.paused = true;
   }
 }
 
 function videojsPlayer(instance) {
   this.player = videojs.getPlayer(instance.player.id);
+  this.player.addEventListener('pause', instance.pausePlayHead, false);
+  this.player.addEventListener('play', instance.preparePlayHead, false);
+  this.paused = true;
 
   this.getTime = () => {
     return new Promise((resolve) => {
@@ -74,18 +79,23 @@ function videojsPlayer(instance) {
 
   this.play = () => {
     this.player.play();
+    this.paused = false;
   }
 
   this.pause = () => {
     this.player.pause();
+    this.paused = true;
   }
 }
 
 function vimeoPlayer(instance) {
   const iframe = document.querySelector('iframe');
   this.player = new Vimeo.Player(iframe);
-  this.player.setCurrentTime(0)
-  this.player.ready().then(instance.preparePlayHead);
+  this.player.setCurrentTime(0);
+  this.paused = true;
+  this.player.ready().then(instance.checkPlayHead);
+  this.player.on('play',instance.preparePlayHead);
+  this.player.on('pause',instance.pausePlayHead);
 
   this.getTime = () => {
     return new Promise((resolve) => {
@@ -99,10 +109,12 @@ function vimeoPlayer(instance) {
 
   this.play = () => {
     this.player.play();
+    this.paused = false;
   }
 
   this.pause = () => {
     this.player.pause();
+    this.paused = true;
   }
 }
 
@@ -112,6 +124,7 @@ function youtubePlayer(instance) {
   tag.src = 'https://www.youtube.com/iframe_api';
   const firstScriptTag = document.getElementsByTagName('script')[0];
   firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+  this.paused = true;
 
   const previousYTEvent = window.onYouTubeIframeAPIReady;
   window.onYouTubeIframeAPIReady = () => {
@@ -130,9 +143,11 @@ function youtubePlayer(instance) {
     if (event.data === 1) {
       // playing
       instance.preparePlayHead();
+      this.paused = false;
     } else if (event.data === 2) {
       // paused
       instance.pausePlayhead();
+      this.paused = true;
     }
   };
 
