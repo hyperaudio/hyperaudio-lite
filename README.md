@@ -12,17 +12,17 @@ You can use Hyperaudio Lite to provide Interactive Transcripts, this readme deta
 
 ## :tiger: Hyperaudio Lite in the Wild :tiger:
 
-As demonstrated here [https://hyperaud.io/lab/halite/latest/](https://hyperaud.io/lab/halite/latest/) plus equivalent [multiplayer version](https://hyperaud.io/lab/halite/latest/multiplayer.html)
+As demonstrated here [https://hyperaudio.github.io/hyperaudio-lite/](https://hyperaudio.github.io/hyperaudio-lite/) plus equivalent [multiplayer version](https://hyperaudio.github.io/hyperaudio-lite/multiplayer.html)
 
 Alternatively styled version [https://lab.hyperaud.io/mozfest2021/interviews/lance_weiler/](https://lab.hyperaud.io/mozfest2021/interviews/lance_weiler/)
 
-YouTube Integration [https://hyperaud.io/lab/halite/latest/youtube.html](https://hyperaud.io/lab/halite/latest/youtube.html)
+YouTube Integration [https://hyperaudio.github.io/hyperaudio-lite/youtube.html](https://hyperaudio.github.io/hyperaudio-lite/youtube.html)
 
-SoundCloud Integration [https://hyperaud.io/lab/halite/latest/soundcloud.html](https://hyperaud.io/lab/halite/latest/soundcloud.html)
+SoundCloud Integration [https://hyperaudio.github.io/hyperaudio-lite/soundcloud.html](https://hyperaudio.github.io/hyperaudio-lite/oundcloud.html)
 
-Vimeo Integration [https://hyperaud.io/lab/halite/latest/vimeo.html](https://hyperaud.io/lab/halite/latest/vimeo.html)
+Vimeo Integration [https://hyperaudio.github.io/hyperaudio-lite/vimeo.html](https://hyperaudio.github.io/hyperaudio-lite/vimeo.html)
 
-VideoJS Integration [https://hyperaud.io/lab/halite/latest/videojs.html](https://hyperaud.io/lab/halite/latest/videojs.html)
+VideoJS Integration [https://hyperaudio.github.io/hyperaudio-lite/videojs.html](https://hyperaudio.github.io/hyperaudio-lite/videojs.html)
 
 Vitorio's version [https://github.com/vitorio/hyperaudio-lite](https://github.com/vitorio/hyperaudio-lite)
 
@@ -97,7 +97,9 @@ We can see that a Hypertranscript is really just HTML, this helps keep it:
 
 ### How to make a Hypertranscript
 
-One way is to use the [Hyperaudio Converter](https://hyperaud.io/converter/)
+The best way is to use the [Hyperaudio Lite Editor](https://hyperaudio.github.io/hyperaudio-lite-editor/).
+
+Another way is to use the [Hyperaudio Converter](https://hyperaud.io/converter/)
 
 This currently takes 4 possible inputs:
 
@@ -162,9 +164,9 @@ let playOnClick = true;
 new HyperaudioLite("hypertranscript", "hyperplayer", minimizedMode, autoScroll, doubleClick, webMonetization, playOnClick);
 ```
 
-View the source code of [http://hyperaud.io/lab/halite/latest/](https://hyperaud.io/lab/halite/latest/) for a complete example.
+View the source code of [https://hyperaudio.github.io/hyperaudio-lite/](https://hyperaudio.github.io/hyperaudio-lite/) for a complete example.
 
-See a version with multiple players in a single page [http://hyperaud.io/lab/halite/latest/multiplayer.html](https://hyperaud.io/lab/halite/latest/multiplayer.html)
+See a version with multiple players in a single page [https://hyperaudio.github.io/hyperaudio-lite/multiplayer.html](https://hyperaudio.github.io/hyperaudio-lite/multiplayer.html)
 
 ## :tv: YouTube Support :tv:
 
