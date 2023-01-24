@@ -1,12 +1,13 @@
 /*! (C) The Hyperaudio Project. MIT @license: en.wikipedia.org/wiki/MIT_License. */
-/*! Version 2.0.21b */
+/*! Version 2.0.22 */
 
 'use strict';
 
 function nativePlayer(instance) {
   this.player = instance.player;
-  this.player.addEventListener('pause', instance.clearTimer, false);
-  this.player.addEventListener('play', instance.checkPlayHead, false);
+  this.player.addEventListener('pause', instance.pausePlayHead, false);
+  this.player.addEventListener('play', instance.preparePlayHead, false);
+  this.paused = true;
 
   this.getTime = () => {
     return new Promise((resolve) => {
@@ -20,17 +21,20 @@ function nativePlayer(instance) {
 
   this.play = () => {
     this.player.play();
+    this.paused = false;
   }
 
   this.pause = () => {
     this.player.pause();
+    this.paused = true;
   }
 }
 
 function soundcloudPlayer(instance) {
   this.player = SC.Widget(instance.player.id);
-  this.player.bind(SC.Widget.Events.PAUSE, instance.clearTimer);
-  this.player.bind(SC.Widget.Events.PLAY, instance.checkPlayHead);
+  this.player.bind(SC.Widget.Events.PAUSE, instance.pausePlayHead);
+  this.player.bind(SC.Widget.Events.PLAY, instance.preparePlayHead);
+  this.paused = true;
 
   this.getTime = () => {
     return new Promise((resolve) => {
@@ -46,15 +50,20 @@ function soundcloudPlayer(instance) {
 
   this.play = () => {
     this.player.play();
+    this.paused = false;
   }
 
   this.pause = () => {
     this.player.pause();
+    this.paused = true;
   }
 }
 
 function videojsPlayer(instance) {
   this.player = videojs.getPlayer(instance.player.id);
+  this.player.addEventListener('pause', instance.pausePlayHead, false);
+  this.player.addEventListener('play', instance.preparePlayHead, false);
+  this.paused = true;
 
   this.getTime = () => {
     return new Promise((resolve) => {
@@ -68,18 +77,23 @@ function videojsPlayer(instance) {
 
   this.play = () => {
     this.player.play();
+    this.paused = false;
   }
 
   this.pause = () => {
     this.player.pause();
+    this.paused = true;
   }
 }
 
 function vimeoPlayer(instance) {
   const iframe = document.querySelector('iframe');
   this.player = new Vimeo.Player(iframe);
-  this.player.setCurrentTime(0)
+  this.player.setCurrentTime(0);
+  this.paused = true;
   this.player.ready().then(instance.checkPlayHead);
+  this.player.on('play',instance.preparePlayHead);
+  this.player.on('pause',instance.pausePlayHead);
 
   this.getTime = () => {
     return new Promise((resolve) => {
@@ -93,10 +107,12 @@ function vimeoPlayer(instance) {
 
   this.play = () => {
     this.player.play();
+    this.paused = false;
   }
 
   this.pause = () => {
     this.player.pause();
+    this.paused = true;
   }
 }
 
@@ -106,6 +122,7 @@ function youtubePlayer(instance) {
   tag.src = 'https://www.youtube.com/iframe_api';
   const firstScriptTag = document.getElementsByTagName('script')[0];
   firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+  this.paused = true;
 
   const previousYTEvent = window.onYouTubeIframeAPIReady;
   window.onYouTubeIframeAPIReady = () => {
@@ -123,10 +140,12 @@ function youtubePlayer(instance) {
   let onPlayerStateChange = event => {
     if (event.data === 1) {
       // playing
-      instance.checkPlayHead();
+      instance.preparePlayHead();
+      this.paused = false;
     } else if (event.data === 2) {
       // paused
-      instance.clearTimer();
+      instance.pausePlayHead();
+      this.paused = true;
     }
   };
 
@@ -171,6 +190,7 @@ class HyperaudioLite {
 
     const windowHash = window.location.hash;
     const hashVar = windowHash.substring(1, windowHash.indexOf('='));
+    
 
     if (hashVar === this.transcript.id) {
       this.hashArray = windowHash.substring(this.transcript.id.length + 2).split(',');
@@ -207,6 +227,7 @@ class HyperaudioLite {
     this.start = null;
 
     this.myPlayer = null;
+    this.playerPaused = true;
 
     if (this.autoscroll === true) {
       this.scroller = window.Velocity || window.jQuery.Velocity;
@@ -223,10 +244,10 @@ class HyperaudioLite {
     // Grab the media source and type from the first section if it exists
     // and add it to the media element.
 
-    const mediaSrc = this.transcript.querySelector('[data-media-src]').getAttribute('data-media-src');
+    const mediaSrc = this.transcript.querySelector('[data-media-src]');
 
     if (mediaSrc !== null &&  mediaSrc !== undefined) {
-      this.player.setAttribute('src', mediaSrc);
+      this.player.src = mediaSrc.getAttribute('data-media-src');
     }
 
     if (this.player.tagName == 'VIDEO' || this.player.tagName == 'AUDIO') {
@@ -240,7 +261,7 @@ class HyperaudioLite {
     this.myPlayer = hyperaudioPlayer(hyperaudioPlayerOptions[this.playerType], this);
     this.parentElementIndex = 0;
     words[0].classList.add('active');
-    this.parentElements[0].classList.add('active');
+    //this.parentElements[0].classList.add('active');
     let playHeadEvent = 'click';
 
     if (this.doubleClick === true) {
@@ -389,9 +410,13 @@ class HyperaudioLite {
       e.classList.remove('active');
     });
 
-    target.classList.add('active');
+    if (this.myPlayer.paused === true && target.getAttribute('data-m') !== null) {
+      target.classList.add('active');
+      target.parentNode.classList.add('active');
+    }
 
     const timeSecs = parseInt(target.getAttribute('data-m')) / 1000;
+    this.updateTranscriptVisualState(timeSecs);
 
     if (!isNaN(parseFloat(timeSecs))) {
       this.end = null;
@@ -406,6 +431,16 @@ class HyperaudioLite {
     if (this.timer) clearTimeout(this.timer);
   };
 
+  preparePlayHead = () => {
+    this.myPlayer.paused = false;
+    this.checkPlayHead();
+  }
+
+  pausePlayHead = () => {
+    this.clearTimer();
+    this.myPlayer.paused = true;
+  }
+
   checkPlayHead = () => {
 
     this.clearTimer();
@@ -418,8 +453,10 @@ class HyperaudioLite {
         instance.myPlayer.setTime(instance.currentTime);
         instance.highlightedText = false;
       }
-
+      // no need to check status if the currentTime hasn't changed
+      
       instance.checkStatus();
+
     })(this);
   }
 
@@ -466,73 +503,79 @@ class HyperaudioLite {
 
   checkStatus = () => {
     //check for end time of shared piece
-    if (this.end && parseInt(this.end) < parseInt(this.currentTime)) {
-      this.myPlayer.pause();
-      this.end = null;
-    } else {
-      let newPara = false;
-      let interval = 0; // used to establish next checkPlayHead
 
-      let indices = this.updateTranscriptVisualState(this.currentTime);
-      let index = indices.currentWordIndex;
+    let interval = 0;
 
-      if (index > 0) {
-        newPara = this.scrollToParagraph(indices.currentParentElementIndex, index);
-      }
+    if (this.myPlayer.paused === false) {
+    
+      if (this.end && parseInt(this.end) < parseInt(this.currentTime)) {
+        this.myPlayer.pause();
+        this.end = null;
+      } else {
+        let newPara = false;
+        //interval = 0; // used to establish next checkPlayHead
 
-      //minimizedMode is still experimental - it changes document.title upon every new word
-      if (this.minimizedMode) {
-        const elements = transcript.querySelectorAll('[data-m]');
-        let currentWord = '';
-        let lastWordIndex = this.wordIndex;
+        let indices = this.updateTranscriptVisualState(this.currentTime);
+        let index = indices.currentWordIndex;
 
-        for (let i = 0; i < elements.length; i++) {
-          if ((' ' + elements[i].className + ' ').indexOf(' active ') > -1) {
-            currentWord = elements[i].innerHTML;
-            this.wordIndex = i;
+        if (index > 0) {
+          newPara = this.scrollToParagraph(indices.currentParentElementIndex, index);
+        }
+
+        //minimizedMode is still experimental - it changes document.title upon every new word
+        if (this.minimizedMode) {
+          const elements = transcript.querySelectorAll('[data-m]');
+          let currentWord = '';
+          let lastWordIndex = this.wordIndex;
+
+          for (let i = 0; i < elements.length; i++) {
+            if ((' ' + elements[i].className + ' ').indexOf(' active ') > -1) {
+              currentWord = elements[i].innerHTML;
+              this.wordIndex = i;
+            }
+          }
+
+          let textShot = '';
+
+          if (this.wordIndex != lastWordIndex) {
+            textShot = textShot + currentWord;
+          }
+
+          if (textShot.length > 16 || newPara === true) {
+            document.title = textShot;
+            textShot = '';
+            newPara = false;
           }
         }
 
-        let textShot = '';
-
-        if (this.wordIndex != lastWordIndex) {
-          textShot = textShot + currentWord;
-        }
-
-        if (textShot.length > 16 || newPara === true) {
-          document.title = textShot;
-          textShot = '';
-          newPara = false;
+        if (this.wordArr[index]) {
+          interval = parseInt(this.wordArr[index].n.getAttribute('data-m') - this.currentTime * 1000);
         }
       }
-
-      if (this.wordArr[index]) {
-        interval = parseInt(this.wordArr[index].n.getAttribute('data-m') - this.currentTime * 1000);
+      if (this.webMonetization === true) {
+        //check for payment pointer
+        let activeElements = this.transcript.getElementsByClassName('active');
+        let paymentPointer = this.checkPaymentPointer(activeElements[activeElements.length - 1]);
+  
+        if (paymentPointer !== null) {
+          let metaElements = document.getElementsByTagName('meta');
+          let wmMeta = document.querySelector("meta[name='monetization']");
+          if (wmMeta === null) {
+            wmMeta = document.createElement('meta');
+            wmMeta.name = 'monetization';
+            wmMeta.content = paymentPointer;
+            document.getElementsByTagName('head')[0].appendChild(wmMeta);
+          } else {
+            wmMeta.name = 'monetization';
+            wmMeta.content = paymentPointer;
+          }
+        }
       }
-
       this.timer = setTimeout(() => {
         this.checkPlayHead();
       }, interval + 1); // +1 to avoid rounding issues (better to be over than under)
-    }
-
-    if (this.webMonetization === true) {
-      //check for payment pointer
-      let activeElements = this.transcript.getElementsByClassName('active');
-      let paymentPointer = this.checkPaymentPointer(activeElements[activeElements.length - 1]);
-
-      if (paymentPointer !== null) {
-        let metaElements = document.getElementsByTagName('meta');
-        let wmMeta = document.querySelector("meta[name='monetization']");
-        if (wmMeta === null) {
-          wmMeta = document.createElement('meta');
-          wmMeta.name = 'monetization';
-          wmMeta.content = paymentPointer;
-          document.getElementsByTagName('head')[0].appendChild(wmMeta);
-        } else {
-          wmMeta.name = 'monetization';
-          wmMeta.content = paymentPointer;
-        }
-      }
+    } else {
+      this.clearTimer();
     }
   };
 
@@ -561,6 +604,7 @@ class HyperaudioLite {
   };
 
   updateTranscriptVisualState = (currentTime) => {
+    
     let index = 0;
     let words = this.wordArr.length - 1;
 
@@ -584,16 +628,19 @@ class HyperaudioLite {
 
     this.wordArr.forEach((word, i) => {
       let classList = word.n.classList;
+      let parentClassList = word.n.parentNode.classList;
 
       if (i < index) {
         classList.add('read');
         classList.remove('unread');
         classList.remove('active');
+        parentClassList.remove('active');
       } else {
         classList.add('unread');
         classList.remove('read');
       }
     });
+
 
     this.parentElements = this.transcript.getElementsByTagName(this.parentTag);
 
@@ -605,13 +652,16 @@ class HyperaudioLite {
     });
 
     // set current word and para to active
+
     if (index > 0) {
-      this.wordArr[index - 1].n.classList.add('active');
+      if (this.myPlayer.paused === false) {
+        this.wordArr[index - 1].n.classList.add('active');
+      }
 
       if (this.wordArr[index - 1].n.parentNode !== null) {
         this.wordArr[index - 1].n.parentNode.classList.add('active');
       }
-    }
+    } 
 
     // Establish current paragraph index
     let currentParentElementIndex;

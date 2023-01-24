@@ -1,7 +1,7 @@
 /**
  * @jest-environment jsdom
  * 
- * Tests updated for version 2.0.21
+ * Tests updated for version 2.0.22
  */
 
 const { test } = require("@jest/globals");
@@ -50,9 +50,9 @@ document.body.innerHTML =
   '<audio id="hyperplayer" class="hyperaudio-player" src="" type=""></audio>' +
   '<div id="hypertranscript" class="hyperaudio-transcript">' +
   "<article>" +
-  '<section data-media-src="test.mp3" data-media-type="audio/mp3">' +
+  '<section data-media-src="test.mp3">' +
   '<p id="p1" data-wm="payment-pointer"><span class="read" data-m="880" data-d="539">test </span><span class="read" data-m="2560" data-d="459">one </span><span class="read" data-m="3240" data-d="370">two </span><span class="read" data-m="3950" data-d="410">three </span><span class="read" data-m="4750" data-d="459">four </span></p>' +
-  '<p class="active"><span class="read" data-m="6580" data-d="530">test </span><span class="read active" data-m="8099" data-d="439">five </span><span class="unread" data-m="8740" data-d="509">six </span><span class="unread" data-m="9469" data-d="540">seven </span><span class="unread" data-m="10280" data-d="330">eight </span></p>' +
+  '<p><span class="read" data-m="6580" data-d="530">test </span><span class="read" data-m="8099" data-d="439">five </span><span class="unread" data-m="8740" data-d="509">six </span><span class="unread" data-m="9469" data-d="540">seven </span><span class="unread" data-m="10280" data-d="330">eight </span></p>' +
   "</section>" +
   "</article>" +
   "<div>";
@@ -104,6 +104,7 @@ test("updateTranscriptVisualState", () => {
     currentParentElementIndex: 1,
   };
 
+  ht.myPlayer.paused = false;
   ht.currentTime = 8.106641;
 
   expect(ht.updateTranscriptVisualState(ht.currentTime)).toStrictEqual(expectedResult);
@@ -165,4 +166,14 @@ test("instantiation - webMonetization true", () => {
 test("transcript - media source insertion from section", () => {
   const src = document.querySelector('#hyperplayer').src;
   expect(src).toMatch(/test.mp3$/);
+});
+
+test("transcript - check that active is set on word", () => {
+  simulateClick(document.getElementsByTagName("span")[4], "dblclick");
+  expect(document.querySelector('span.active')).toBe(document.getElementsByTagName("span")[4]);
+});
+
+test("transcript - check that active is set on paragraph", () => {
+  simulateClick(document.getElementsByTagName("span")[4], "dblclick");
+  expect(document.querySelector('p.active')).toBe(document.getElementsByTagName('p')[0]);
 });
