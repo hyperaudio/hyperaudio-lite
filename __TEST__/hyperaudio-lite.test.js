@@ -52,7 +52,7 @@ document.body.innerHTML =
   "<article>" +
   '<section data-media-src="test.mp3" data-media-type="audio/mp3">' +
   '<p id="p1" data-wm="payment-pointer"><span class="read" data-m="880" data-d="539">test </span><span class="read" data-m="2560" data-d="459">one </span><span class="read" data-m="3240" data-d="370">two </span><span class="read" data-m="3950" data-d="410">three </span><span class="read" data-m="4750" data-d="459">four </span></p>' +
-  '<p class="active"><span class="read" data-m="6580" data-d="530">test </span><span class="read active" data-m="8099" data-d="439">five </span><span class="unread" data-m="8740" data-d="509">six </span><span class="unread" data-m="9469" data-d="540">seven </span><span class="unread" data-m="10280" data-d="330">eight </span></p>' +
+  '<p><span class="read" data-m="6580" data-d="530">test </span><span class="read" data-m="8099" data-d="439">five </span><span class="unread" data-m="8740" data-d="509">six </span><span class="unread" data-m="9469" data-d="540">seven </span><span class="unread" data-m="10280" data-d="330">eight </span></p>' +
   "</section>" +
   "</article>" +
   "<div>";
@@ -171,4 +171,14 @@ test("transcript - media source insertion from section", () => {
 test("transcript - media source insertion from section", () => {
   const type = document.querySelector('#hyperplayer').getAttribute("type");
   expect(type).toBe("audio/mp3");
+});
+
+test("transcript - check that active is set on word", () => {
+  simulateClick(document.getElementsByTagName("span")[4], "dblclick");
+  expect(document.querySelector('span.active')).toBe(document.getElementsByTagName("span")[4]);
+});
+
+test("transcript - check that active is set on paragraph", () => {
+  simulateClick(document.getElementsByTagName("span")[4], "dblclick");
+  expect(document.querySelector('p.active')).toBe(document.getElementsByTagName('p')[0]);
 });
