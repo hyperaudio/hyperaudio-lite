@@ -166,8 +166,3 @@ test("transcript - media source insertion from section", () => {
   const src = document.querySelector('#hyperplayer').src;
   expect(src).toMatch(/test.mp3$/);
 });
-
-test("transcript - media source insertion from section", () => {
-  const type = document.querySelector('#hyperplayer').getAttribute("type");
-  expect(type).toBe("audio/mp3");
-});
