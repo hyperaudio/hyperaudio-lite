@@ -1,4 +1,5 @@
 /*! (C) The Hyperaudio Project. MIT @license: en.wikipedia.org/wiki/MIT_License. */
+/* Updated for Version 2.1 */
 
 .hyperaudio-transcript .strikethrough {
   text-decoration: line-through;
@@ -39,7 +40,7 @@
 }
 
 .hyperaudio-transcript .unread {
-  color: #999;
+  color: #666;
 }
 
 .hyperaudio-transcript .search-match {
