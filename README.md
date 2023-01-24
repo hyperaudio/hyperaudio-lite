@@ -14,6 +14,8 @@ You can use Hyperaudio Lite to provide Interactive Transcripts, this readme deta
 
 As demonstrated here [https://hyperaudio.github.io/hyperaudio-lite/](https://hyperaudio.github.io/hyperaudio-lite/) plus equivalent [multiplayer version](https://hyperaudio.github.io/hyperaudio-lite/multiplayer.html)
 
+Active word version [https://hyperaudio.github.io/hyperaudio-lite/active.html](https://hyperaudio.github.io/hyperaudio-lite/active.html)
+
 Alternatively styled version [https://lab.hyperaud.io/mozfest2021/interviews/lance_weiler/](https://lab.hyperaud.io/mozfest2021/interviews/lance_weiler/)
 
 YouTube Integration [https://hyperaudio.github.io/hyperaudio-lite/youtube.html](https://hyperaudio.github.io/hyperaudio-lite/youtube.html)
