@@ -1,5 +1,5 @@
 /*! (C) The Hyperaudio Project. MIT @license: en.wikipedia.org/wiki/MIT_License. */
-/*! Version 2.1 */
+/*! Version 2.1.1 */
 
 'use strict';
 
@@ -360,9 +360,9 @@ class HyperaudioLite {
       let fNodeTime;
       let fNodeDuration;
 
-      if (fNode != null && fNode.getAttribute('data-m') != null) {
-        // if the selection ends in a space we want the previous element
-        if(selection.toString().slice(-1) == " ") {
+      if (fNode !== null && fNode.getAttribute('data-m') !== null) {
+        // if the selection ends in a space we want the previous element if it exists
+        if(selection.toString().slice(-1) == " " && fNode.previousElementSibling !== null) {
           fNode = fNode.previousElementSibling;
         }
 
