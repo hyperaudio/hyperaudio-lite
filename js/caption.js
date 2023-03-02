@@ -1,5 +1,5 @@
 /*! (C) The Hyperaudio Project. MIT @license: en.wikipedia.org/wiki/MIT_License. */
-/*! Version 2.0.16 (patch) */
+/*! Version 2.1.1 (patch) */
 'use strict';
 
 var caption = function () {
@@ -317,8 +317,15 @@ var caption = function () {
     }
 
     function captionsObj(vtt, srt) {
-      this.vtt = vtt;
-      this.srt = srt;
+      // clean up – remove any double blank lines 
+      // and blank line at the start of srt
+
+      if (srt.charAt(0) !== "1") {
+        srt = srt.slice(1);
+      }
+
+      this.vtt = vtt.replaceAll("\n\n\n","\n\n");
+      this.srt = srt.replaceAll("\n\n\n","\n\n");
     }
 
     return new captionsObj(captionsVtt, captionsSrt);
