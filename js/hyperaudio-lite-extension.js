@@ -43,7 +43,7 @@ let searchPhrase = function (phrase) {
 
       // regex removes punctuation - NB for htmlWords case we also remove the space
 
-      if (phraseWords[j].toLowerCase() == htmlWords[wordIndex].innerHTML.toLowerCase().replace(/[\.,-\/#!$%\^&\*;:{}=\-_`~() ]/g,"")) {
+      if (phraseWords[j].toLowerCase() == htmlWords[wordIndex].innerHTML.toLowerCase().replace(/[\.,-\/#!$%\^&\*;:{}=\-_`~()\? ]/g,"")) {
         potentiallyMatched.push(htmlWords[wordIndex].getAttribute('data-m'));
         numWordsMatched++;
       } else {
