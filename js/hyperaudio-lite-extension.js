@@ -1,5 +1,5 @@
 /*! (C) The Hyperaudio Project. MIT @license: en.wikipedia.org/wiki/MIT_License. */
-/*! Version 2.0.22 */
+/*! Version 2.1.1 */
 
 'use strict';
 // Example wrapper for hyperaudio-lite with search and playbackRate included
@@ -13,10 +13,12 @@ if (searchForm) {
   }, false);
 }
 
-const htmlWords = document.querySelectorAll('[data-m]');
-const htmlWordsLen = htmlWords.length;
 
 let searchPhrase = function (phrase) {
+	
+  let htmlWords = document.querySelectorAll('[data-m]');
+  let htmlWordsLen = htmlWords.length;
+	
   let phraseWords = phrase.split(" ");
   let phraseWordsLen = phraseWords.length;
   let matchedTimes = [];
