@@ -1,5 +1,5 @@
 /*! (C) The Hyperaudio Project. MIT @license: en.wikipedia.org/wiki/MIT_License. */
-/*! Version 2.1.2 */
+/*! Version 2.1.3 */
 
 'use strict';
 
@@ -330,7 +330,18 @@ class HyperaudioLite {
       selection = document.selection.createRange();
     }
 
-    if (selection.toString() !== '' && selection.focusNode !== null && selection.anchorNode !== null) {
+    // check to see if selection is actually inside the transcript
+    let insideTranscript = false;
+    let parentElement = selection.focusNode;
+    while (parentElement !== null) {
+      if (parentElement.id === this.transcript.id) {
+        insideTranscript = true;
+        break;
+      }
+      parentElement = parentElement.parentElement;
+    }
+
+    if (selection.toString() !== '' && insideTranscript === true && selection.focusNode !== null && selection.anchorNode !== null) {
       
       let fNode = selection.focusNode.parentNode;
       let aNode = selection.anchorNode.parentNode;
@@ -352,7 +363,7 @@ class HyperaudioLite {
       }
 
       // if the selection starts with a space we want the next element
-      if(selection.toString().charAt(0) == " ") {
+      if(selection.toString().charAt(0) == " " && aNode !== null) {
         aNode = aNode.nextElementSibling;
       }
 
