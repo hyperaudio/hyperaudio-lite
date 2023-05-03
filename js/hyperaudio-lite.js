@@ -1,5 +1,5 @@
 /*! (C) The Hyperaudio Project. MIT @license: en.wikipedia.org/wiki/MIT_License. */
-/*! Version 2.1.1 */
+/*! Version 2.1.2 */
 
 'use strict';
 
@@ -203,7 +203,7 @@ class HyperaudioLite {
       () => {
         const mediaFragment = this.getSelectionMediaFragment();
 
-        if (mediaFragment !== '') {
+        if (mediaFragment !== null) {
           document.location.hash = mediaFragment;
         }
       },
@@ -321,7 +321,7 @@ class HyperaudioLite {
   };
 
   getSelectionMediaFragment = () => {
-    let fragment = '';
+    let fragment = null;
     let selection = null;
 
     if (window.getSelection) {
@@ -330,7 +330,8 @@ class HyperaudioLite {
       selection = document.selection.createRange();
     }
 
-    if (selection.toString() !== '') {
+    if (selection.toString() !== '' && selection.focusNode !== null && selection.anchorNode !== null) {
+      
       let fNode = selection.focusNode.parentNode;
       let aNode = selection.anchorNode.parentNode;
 
@@ -355,43 +356,49 @@ class HyperaudioLite {
         aNode = aNode.nextElementSibling;
       }
 
-      let aNodeTime = parseInt(aNode.getAttribute('data-m'), 10);
-      let aNodeDuration = parseInt(aNode.getAttribute('data-d'), 10);
-      let fNodeTime;
-      let fNodeDuration;
+      if (aNode !== null) {
+        let aNodeTime = parseInt(aNode.getAttribute('data-m'), 10);
+        let aNodeDuration = parseInt(aNode.getAttribute('data-d'), 10);
+        let fNodeTime;
+        let fNodeDuration;
 
-      if (fNode !== null && fNode.getAttribute('data-m') !== null) {
-        // if the selection ends in a space we want the previous element if it exists
-        if(selection.toString().slice(-1) == " " && fNode.previousElementSibling !== null) {
-          fNode = fNode.previousElementSibling;
+        if (fNode !== null && fNode.getAttribute('data-m') !== null) {
+          // if the selection ends in a space we want the previous element if it exists
+          if(selection.toString().slice(-1) == " " && fNode.previousElementSibling !== null) {
+            fNode = fNode.previousElementSibling;
+          }
+
+          fNodeTime = parseInt(fNode.getAttribute('data-m'), 10);
+          fNodeDuration = parseInt(fNode.getAttribute('data-d'), 10);
+
+          // if the selection starts with a space we want the next element
+
         }
 
-        fNodeTime = parseInt(fNode.getAttribute('data-m'), 10);
-        fNodeDuration = parseInt(fNode.getAttribute('data-d'), 10);
+        // 1 decimal place will do
+        aNodeTime = Math.round(aNodeTime / 100) / 10;
+        aNodeDuration = Math.round(aNodeDuration / 100) / 10;
+        fNodeTime = Math.round(fNodeTime / 100) / 10;
+        fNodeDuration = Math.round(fNodeDuration / 100) / 10;
 
-        // if the selection starts with a space we want the next element
+        let nodeStart = aNodeTime;
+        let nodeDuration = Math.round((fNodeTime + fNodeDuration - aNodeTime) * 10) / 10;
 
+        if (aNodeTime >= fNodeTime) {
+          nodeStart = fNodeTime;
+          nodeDuration = Math.round((aNodeTime + aNodeDuration - fNodeTime) * 10) / 10;
+        }
+
+        if (nodeDuration === 0 || nodeDuration === null || isNaN(nodeDuration)) {
+          nodeDuration = 10; // arbitary for now
+        }
+
+        if (isNaN(parseFloat(nodeStart))) {
+          fragment = null;
+        } else {
+          fragment = this.transcript.id + '=' + nodeStart + ',' + Math.round((nodeStart + nodeDuration) * 10) / 10;
+        }
       }
-
-      // 1 decimal place will do
-      aNodeTime = Math.round(aNodeTime / 100) / 10;
-      aNodeDuration = Math.round(aNodeDuration / 100) / 10;
-      fNodeTime = Math.round(fNodeTime / 100) / 10;
-      fNodeDuration = Math.round(fNodeDuration / 100) / 10;
-
-      let nodeStart = aNodeTime;
-      let nodeDuration = Math.round((fNodeTime + fNodeDuration - aNodeTime) * 10) / 10;
-
-      if (aNodeTime >= fNodeTime) {
-        nodeStart = fNodeTime;
-        nodeDuration = Math.round((aNodeTime + aNodeDuration - fNodeTime) * 10) / 10;
-      }
-
-      if (nodeDuration === 0 || nodeDuration === null || isNaN(nodeDuration)) {
-        nodeDuration = 10; // arbitary for now
-      }
-
-      fragment = this.transcript.id + '=' + nodeStart + ',' + Math.round((nodeStart + nodeDuration) * 10) / 10;
     }
 
     return fragment;
