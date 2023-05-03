@@ -352,7 +352,7 @@ class HyperaudioLite {
       }
 
       // if the selection starts with a space we want the next element
-      if(selection.toString().charAt(0) == " ") {
+      if(selection.toString().charAt(0) == " " && aNode !== null) {
         aNode = aNode.nextElementSibling;
       }
 
