@@ -330,7 +330,18 @@ class HyperaudioLite {
       selection = document.selection.createRange();
     }
 
-    if (selection.toString() !== '' && selection.focusNode !== null && selection.anchorNode !== null) {
+    // check to see if selection is actually inside the transcript
+    let insideTranscript = false;
+    let parentElement = selection.focusNode;
+    while (parentElement !== null) {
+      if (parentElement.id === this.transcript.id) {
+        insideTranscript = true;
+        break;
+      }
+      parentElement = parentElement.parentElement;
+    }
+
+    if (selection.toString() !== '' && insideTranscript === true && selection.focusNode !== null && selection.anchorNode !== null) {
       
       let fNode = selection.focusNode.parentNode;
       let aNode = selection.anchorNode.parentNode;
