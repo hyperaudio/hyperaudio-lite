@@ -182,7 +182,7 @@ Optionally, you can include your source media file in the player definition:
 ```html
 <video id="hyperplayer" controls src="https://example.com/somevideo.mp4"></video>
 ```
-Note that `hyperplayer` is the id that you will use to instantiate (see above).
+*Note – `hyperplayer` is the id that you will use to instantiate (see above).*
 
 If you want to use other players such as YouTube or Soundcloud, use the embeds in the following sections instead.
 
@@ -211,6 +211,7 @@ You will also need to define your interactive transcript – something like thi
   </article>
 </div>
 ```
+*Note – it is up to you where you define your media source. In our examples we include it in the transcript itself using the `data-media-src` attribute.*
 
 View the source code of [https://hyperaudio.github.io/hyperaudio-lite/](https://hyperaudio.github.io/hyperaudio-lite/) for a complete example.
 
