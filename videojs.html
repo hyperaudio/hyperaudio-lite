@@ -1,15 +1,17 @@
-<!-- Example index.html Copyright (C) BBC Research & Development - content used with kind permission of Ian Forrester https://twitter.com/cubicgarden/ -->
-<!-- Version 2.1 -->
+<!-- Last updated for Version 2.1 -->
 
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
-  <meta charset="utf-8">
-  <title>Hyperaudio - BBCRD | Education | Ethics of personal data in the era of QS and IoT</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <title>Vimeo Version</title>
   <link rel="stylesheet" href="css/hyperaudio-lite-player.css">
   <link rel="stylesheet" href="css/share-this.css">
+  <link href="https://vjs.zencdn.net/7.4.1/video-js.css" rel="stylesheet" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/velocity/1.5.0/velocity.js"></script>
   <script src="https://platform.twitter.com/widgets.js"></script>
+  <script src="https://vjs.zencdn.net/7.4.1/video.min.js"></script>
   <style>
     /* uncomment the following CSS for active parent / word indicator */ 
     
@@ -24,40 +26,42 @@
       text-decoration-thickness: 3px;
     }
     */
-    
   </style>
 </head>
+
 <body>
   <p>
-    <form id="searchForm" style="float:right">
-      <!-- comment out the following line if you don't need playback rate controls -->
-      Playback Rate <span id="currentPbr">1</span><input id="pbr" type="range" value="1" min="0.5" max="3" step="0.1" style="width:10%">
-      <input id="search" type="text" ><input type="submit" value="search">
-    </form>
+  <form id="searchForm" style="float:right">
+    <input id="search" type="text"><input type="submit" value="search">
+  </form>
   </p>
+  <video
+    id="hyperplayer"
+    class="video-js"
+    controls
+    preload="auto"
+    width="640"
+    height="264"
+    data-setup="{}"
+    data-player-type="videojs"
+  >
+    <source src="https://lab.hyperaud.io/video/BBC/education.mp4" type="video/mp4" />
 
-  <!-- Comment out the following line if you are using an alternative player. ie SoundCloud or YouTube -->
-  <video id="hyperplayer" class="hyperaudio-player" style="z-index: 5000000; position:relative; width:400px" controls>
-    <track id="hyperplayer-vtt" label="English" kind="subtitles" srclang="en" src="">
+    <p class="vjs-no-js">
+      To view this video please enable JavaScript, and consider upgrading to a
+      web browser that
+      <a href="https://videojs.com/html5-video-support/" target="_blank"
+        >supports HTML5 video</a
+      >
+    </p>
   </video>
 
-  <!-- Uncomment the following lines for SoundCloud compatibility. Keep commented if you are using native or YouTube -->
-  <!-- iFrame HTML can be found by clicking the embed button while viewing the audio on SoundCloud -->
-  <!-- <script src="https://w.soundcloud.com/player/api.js"></script>
-  <iframe id="hyperplayer" data-player-type="soundcloud" width="100%" height="166" scrolling="no" frameborder="no" allow="autoplay" 
-        src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/730479133&color=%23ff5500&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true">
-  </iframe> -->
+  <div id="hypertranscript" class="hyperaudio-transcript"
+    style="overflow-y:scroll; height:600px; position:relative; border-style:dashed; border-width: 1px; border-color:#999; padding: 8px">
 
-  <!-- Uncomment the following lines for YouTube compatibility. Keep commented if you are using native or SoundCloud -->
-  <!-- <iframe id="hyperplayer" data-player-type="youtube" width="400" height="300" frameborder="no" allow="autoplay"
-    src="https://www.youtube.com/embed/xLcsdc823dg?enablejsapi=1">
-  </iframe> -->
-
-  <div id="hypertranscript" class="hyperaudio-transcript" style="overflow-y:scroll; height:600px; position:relative; border-style:dashed; border-width: 1px; border-color:#999; padding: 8px">
-    
     <article data-wm="$ilp.uphold.com/123article">
 
-      <section data-media-src="https://lab.hyperaud.io/video/BBC/education.mp4" data-wm="$ilp.uphold.com/123section">
+      <section data-wm="$ilp.uphold.com/123section">
 
         <h5 data-m="0">How do we make people more aware of their personal data?</h5>
 
@@ -998,35 +1002,25 @@
       </section>
     </article>
   </div>
-  
+
   <script src="js/hyperaudio-lite.js"></script>
   <script src="js/hyperaudio-lite-extension.js"></script>
   <script src="js/share-this.js"></script>
   <script src="js/share-this-twitter.js"></script>
-  <script src="js/share-this-clipboard.js"></script>
-  <script src="js/caption.js"></script>
   <script>
-  ShareThis({
-      sharers: [ ShareThisViaTwitter, ShareThisViaClipboard ],
+    ShareThis({
+      sharers: [ShareThisViaTwitter],
       selector: "article"
-  }).init();
+    }).init();
 
-  // minimizedMode is still experimental - it aims to show the current words in the title, which can be seen on the browser tab.
-  let minimizedMode = false;
-  let autoScroll = true;
-  let doubleClick = false;
-  let webMonetization = true;
-  let playOnClick = false;
+    // minimizedMode is still experimental - it aims to show the current words in the title, which can be seen on the browser tab.
+    let minimizedMode = false;
+    let autoScroll = true;
+    let doubleClick = false;
+    let webMonetization = false;
 
-  new HyperaudioLite("hypertranscript", "hyperplayer", minimizedMode, autoScroll, doubleClick, webMonetization, playOnClick);
-
-  // Override scroll parameters
-  //ht1.setScrollParameters(<duration>, <delay>, <offset>, <container>);
-
-  // this should create captions  
-  let cap1 = caption();
-  cap1.init("hypertranscript", "hyperplayer", '37' , '21'); // transcript Id, player Id, max chars, min chars for caption line
-  
+    new HyperaudioLite("hypertranscript", "hyperplayer", minimizedMode, autoScroll, doubleClick, webMonetization);
   </script>
 </body>
+
 </html>

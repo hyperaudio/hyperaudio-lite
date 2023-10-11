@@ -1,5 +1,5 @@
 /*! (C) The Hyperaudio Project. MIT @license: en.wikipedia.org/wiki/MIT_License. */
-/*! Version 2.0.12 */
+/*! Version 2.1.1 (patch) */
 'use strict';
 
 var caption = function () {
@@ -302,21 +302,30 @@ var caption = function () {
 
     var video = document.getElementById(playerId);
 
-    video.addEventListener("loadedmetadata", function() {
-      //var track = document.createElement("track");
-      var track = document.getElementById(playerId+'-vtt');
-      track.kind = "captions";
-      track.label = "English";
-      track.srclang = "en";
-      track.src = "data:text/vtt,"+encodeURIComponent(captionsVtt);
+    if (video !== null) {
+      video.addEventListener("loadedmetadata", function() {
+        //var track = document.createElement("track");
+        var track = document.getElementById(playerId+'-vtt');
+        track.kind = "captions";
+        track.label = "English";
+        track.srclang = "en";
+        track.src = "data:text/vtt,"+encodeURIComponent(captionsVtt);
+        video.textTracks[0].mode = "showing";
+      });
+  
       video.textTracks[0].mode = "showing";
-    });
-
-    video.textTracks[0].mode = "showing";
+    }
 
     function captionsObj(vtt, srt) {
-      this.vtt = vtt;
-      this.srt = srt;
+      // clean up – remove any double blank lines 
+      // and blank line at the start of srt
+
+      if (srt.charAt(0) !== "1") {
+        srt = srt.slice(1);
+      }
+
+      this.vtt = vtt.replaceAll("\n\n\n","\n\n");
+      this.srt = srt.replaceAll("\n\n\n","\n\n");
     }
 
     return new captionsObj(captionsVtt, captionsSrt);

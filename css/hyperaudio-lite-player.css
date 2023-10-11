@@ -1,4 +1,5 @@
 /*! (C) The Hyperaudio Project. MIT @license: en.wikipedia.org/wiki/MIT_License. */
+/* Updated for Version 2.1 */
 
 .hyperaudio-transcript .strikethrough {
   text-decoration: line-through;
@@ -24,15 +25,7 @@
   cursor: pointer;
   color: #000;
 }*/
-/*
-.hyperaudio-transcript .active ~ span {
-  color: #999;
-}
 
-.hyperaudio-transcript p.active ~ p span {
-  color: #999;
-}
-*/
 
 .hyperaudio-transcript a, a.link {
   border: 0px;
@@ -42,8 +35,12 @@
   color: #000;
 }
 
+.hyperaudio-transcript .active > .active {
+  color: #000;
+}
+
 .hyperaudio-transcript .unread {
-  color: #999;
+  color: #777;
 }
 
 .hyperaudio-transcript .search-match {
@@ -69,7 +66,6 @@
 [data-m] {
   cursor: pointer;
 }
-
 
 body {
   font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif;

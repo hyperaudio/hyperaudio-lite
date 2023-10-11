@@ -12,13 +12,19 @@ You can use Hyperaudio Lite to provide Interactive Transcripts, this readme deta
 
 ## :tiger: Hyperaudio Lite in the Wild :tiger:
 
-As demonstrated here [https://hyperaud.io/lab/halite/v28/](https://hyperaud.io/lab/halite/v28/) plus equivalent [multiplayer version](https://hyperaud.io/lab/halite/v28/multiplayer.html)
+As demonstrated here [https://hyperaudio.github.io/hyperaudio-lite/](https://hyperaudio.github.io/hyperaudio-lite/) plus equivalent [multiplayer version](https://hyperaudio.github.io/hyperaudio-lite/multiplayer.html)
+
+Active word version [https://hyperaudio.github.io/hyperaudio-lite/active.html](https://hyperaudio.github.io/hyperaudio-lite/active.html)
 
 Alternatively styled version [https://lab.hyperaud.io/mozfest2021/interviews/lance_weiler/](https://lab.hyperaud.io/mozfest2021/interviews/lance_weiler/)
 
-YouTube Integration [https://hyperaud.io/lab/halite/v28/youtube.html](https://hyperaud.io/lab/halite/v28/youtube.html)
+YouTube Integration [https://hyperaudio.github.io/hyperaudio-lite/youtube.html](https://hyperaudio.github.io/hyperaudio-lite/youtube.html)
 
-SoundCloud Integration [https://hyperaud.io/lab/halite/v28/soundcloud.html](https://hyperaud.io/lab/halite/v28/soundcloud.html)
+SoundCloud Integration [https://hyperaudio.github.io/hyperaudio-lite/soundcloud.html](https://hyperaudio.github.io/hyperaudio-lite/soundcloud.html)
+
+Vimeo Integration [https://hyperaudio.github.io/hyperaudio-lite/vimeo.html](https://hyperaudio.github.io/hyperaudio-lite/vimeo.html)
+
+VideoJS Integration [https://hyperaudio.github.io/hyperaudio-lite/videojs.html](https://hyperaudio.github.io/hyperaudio-lite/videojs.html)
 
 Vitorio's version [https://github.com/vitorio/hyperaudio-lite](https://github.com/vitorio/hyperaudio-lite)
 
@@ -93,7 +99,9 @@ We can see that a Hypertranscript is really just HTML, this helps keep it:
 
 ### How to make a Hypertranscript
 
-One way is to use the [Hyperaudio Converter](https://hyperaud.io/converter/)
+The best way is to use the [Hyperaudio Lite Editor](https://hyperaudio.github.io/hyperaudio-lite-editor/).
+
+Another way is to use the [Hyperaudio Converter](https://hyperaud.io/converter/)
 
 This currently takes 4 possible inputs:
 
@@ -153,13 +161,61 @@ let minimizedMode = false;
 let autoScroll = true;
 let doubleClick = false;
 let webMonetization = false;
+let playOnClick = true;
 
-new HyperaudioLite("hypertranscript", "hyperplayer", minimizedMode, autoScroll, doubleClick, webMonetization);
+new HyperaudioLite("hypertranscript", "hyperplayer", minimizedMode, autoScroll, doubleClick, webMonetization, playOnClick);
 ```
 
-View the source code of [http://hyperaud.io/lab/halite/v28/](https://hyperaud.io/lab/halite/v28/) for a complete example.
+If you want to use the native audio/video capabilities of your browser, you would define your player something like this:
 
-See a version with multiple players in a single page [http://hyperaud.io/lab/halite/v28/multiplayer.html](https://hyperaud.io/lab/halite/v28/multiplayer.html)
+```html
+<video id="hyperplayer" controls></video>
+```
+
+or in the case of audio:
+```html
+<audio id="hyperplayer" controls></audio>
+```
+
+Optionally, you can include your source media file in the player definition:
+
+```html
+<video id="hyperplayer" controls src="https://example.com/somevideo.mp4"></video>
+```
+*Note – `hyperplayer` is the id that you will use to instantiate (see above).*
+
+If you want to use other players such as YouTube or Soundcloud, use the embeds in the following sections instead.
+
+You will also need to define your interactive transcript – something like this:
+
+```html
+<div id="hypertranscript" class="hyperaudio-transcript">
+  <article>
+    <section data-media-src="https://example.com/somevideo.mp4">
+      <p>
+        <span data-m="4470" data-d="0" class="speaker">Doc: </span>
+        <span data-m="4470" data-d="270">We </span>
+        <span data-m="4740" data-d="240">have </span>
+        <span data-m="5010" data-d="300">two </span>
+        <span data-m="5310" data-d="600">selves </span>
+        <span data-m="6030" data-d="150">in </span>
+        <span data-m="6180" data-d="120">the </span>
+        <span data-m="6300" data-d="300">world </span>
+        <span data-m="6600" data-d="90">at </span>
+        <span data-m="6690" data-d="150">any </span>
+        <span data-m="6840" data-d="300">given </span>
+        <span data-m="7140" data-d="310">time </span>
+        <span data-m="7540" data-d="180">now. </span>
+      </p>
+    </section>
+  </article>
+</div>
+```
+*Note – it is up to you where you define your media source. In our examples we include it in the transcript itself using the `data-media-src` attribute.*
+
+View the source code of [https://hyperaudio.github.io/hyperaudio-lite/](https://hyperaudio.github.io/hyperaudio-lite/) for a complete example.
+
+See a version with multiple players in a single page [https://hyperaudio.github.io/hyperaudio-lite/multiplayer.html](https://hyperaudio.github.io/hyperaudio-lite/multiplayer.html)
 
 ## :tv: YouTube Support :tv:
 
@@ -202,6 +258,10 @@ Example of Soundcloud API and `iframe` embed:
 
 You can get the snippet of code by visiting the page of the SoundCloud file you're interested in, clicking on _Share_ and then _Embed_.
 
+## :heart_eyes: Other Player Support :heart_eyes:
+
+We also now support [Vimeo](https://vimeo.com/) and [VideoJS](https://videojs.com/) players. See the [Vimeo example](https://hyperaudio.github.io/hyperaudio-lite/vimeo.html) and [VideoJS example](https://hyperaudio.github.io/hyperaudio-lite/videojs.html) for how to emebed. Please let us know if their are other types of players you wish us to support by creating an issue.
+
 
 ## :money_with_wings: Web Monetization Support :money_with_wings:
 
@@ -216,8 +276,9 @@ let minimizedMode = false;
 let autoScroll = true;
 let doubleClick = false;
 let webMonetization = true;
+let playOnClick = true;
 
-new HyperaudioLite("hypertranscript", "hyperplayer", minimizedMode, autoScroll, doubleClick, webMonetization);
+new HyperaudioLite("hypertranscript", "hyperplayer", minimizedMode, autoScroll, doubleClick, webMonetization, playOnClick);
 ```
 
 If you then set the `data-wm` attributes in your transcript streaming will be switched to that payment pointer when encountered.
@@ -246,11 +307,24 @@ Currently we use [Jest](https://jestjs.io/) for testing.
 
 Install Jest using yarn:
 `yarn add --dev jest`
+then
+`yarn add -D jest-environment-jsdom`
 
 Or npm:
 `npm install --save-dev jest`
+then
+`npm install -D jest-environment-jsdom`
 
 To run the tests:
 `yarn test` or `npm run test`
 
-Note: If you have issues runing the tests, try a more recent version of node. (node v16.0.0 should work).
+Note: If you have issues runing the tests, try a more recent version of node. (node v17.0.0 should work).
+
+## :raised_hand: How do I create timed transcripts to use with Hyperaudio Lite? :raised_hand:
+
+1.  You can use our the [Hyperaudio Lite Editor](https://github.com/hyperaudio/hyperaudio-lite-editor)
+2.  You can convert from various formats with our [Converter](https://github.com/hyperaudio/ha-converter)
+
+---
+
+Find out more about the Hyperaudio Project at [hyper.audio](https://hyper.audio) or contact mark@hyperaud.io
