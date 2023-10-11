@@ -20,7 +20,7 @@ Alternatively styled version [https://lab.hyperaud.io/mozfest2021/interviews/lan
 
 YouTube Integration [https://hyperaudio.github.io/hyperaudio-lite/youtube.html](https://hyperaudio.github.io/hyperaudio-lite/youtube.html)
 
-SoundCloud Integration [https://hyperaudio.github.io/hyperaudio-lite/soundcloud.html](https://hyperaudio.github.io/hyperaudio-lite/oundcloud.html)
+SoundCloud Integration [https://hyperaudio.github.io/hyperaudio-lite/soundcloud.html](https://hyperaudio.github.io/hyperaudio-lite/soundcloud.html)
 
 Vimeo Integration [https://hyperaudio.github.io/hyperaudio-lite/vimeo.html](https://hyperaudio.github.io/hyperaudio-lite/vimeo.html)
 
