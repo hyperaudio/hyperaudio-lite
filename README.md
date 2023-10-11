@@ -166,6 +166,52 @@ let playOnClick = true;
 new HyperaudioLite("hypertranscript", "hyperplayer", minimizedMode, autoScroll, doubleClick, webMonetization, playOnClick);
 ```
 
+If you want to use the native audio/video capabilities of your browser, you would define your player something like this:
+
+```html
+<video id="hyperplayer" controls></video>
+```
+
+or in the case of audio:
+```html
+<audio id="hyperplayer" controls></audio>
+```
+
+Optionally, you can include your source media file in the player definition:
+
+```html
+<video id="hyperplayer" controls src="https://example.com/somevideo.mp4"></video>
+```
+Note that `hyperplayer` is the id that you will use to instantiate (see above).
+
+If you want to use other players such as YouTube or Soundcloud, use the embeds in the following sections instead.
+
+You will also need to define your interactive transcript – something like this:
+
+```html
+<div id="hypertranscript" class="hyperaudio-transcript">
+  <article>
+    <section data-media-src="https://example.com/somevideo.mp4">
+      <p>
+        <span data-m="4470" data-d="0" class="speaker">Doc: </span>
+        <span data-m="4470" data-d="270">We </span>
+        <span data-m="4740" data-d="240">have </span>
+        <span data-m="5010" data-d="300">two </span>
+        <span data-m="5310" data-d="600">selves </span>
+        <span data-m="6030" data-d="150">in </span>
+        <span data-m="6180" data-d="120">the </span>
+        <span data-m="6300" data-d="300">world </span>
+        <span data-m="6600" data-d="90">at </span>
+        <span data-m="6690" data-d="150">any </span>
+        <span data-m="6840" data-d="300">given </span>
+        <span data-m="7140" data-d="310">time </span>
+        <span data-m="7540" data-d="180">now. </span>
+      </p>
+    </section>
+  </article>
+</div>
+```
+
 View the source code of [https://hyperaudio.github.io/hyperaudio-lite/](https://hyperaudio.github.io/hyperaudio-lite/) for a complete example.
 
 See a version with multiple players in a single page [https://hyperaudio.github.io/hyperaudio-lite/multiplayer.html](https://hyperaudio.github.io/hyperaudio-lite/multiplayer.html)
