@@ -213,7 +213,7 @@ You can get the snippet of code by visiting the page of the SoundCloud file you'
 
 ## :heart_eyes: Other Player Support :heart_eyes:
 
-We also now support [Vimeo] and VideoJS players. Please let us know if their are other types of players you wish us to support by creating an issue.
+We also now support [Vimeo](https://vimeo.com/) and [VideoJS](https://videojs.com/) players. Please let us know if their are other types of players you wish us to support by creating an issue.
 
 
 ## :money_with_wings: Web Monetization Support :money_with_wings:
