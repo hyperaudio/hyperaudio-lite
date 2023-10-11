@@ -177,7 +177,11 @@ const hyperaudioPlayerOptions = {
 }
 
 function hyperaudioPlayer(playerType, instance) {
-  return new playerType(instance);
+  if (playerType !== null && playerType !== undefined) {
+    return new playerType(instance);
+  } else {
+    alert("data-player-type attribute must be set on player if not native, eg SoundCloud, YouTube, Vimeo, VideoJS")
+  }
 }
 
 class HyperaudioLite {
