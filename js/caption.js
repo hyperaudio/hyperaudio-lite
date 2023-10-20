@@ -1,5 +1,5 @@
 /*! (C) The Hyperaudio Project. MIT @license: en.wikipedia.org/wiki/MIT_License. */
-/*! Version 2.1.1 (patch) */
+/*! Version 2.1.3 patch*/
 'use strict';
 
 var caption = function () {
@@ -20,7 +20,7 @@ var caption = function () {
     return timecode.substring(0,8) + "," + timecode.substring(9,12);
   }
 
-  cap.init = function (transcriptId, playerId, maxLength, minLength) {
+  cap.init = function (transcriptId, playerId, maxLength, minLength, label, srclang) {
     var transcript = document.getElementById(transcriptId);
     var words = transcript.querySelectorAll('[data-m]');
     var data = {};
@@ -303,20 +303,35 @@ var caption = function () {
     var video = document.getElementById(playerId);
 
     if (video !== null) {
-      video.addEventListener("loadedmetadata", function() {
+      video.addEventListener("loadedmetadata", function listener() {
         //var track = document.createElement("track");
         var track = document.getElementById(playerId+'-vtt');
         track.kind = "captions";
-        track.label = "English";
-        track.srclang = "en";
+
+        console.log("label = "+label);
+
+        if (label !== undefined) {
+          console.log("setting label as "+label);
+          track.label = label;
+        }
+
+        if (srclang !== undefined) {
+          console.log("setting srclang as "+srclang);
+          track.srclang = srclang;
+        }
+        //track.label = "English";
+        //track.srclang = "en";
         track.src = "data:text/vtt,"+encodeURIComponent(captionsVtt);
         video.textTracks[0].mode = "showing";
-      });
+        video.removeEventListener("loadedmetadata", listener, true);
+      }, true);
   
-      video.textTracks[0].mode = "showing";
+      if (video.textTracks !== undefined) {
+        video.textTracks[0].mode = "showing";
+      }
     }
 
-    function captionsObj(vtt, srt) {
+    function captionsObj(vtt, srt, data) {
       // clean up – remove any double blank lines 
       // and blank line at the start of srt
 
@@ -326,9 +341,10 @@ var caption = function () {
 
       this.vtt = vtt.replaceAll("\n\n\n","\n\n");
       this.srt = srt.replaceAll("\n\n\n","\n\n");
+      this.data = captions;
     }
 
-    return new captionsObj(captionsVtt, captionsSrt);
+    return new captionsObj(captionsVtt, captionsSrt, captions);
   };
 
   return cap;
