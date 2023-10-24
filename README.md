@@ -314,7 +314,7 @@ If you then set the `data-wm` attributes in your transcript streaming will be sw
 
         <h5 data-m="0">How do we make people more aware of their personal data?</h5>
 
-        <p data-tc="00:00:04" data-wm="$ilp.uphold.com/123Doc">
+        <p data-wm="$ilp.uphold.com/123Doc">
           <span data-m="4470" data-d="0" class="speaker">Doc: </span>
           <span data-m="4470" data-d="270">We </span>
           <span data-m="4740" data-d="240">have </span>
