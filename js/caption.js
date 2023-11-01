@@ -1,5 +1,5 @@
 /*! (C) The Hyperaudio Project. MIT @license: en.wikipedia.org/wiki/MIT_License. */
-/*! Version 2.1.3 patch*/
+/*! Version 2.1.3 patch 2*/
 'use strict';
 
 var caption = function () {
@@ -308,8 +308,6 @@ var caption = function () {
         var track = document.getElementById(playerId+'-vtt');
         track.kind = "captions";
 
-        console.log("label = "+label);
-
         if (label !== undefined) {
           console.log("setting label as "+label);
           track.label = label;
@@ -326,7 +324,7 @@ var caption = function () {
         video.removeEventListener("loadedmetadata", listener, true);
       }, true);
   
-      if (video.textTracks !== undefined) {
+      if (video.textTracks[0] !== undefined) {
         video.textTracks[0].mode = "showing";
       }
     }
