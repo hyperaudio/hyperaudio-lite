@@ -1,5 +1,5 @@
 /*! (C) The Hyperaudio Project. MIT @license: en.wikipedia.org/wiki/MIT_License. */
-/*! Version 2.1.3 patch 2*/
+/*! Version 2.1.4 */
 'use strict';
 
 var caption = function () {
@@ -62,8 +62,6 @@ var caption = function () {
       minLineLength = minLength;
     }
 
-    var lastSpeaker = '';
-
     words.forEach(function (word, i) {
       if (thisSegmentMeta === null) {
         // create segment meta object
@@ -73,8 +71,6 @@ var caption = function () {
       if (word.classList.contains('speaker')) {
         // checking that this is not a new segment AND a new empty segment wasn't already created
         if (thisSegmentMeta !== null && thisSegmentMeta.start !== null) {
-          //console.log("pushing...");
-          //console.log(thisSegmentMeta);
           data.segments.push(thisSegmentMeta); // push the previous segment because it's a new speaker
           thisSegmentMeta = new segmentMeta('', null, 0, 0, 0);
         }
@@ -103,9 +99,6 @@ var caption = function () {
           }
         }
 
-        //console.log("thisStart = " + thisStart);
-        //console.log("thisDuration = " + thisDuration);
-
         var thisText = word.innerText;
 
         thisWordMeta = new wordMeta(thisStart, thisDuration, thisText);
@@ -129,8 +122,6 @@ var caption = function () {
         }
       }
     });
-
-    //console.log(data.segments);
 
     function captionMeta(start, stop, text) {
       this.start = start;
@@ -257,7 +248,7 @@ var caption = function () {
               // do the stuff we need to do to start a new line
               charCount = wordMeta.text.length;
               lineText = wordMeta.text;
-              lastInTime = wordMeta.start; // Why do we do this??????
+              lastInTime = wordMeta.start; 
             } else {
               // We're not over the maximum with this word, update the line length and add the word to the text
 
@@ -292,8 +283,6 @@ var caption = function () {
       }
     });
 
-    //console.log("start creating captions");
-
     captions.forEach(function (caption, i) {
       captionsVtt += '\n' + caption.start + ' --> ' + caption.stop + '\n' + caption.text + '\n';
       //console.log(caption.start + ' --> ' + caption.stop + '\n' + caption.text);
@@ -304,27 +293,30 @@ var caption = function () {
 
     if (video !== null) {
       video.addEventListener("loadedmetadata", function listener() {
-        //var track = document.createElement("track");
+
         var track = document.getElementById(playerId+'-vtt');
-        track.kind = "captions";
 
-        if (label !== undefined) {
-          console.log("setting label as "+label);
-          track.label = label;
-        }
+        if (track !== null){
+          track.kind = "captions";
 
-        if (srclang !== undefined) {
-          console.log("setting srclang as "+srclang);
-          track.srclang = srclang;
+          if (label !== undefined) {
+            //console.log("setting label as "+label);
+            track.label = label;
+          }
+  
+          if (srclang !== undefined) {
+            //console.log("setting srclang as "+srclang);
+            track.srclang = srclang;
+          }
+
+          track.src = "data:text/vtt,"+encodeURIComponent(captionsVtt);
+          video.textTracks[0].mode = "showing";
+          video.removeEventListener("loadedmetadata", listener, true);
         }
-        //track.label = "English";
-        //track.srclang = "en";
-        track.src = "data:text/vtt,"+encodeURIComponent(captionsVtt);
-        video.textTracks[0].mode = "showing";
-        video.removeEventListener("loadedmetadata", listener, true);
+        
       }, true);
   
-      if (video.textTracks[0] !== undefined) {
+      if (video.textTracks !== undefined && video.textTracks[0] !== undefined) {
         video.textTracks[0].mode = "showing";
       }
     }
