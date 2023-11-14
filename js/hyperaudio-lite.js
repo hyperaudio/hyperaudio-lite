@@ -1,5 +1,5 @@
 /*! (C) The Hyperaudio Project. MIT @license: en.wikipedia.org/wiki/MIT_License. */
-/*! Version 2.1.5 */
+/*! Version 2.1.6 */
 
 'use strict';
 
@@ -168,12 +168,88 @@ function youtubePlayer(instance) {
   }
 }
 
+function spotifyPlayer(instance) {
+  this.currentTime = 0;
+  this.paused = true;
+  this.player = null;
+
+  this.getTime = () => {
+    return new Promise((resolve) => {
+      console.log(this.currentTime);
+      resolve(this.currentTime);
+    });
+  }
+
+  window.onSpotifyIframeApiReady = IFrameAPI => {
+
+    const element = document.getElementById('hyperplayer');
+
+    const srcValue = element.getAttribute('src');
+    const episodeID = this.extractEpisodeID(srcValue);
+
+    const options = {
+      uri: `spotify:episode:${episodeID}`,
+    }
+
+    const callback = player => {
+      this.player = player;
+      player.addListener('playback_update', e => {
+        if (e.data.isPaused !== true) {
+          this.currentTime = e.data.position / 1000;
+          setTimeout(this.subSample, 250);
+          setTimeout(this.subSample, 500);
+          setTimeout(this.subSample, 750);
+          instance.preparePlayHead();
+          this.paused = false;
+        } else {
+          instance.pausePlayHead();
+          this.paused = true;
+        }
+      });
+
+      player.addListener('ready', () => {
+        instance.checkPlayHead();
+      });
+    };
+  
+    IFrameAPI.createController(element, options, callback);
+  }
+
+  this.subSample = () => {
+    this.currentTime += 0.25;
+  }
+
+  this.setTime = (seconds) => {
+    console.log("spotify seek");
+    this.player.seek(seconds);
+  }
+
+  this.play = () => {
+    console.log("spotify play");
+    this.player.play();
+    this.paused = false;
+  }
+
+  this.pause = () => {
+    console.log("spotify pause");
+    this.player.play();
+    this.player.togglePlay();
+    this.paused = true;
+  }
+
+  this.extractEpisodeID = (url) => {
+    const match = url.match(/episode\/(.+)$/);
+    return match ? match[1] : null;
+  }
+}
+
 const hyperaudioPlayerOptions = {
   "native": nativePlayer,
   "soundcloud": soundcloudPlayer,
   "youtube": youtubePlayer,
   "videojs": videojsPlayer,
-  "vimeo": vimeoPlayer
+  "vimeo": vimeoPlayer,
+  "spotify": spotifyPlayer
 }
 
 function hyperaudioPlayer(playerType, instance) {
@@ -469,6 +545,8 @@ class HyperaudioLite {
 
     (async (instance) => {
       instance.currentTime = await instance.myPlayer.getTime();
+      //console.log("instance.currentTime");
+      //console.log(instance.currentTime);
 
       if (instance.highlightedText === true) {
         instance.currentTime = instance.start;
@@ -527,6 +605,11 @@ class HyperaudioLite {
     //check for end time of shared piece
 
     let interval = 0;
+
+    //console.log("check status");
+
+    //console.log(this.myPlayer.paused);
+    //console.log(this.currentTime);
 
     if (this.myPlayer.paused === false) {
     
@@ -626,6 +709,8 @@ class HyperaudioLite {
   };
 
   updateTranscriptVisualState = (currentTime) => {
+
+    //console.log(currentTime);
     
     let index = 0;
     let words = this.wordArr.length - 1;
