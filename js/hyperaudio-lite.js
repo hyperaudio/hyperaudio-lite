@@ -196,9 +196,16 @@ function spotifyPlayer(instance) {
       player.addListener('playback_update', e => {
         if (e.data.isPaused !== true) {
           this.currentTime = e.data.position / 1000;
-          setTimeout(this.subSample, 250);
-          setTimeout(this.subSample, 500);
-          setTimeout(this.subSample, 750);
+          let currentSample = 0;
+          let totalSample = 0;
+          let sampleInterval = 0.25;
+
+          while (totalSample < 1){
+            currentSample += sampleInterval;
+            setTimeout(this.subSample, currentSample*1000, sampleInterval);
+            totalSample = currentSample + sampleInterval;
+          }
+
           instance.preparePlayHead();
           this.paused = false;
         } else {
@@ -215,8 +222,8 @@ function spotifyPlayer(instance) {
     IFrameAPI.createController(element, options, callback);
   }
 
-  this.subSample = () => {
-    this.currentTime += 0.25;
+  this.subSample = (sampleInterval) => {
+    this.currentTime += sampleInterval;
   }
 
   this.setTime = (seconds) => {
