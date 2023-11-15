@@ -168,6 +168,13 @@ function youtubePlayer(instance) {
   }
 }
 
+
+// Note – The Spotify Player is in beta.
+// The API limits us to:
+// 1. A seek accuracy of nearest second
+// 2. An update frequency of one second (although a workaround is provided)
+// 3. Play will always 
+
 function spotifyPlayer(instance) {
   this.currentTime = 0;
   this.paused = true;
@@ -175,7 +182,6 @@ function spotifyPlayer(instance) {
 
   this.getTime = () => {
     return new Promise((resolve) => {
-      console.log(this.currentTime);
       resolve(this.currentTime);
     });
   }
@@ -215,6 +221,9 @@ function spotifyPlayer(instance) {
       });
 
       player.addListener('ready', () => {
+        // With the Spotify API we need to play before we seek. 
+        // Although togglePlay should autoplay it doesn't.
+        player.togglePlay();
         instance.checkPlayHead();
       });
     };
@@ -227,19 +236,17 @@ function spotifyPlayer(instance) {
   }
 
   this.setTime = (seconds) => {
-    console.log("spotify seek");
+    console.log("setTime");
+    console.log(seconds);
     this.player.seek(seconds);
   }
 
   this.play = () => {
-    console.log("spotify play");
     this.player.play();
     this.paused = false;
   }
 
   this.pause = () => {
-    console.log("spotify pause");
-    this.player.play();
     this.player.togglePlay();
     this.paused = true;
   }
@@ -359,6 +366,8 @@ class HyperaudioLite {
     this.transcript.addEventListener(playHeadEvent, this.checkPlayHead, false);
 
     this.start = this.hashArray[0];
+
+    //check for URL based start and stop times 
 
     if (!isNaN(parseFloat(this.start))) {
       this.highlightedText = true;
@@ -552,8 +561,6 @@ class HyperaudioLite {
 
     (async (instance) => {
       instance.currentTime = await instance.myPlayer.getTime();
-      //console.log("instance.currentTime");
-      //console.log(instance.currentTime);
 
       if (instance.highlightedText === true) {
         instance.currentTime = instance.start;
@@ -612,11 +619,6 @@ class HyperaudioLite {
     //check for end time of shared piece
 
     let interval = 0;
-
-    //console.log("check status");
-
-    //console.log(this.myPlayer.paused);
-    //console.log(this.currentTime);
 
     if (this.myPlayer.paused === false) {
     
@@ -717,8 +719,6 @@ class HyperaudioLite {
 
   updateTranscriptVisualState = (currentTime) => {
 
-    //console.log(currentTime);
-    
     let index = 0;
     let words = this.wordArr.length - 1;
 
