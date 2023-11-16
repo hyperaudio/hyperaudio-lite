@@ -168,30 +168,34 @@ function youtubePlayer(instance) {
   }
 }
 
-
 // Note – The Spotify Player is in beta.
 // The API limits us to:
 // 1. A seek accuracy of nearest second
 // 2. An update frequency of one second (although a workaround is provided)
-// 3. Play will always 
+// 3. Playing a file without previous iteraction will always play from start
+//    ie – a shared selection will highlight but not start at the start of
+//    that selection. 
 
 function spotifyPlayer(instance) {
   this.currentTime = 0;
   this.paused = true;
   this.player = null;
 
-  this.getTime = () => {
-    return new Promise((resolve) => {
-      resolve(this.currentTime);
-    });
-  }
-
   window.onSpotifyIframeApiReady = IFrameAPI => {
 
     const element = document.getElementById('hyperplayer');
 
+    const extractEpisodeID = (url) => {
+      const match = url.match(/episode\/(.+)$/);
+      return match ? match[1] : null;
+    }
+
+    const subSample = (sampleInterval) => {
+      this.currentTime += sampleInterval;
+    }
+
     const srcValue = element.getAttribute('src');
-    const episodeID = this.extractEpisodeID(srcValue);
+    const episodeID = extractEpisodeID(srcValue);
 
     const options = {
       uri: `spotify:episode:${episodeID}`,
@@ -208,7 +212,7 @@ function spotifyPlayer(instance) {
 
           while (totalSample < 1){
             currentSample += sampleInterval;
-            setTimeout(this.subSample, currentSample*1000, sampleInterval);
+            setTimeout(subSample, currentSample*1000, sampleInterval);
             totalSample = currentSample + sampleInterval;
           }
 
@@ -222,7 +226,8 @@ function spotifyPlayer(instance) {
 
       player.addListener('ready', () => {
         // With the Spotify API we need to play before we seek. 
-        // Although togglePlay should autoplay it doesn't.
+        // Although togglePlay should autoplay it doesn't,
+        // but lets us prime the playhead.
         player.togglePlay();
         instance.checkPlayHead();
       });
@@ -231,13 +236,13 @@ function spotifyPlayer(instance) {
     IFrameAPI.createController(element, options, callback);
   }
 
-  this.subSample = (sampleInterval) => {
-    this.currentTime += sampleInterval;
+  this.getTime = () => {
+    return new Promise((resolve) => {
+      resolve(this.currentTime);
+    });
   }
 
   this.setTime = (seconds) => {
-    console.log("setTime");
-    console.log(seconds);
     this.player.seek(seconds);
   }
 
@@ -249,11 +254,6 @@ function spotifyPlayer(instance) {
   this.pause = () => {
     this.player.togglePlay();
     this.paused = true;
-  }
-
-  this.extractEpisodeID = (url) => {
-    const match = url.match(/episode\/(.+)$/);
-    return match ? match[1] : null;
   }
 }
 
@@ -371,7 +371,7 @@ class HyperaudioLite {
 
     if (!isNaN(parseFloat(this.start))) {
       this.highlightedText = true;
-
+      
       let indices = this.updateTranscriptVisualState(this.start);
       let index = indices.currentWordIndex;
 
