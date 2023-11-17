@@ -1,5 +1,5 @@
 /*! (C) The Hyperaudio Project. MIT @license: en.wikipedia.org/wiki/MIT_License. */
-/*! Version 2.1.6 */
+/*! Version 2.2.0 */
 
 'use strict';
 
@@ -257,17 +257,78 @@ function spotifyPlayer(instance) {
   }
 }
 
+function simplecastPlayer(instance) {
+  this.currentTime = 0;
+  this.paused = true;
+
+  const element = document.getElementById('hyperplayer');
+  const source = element.getAttribute("src");
+
+  const showPlayer = () => {
+    let iFrame = document.querySelector("#simplecastPlayer");
+    console.log(iFrame);
+    let contentDoc = iFrame.contentDocument || iFrame.contentWindow.document;
+    this.player = contentDoc.querySelector(".simplecast-player audio");
+    console.log(this.player);
+  }
+
+  var observer = new MutationObserver(function(mutations) {
+    let iFrame = document.querySelector("#simplecastPlayer");
+    console.log(iFrame);
+    let contentDoc = iFrame.contentDocument || iFrame.contentWindow.document;
+    this.player = contentDoc.querySelector(".simplecast-player audio");
+    console.log(this.player);
+  });
+
+  observer.observe(element, {attributes: false, childList: true, characterData: false, subtree:true});
+
+  element.innerHTML = `<iframe id="simplecastPlayer" title="" frameborder="0" height="183px" scrolling="no" src="${source}" width="100%"></iframe>`;
+
+  console.log("========");
+
+  setTimeout(showPlayer, 5000);
+
+
+  this.getTime = () => {
+    return new Promise((resolve) => {
+      resolve(this.currentTime);
+    });
+  }
+
+  this.setTime = (seconds) => {
+    document.querySelector("audio").currentTime = seconds;
+    //this.player = document.querySelector(".simplecast-player audio");
+    //this.player.seek(seconds);
+  }
+
+  this.play = () => {
+    document.querySelector("#simplecastPlayer").querySelector(".simplecast-player audio").play();
+    //this.player = document.querySelector(".simplecast-player audio");
+    //this.player.play();
+    this.paused = false;
+  }
+
+  this.pause = () => {
+    this.player.togglePlay();
+    this.paused = true;
+  }
+}
+
+
+
 const hyperaudioPlayerOptions = {
   "native": nativePlayer,
   "soundcloud": soundcloudPlayer,
   "youtube": youtubePlayer,
   "videojs": videojsPlayer,
   "vimeo": vimeoPlayer,
-  "spotify": spotifyPlayer
+  "spotify": spotifyPlayer,
+  "simplecast": simplecastPlayer
 }
 
 function hyperaudioPlayer(playerType, instance) {
   if (playerType !== null && playerType !== undefined) {
+    console.log(playerType);
     return new playerType(instance);
   } else {
     console.warn("HYPERAUDIO LITE WARNING: data-player-type attribute should be set on player if not native, eg SoundCloud, YouTube, Vimeo, VideoJS");
