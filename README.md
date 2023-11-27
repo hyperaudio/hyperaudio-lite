@@ -26,6 +26,8 @@ Vimeo Integration [https://hyperaudio.github.io/hyperaudio-lite/vimeo.html](http
 
 VideoJS Integration [https://hyperaudio.github.io/hyperaudio-lite/videojs.html](https://hyperaudio.github.io/hyperaudio-lite/videojs.html)
 
+Spotify Integration [https://hyperaudio.github.io/hyperaudio-lite/spotify.html](https://hyperaudio.github.io/hyperaudio-lite/spotify.html)
+
 Vitorio's version [https://github.com/vitorio/hyperaudio-lite](https://github.com/vitorio/hyperaudio-lite)
 
 ## :star2: Hyper Powers :star2:
