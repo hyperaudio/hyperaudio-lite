@@ -335,9 +335,6 @@ class HyperaudioLite {
     this.parentElements = this.transcript.getElementsByTagName(this.parentTag);
     this.player = document.getElementById(mediaElementId);
 
-    console.log(mediaElementId);
-    console.log(this.player);
-
     // Grab the media source and type from the first section if it exists
     // and add it to the media element.
 
