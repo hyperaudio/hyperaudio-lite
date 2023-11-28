@@ -1,5 +1,5 @@
 /*! (C) The Hyperaudio Project. MIT @license: en.wikipedia.org/wiki/MIT_License. */
-/*! Version 2.1.6 */
+/*! Version 2.1.7 */
 
 'use strict';
 
@@ -183,7 +183,7 @@ function spotifyPlayer(instance) {
 
   window.onSpotifyIframeApiReady = IFrameAPI => {
 
-    const element = document.getElementById('hyperplayer');
+    const element = document.getElementById(instance.player.id);
 
     const extractEpisodeID = (url) => {
       const match = url.match(/episode\/(.+)$/);
@@ -334,6 +334,9 @@ class HyperaudioLite {
     this.parentTag = words[0].parentElement.tagName;
     this.parentElements = this.transcript.getElementsByTagName(this.parentTag);
     this.player = document.getElementById(mediaElementId);
+
+    console.log(mediaElementId);
+    console.log(this.player);
 
     // Grab the media source and type from the first section if it exists
     // and add it to the media element.
