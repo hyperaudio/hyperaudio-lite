@@ -265,11 +265,16 @@ function simplecastPlayer(instance) {
   const source = element.getAttribute("src");
 
   const showPlayer = () => {
+    //let iFrame = document.querySelector("#simplecastPlayer");
     let iFrame = document.querySelector("#simplecastPlayer");
     console.log(iFrame);
-    let contentDoc = iFrame.contentDocument || iFrame.contentWindow.document;
-    this.player = contentDoc.querySelector(".simplecast-player audio");
+    //let contentDoc = iFrame.contentDocument || iFrame.contentWindow.document;
+    //let contentDoc = 
+    //this.player = contentDoc.querySelector(".simplecast-player audio");
+    this.player = iFrame.querySelector(".simplecast-player audio");
+
     console.log(this.player);
+    console.log(document.querySelector(".simplecast-player"));
   }
 
   var observer = new MutationObserver(function(mutations) {
@@ -282,11 +287,23 @@ function simplecastPlayer(instance) {
 
   observer.observe(element, {attributes: false, childList: true, characterData: false, subtree:true});
 
+  let iframe = document.createElement('iframe');
+
+  // Set the attributes
+  iframe.id = 'simplecastPlayer';
+  iframe.title = '';
+  iframe.frameBorder = '0';
+  iframe.height = '183px';
+  iframe.scrolling = 'no';
+  iframe.src = source;
+
   element.innerHTML = `<iframe id="simplecastPlayer" title="" frameborder="0" height="183px" scrolling="no" src="${source}" width="100%"></iframe>`;
+
+  //element.append(iframe);
 
   console.log("========");
 
-  setTimeout(showPlayer, 5000);
+  setTimeout(showPlayer, 1000);
 
 
   this.getTime = () => {
