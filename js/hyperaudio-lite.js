@@ -1,5 +1,5 @@
 /*! (C) The Hyperaudio Project. MIT @license: en.wikipedia.org/wiki/MIT_License. */
-/*! Version 2.1.7 */
+/*! Version 2.2.0 */
 
 'use strict';
 
@@ -307,6 +307,7 @@ class HyperaudioLite {
     this.minimizedMode = minimizedMode;
     this.textShot = '';
     this.wordIndex = 0;
+    this.sectionIndex = 0;
 
     this.autoscroll = autoscroll;
     this.scrollerContainer = this.transcript;
@@ -327,10 +328,16 @@ class HyperaudioLite {
       this.scroller = window.Velocity || window.jQuery.Velocity;
     }
 
-    //Create the array of timed elements (wordArr)
+    //Create the array of timed elements (wordArray)
 
     const words = this.transcript.querySelectorAll('[data-m]');
-    this.wordArr = this.createWordArray(words);
+    const sections = this.transcript.querySelectorAll('section');
+    this.wordArray = this.createWordArray(words);
+    this.wordArrays = this.createWordArrays(sections);
+
+    console.log(sections);
+    console.log(this.wordArrays);
+
     this.parentTag = words[0].parentElement.tagName;
     this.parentElements = this.transcript.getElementsByTagName(this.parentTag);
     this.player = document.getElementById(mediaElementId);
@@ -394,7 +401,7 @@ class HyperaudioLite {
   }; // end init
 
   createWordArray = words => {
-    let wordArr = [];
+    let wordArray = [];
 
     words.forEach((word, i) => {
       const m = parseInt(word.getAttribute('data-m'));
@@ -409,12 +416,21 @@ class HyperaudioLite {
         }
         p = p.parentNode;
       }
-      wordArr[i] = { n: words[i], m: m, p: p };
-      wordArr[i].n.classList.add('unread');
+      wordArray[i] = { n: words[i], m: m, p: p };
+      wordArray[i].n.classList.add('unread');
     });
 
-    return wordArr;
-  };
+    return wordArray;
+  }
+
+  createWordArrays = sections => {
+    let wordArrays = [];
+    sections.forEach((section, i) => {
+      console.log("section "+i);
+      wordArrays[i] = this.createWordArray(section.querySelectorAll('[data-m]'));
+    });
+    return wordArrays;
+  }
 
   getSelectionMediaFragment = () => {
     let fragment = null;
@@ -576,11 +592,13 @@ class HyperaudioLite {
 
   scrollToParagraph = (currentParentElementIndex, index) => {
     let newPara = false;
-    let scrollNode = this.wordArr[index - 1].n.parentNode;
+    //let scrollNode = this.wordArray[index - 1].n.parentNode;
+    let scrollNode = this.wordArrays[this.sectionIndex][index - 1].n.parentNode;
 
     if (scrollNode !== null && scrollNode.tagName != 'P') {
       // it's not inside a para so just use the element
-      scrollNode = this.wordArr[index - 1].n;
+      // scrollNode = this.wordArray[index - 1].n;
+      scrollNode = this.wordArrays[this.sectionIndex][index - 1].n;
     }
 
     if (currentParentElementIndex != this.parentElementIndex) {
@@ -604,7 +622,9 @@ class HyperaudioLite {
         } else {
           // the wordlst needs refreshing
           let words = this.transcript.querySelectorAll('[data-m]');
-          this.wordArr = this.createWordArray(words);
+          let sections = this.transcript.querySelectorAll(section);
+          //this.wordArray = this.createWordArray(words);
+          this.wordArrays = this.createWordArrays(sections);
           this.parentElements = this.transcript.getElementsByTagName(this.parentTag);
         }
       }
@@ -662,8 +682,26 @@ class HyperaudioLite {
           }
         }
 
-        if (this.wordArr[index]) {
-          interval = parseInt(this.wordArr[index].n.getAttribute('data-m') - this.currentTime * 1000);
+        //if (this.wordArray[index]) {
+        if (this.wordArrays[this.sectionIndex][index]) {
+          //interval = parseInt(this.wordArray[index].n.getAttribute('data-m') - this.currentTime * 1000);
+          interval = parseInt(this.wordArrays[this.sectionIndex][index].n.getAttribute('data-m') - this.currentTime * 1000);
+        }
+
+        /////////////////////
+
+        console.log(index);
+        console.log(this.wordArrays[this.sectionIndex].length);
+
+        if (index >= this.wordArrays[this.sectionIndex].length) {
+          console.log("END OF SECTION");
+          this.sectionIndex++;
+
+          // this needs to be abstracted for each type of player - reinstantiate the player?
+
+          this.player.src = this.transcript.querySelectorAll('section')[this.sectionIndex].getAttribute('data-media-src');
+          this.myPlayer.setTime(this.wordArrays[this.sectionIndex][0].m/1000);
+          this.myPlayer.play();
         }
       }
       if (this.webMonetization === true) {
@@ -720,12 +758,14 @@ class HyperaudioLite {
   updateTranscriptVisualState = (currentTime) => {
 
     let index = 0;
-    let words = this.wordArr.length - 1;
+    //let words = this.wordArray.length - 1;
+    console.log("section  "+this.sectionIndex);
+    let words = this.wordArrays[this.sectionIndex].length - 1;
 
     // Binary search https://en.wikipedia.org/wiki/Binary_search_algorithm
     while (index <= words) {
       const guessIndex = index + ((words - index) >> 1); // >> 1 has the effect of halving and rounding down
-      const difference = this.wordArr[guessIndex].m / 1000 - currentTime; // wordArr[guessIndex].m represents start time of word
+      const difference = this.wordArray[guessIndex].m / 1000 - currentTime; // wordArray[guessIndex].m represents start time of word
 
       if (difference < 0) {
         // comes before the element
@@ -740,7 +780,7 @@ class HyperaudioLite {
       }
     }
 
-    this.wordArr.forEach((word, i) => {
+    this.wordArray.forEach((word, i) => {
       let classList = word.n.classList;
       let parentClassList = word.n.parentNode.classList;
 
@@ -755,7 +795,6 @@ class HyperaudioLite {
       }
     });
 
-
     this.parentElements = this.transcript.getElementsByTagName(this.parentTag);
 
     //remove active class from all paras
@@ -769,11 +808,13 @@ class HyperaudioLite {
 
     if (index > 0) {
       if (this.myPlayer.paused === false) {
-        this.wordArr[index - 1].n.classList.add('active');
+        //this.wordArray[index - 1].n.classList.add('active');
+        this.wordArrays[this.sectionIndex][index - 1].n.classList.add('active');
       }
 
-      if (this.wordArr[index - 1].n.parentNode !== null) {
-        this.wordArr[index - 1].n.parentNode.classList.add('active');
+      if (this.wordArray[index - 1].n.parentNode !== null) {
+        //this.wordArray[index - 1].n.parentNode.classList.add('active');
+        this.wordArrays[this.sectionIndex][index - 1].n.parentNode.classList.add('active');
       }
     } 
 

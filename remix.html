@@ -1,0 +1,244 @@
+<!-- Example index.html Copyright (C) BBC Research & Development - content used with kind permission of Ian Forrester https://twitter.com/cubicgarden/ -->
+<!-- Version 2.1 -->
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Hyperaudio - BBCRD | Education | Ethics of personal data in the era of QS and IoT</title>
+  <link rel="stylesheet" href="css/hyperaudio-lite-player.css">
+  <link rel="stylesheet" href="css/share-this.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/velocity/1.5.0/velocity.js"></script>
+  <script src="https://platform.twitter.com/widgets.js"></script>
+  <style>
+    /* uncomment the following CSS for active parent / word indicator */ 
+    
+    /*
+    .hyperaudio-transcript .active{
+      background-color: #efefef;
+    }
+
+    .hyperaudio-transcript .active > .active {
+      background-color: #ccf;
+      text-decoration:  #00f underline;
+      text-decoration-thickness: 3px;
+    }
+    */
+    
+  </style>
+</head>
+<body>
+  <p>
+    <form id="searchForm" style="float:right">
+      <!-- comment out the following line if you don't need playback rate controls -->
+      Playback Rate <span id="currentPbr">1</span><input id="pbr" type="range" value="1" min="0.5" max="3" step="0.1" style="width:10%">
+      <input id="search" type="text" ><input type="submit" value="search">
+    </form>
+  </p>
+
+  <!-- Comment out the following line if you are using an alternative player. ie SoundCloud or YouTube -->
+  <video id="hyperplayer" class="hyperaudio-player" style="z-index: 5000000; position:relative; width:400px" controls>
+    <track id="hyperplayer-vtt" label="English" kind="subtitles" srclang="en" src="">
+  </video>
+
+  <!-- Uncomment the following lines for SoundCloud compatibility. Keep commented if you are using native or YouTube -->
+  <!-- iFrame HTML can be found by clicking the embed button while viewing the audio on SoundCloud -->
+  <!-- <script src="https://w.soundcloud.com/player/api.js"></script>
+  <iframe id="hyperplayer" data-player-type="soundcloud" width="100%" height="166" scrolling="no" frameborder="no" allow="autoplay" 
+        src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/730479133&color=%23ff5500&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true">
+  </iframe> -->
+
+  <!-- Uncomment the following lines for YouTube compatibility. Keep commented if you are using native or SoundCloud -->
+  <!-- <iframe id="hyperplayer" data-player-type="youtube" width="400" height="300" frameborder="no" allow="autoplay"
+    src="https://www.youtube.com/embed/xLcsdc823dg?enablejsapi=1">
+  </iframe> -->
+
+  <div id="hypertranscript" class="hyperaudio-transcript" style="overflow-y:scroll; height:600px; position:relative; border-style:dashed; border-width: 1px; border-color:#999; padding: 8px">
+    
+    <article data-wm="$ilp.uphold.com/123article">
+
+      <section data-media-src="https://lab.hyperaud.io/video/BBC/education.mp4" data-wm="$ilp.uphold.com/123section">
+
+        <h5 data-m="0">How do we make people more aware of their personal data?</h5>
+
+        <p data-wm="$ilp.uphold.com/123Doc">
+          <span data-m="4470" data-d="0" class="speaker">Doc: </span>
+          <span data-m="4470" data-d="270">We </span>
+          <span data-m="4740" data-d="240">have </span>
+          <span data-m="5010" data-d="300">two </span>
+          <span data-m="5310" data-d="600">selves </span>
+          <span data-m="6030" data-d="150">in </span>
+          <span data-m="6180" data-d="120">the </span>
+          <span data-m="6300" data-d="300">world </span>
+          <span data-m="6600" data-d="90">at </span>
+          <span data-m="6690" data-d="150">any </span>
+          <span data-m="6840" data-d="300">given </span>
+          <span data-m="7140" data-d="310">time </span>
+          <span data-m="7540" data-d="180">now. </span>
+          <span data-m="8490" data-d="180">We </span>
+          <span data-m="8670" data-d="270">have </span>
+          <span data-m="8940" data-d="120">the </span>
+          <span data-m="9060" data-d="480">physical </span>
+          <span data-m="9720" data-d="570">self, </span>
+          <span data-m="11010" data-d="150">our </span>
+          <span data-m="11160" data-d="390">flesh </span>
+          <span data-m="11550" data-d="120">and </span>
+          <span data-m="11670" data-d="360">blood, </span>
+          <span data-m="12420" data-d="180">our </span>
+          <span data-m="12600" data-d="690">voice, </span>
+          <span data-m="13860" data-d="120">our </span>
+          <span data-m="13980" data-d="510">presence </span>
+          <span data-m="14490" data-d="120">in </span>
+          <span data-m="14610" data-d="120">the </span>
+          <span data-m="14730" data-d="360">world </span>
+          <span data-m="15300" data-d="150">which </span>
+          <span data-m="15450" data-d="510">extends </span>
+          <span data-m="15960" data-d="360">beyond </span>
+          <span data-m="16320" data-d="120">our </span>
+          <span data-m="16440" data-d="420">bodies </span>
+          <span data-m="16890" data-d="140">but </span>
+          <span data-m="18060" data-d="390">lives </span>
+          <span data-m="18450" data-d="90">in </span>
+          <span data-m="18540" data-d="140">this </span>
+          <span data-m="18690" data-d="450">physical </span>
+          <span data-m="19140" data-d="450">space. </span>
+          <span data-m="20560" data-d="180">There's </span>
+          <span data-m="20760" data-d="180">this </span>
+          <span data-m="20940" data-d="300">other </span>
+          <span data-m="21240" data-d="390">space, </span>
+          <span data-m="21660" data-d="120">we </span>
+          <span data-m="21780" data-d="480">started </span>
+          <span data-m="22260" data-d="270">calling </span>
+          <span data-m="22530" data-d="840">cyberspace </span>
+          <span data-m="23370" data-d="60">a </span>
+          <span data-m="23430" data-d="210">long </span>
+          <span data-m="23640" data-d="270">time </span>
+          <span data-m="23910" data-d="240">ago, </span>
+          <span data-m="24180" data-d="180">but </span>
+          <span data-m="24360" data-d="150">it's </span>
+          <span data-m="24510" data-d="60">a </span>
+          <span data-m="24570" data-d="270">real </span>
+          <span data-m="24840" data-d="240">thing. </span>
+          <span data-m="25770" data-d="180">It's </span>
+          <span data-m="25950" data-d="60">a </span>
+          <span data-m="26010" data-d="270">data </span>
+          <span data-m="26280" data-d="440">space. </span>
+        </p>
+        <p data-wm="$ilp.uphold.com/123Julian">
+          <span data-m="26940" data-d="0" class="speaker">Julian: </span>
+          <span data-m="26940" data-d="240">We </span>
+          <span data-m="27180" data-d="360">are </span>
+          <span data-m="27960" data-d="510">as </span>
+          <span data-m="29130" data-d="510">people </span>
+          <span data-m="29970" data-d="210">quite </span>
+          <span data-m="30180" data-d="390">often </span>
+          <span data-m="30690" data-d="660">data </span>
+          <span data-m="31350" data-d="660">illiterate. </span>
+          <span data-m="32850" data-d="180">We </span>
+          <span data-m="33030" data-d="300">don't </span>
+          <span data-m="33330" data-d="450">realise </span>
+          <span data-m="33780" data-d="60">the </span>
+          <span data-m="33840" data-d="540">impact </span>
+          <span data-m="34380" data-d="120">of </span>
+          <span data-m="34500" data-d="150">what </span>
+          <span data-m="34650" data-d="220">data </span>
+          <span data-m="34960" data-d="170">has </span>
+          <span data-m="35130" data-d="90">on </span>
+          <span data-m="35220" data-d="90">our </span>
+          <span data-m="35310" data-d="420">lives, </span>
+          <span data-m="35760" data-d="90">we </span>
+          <span data-m="35850" data-d="270">don't </span>
+          <span data-m="36390" data-d="450">realise </span>
+          <span data-m="36840" data-d="150">what </span>
+          <span data-m="36990" data-d="120">we're </span>
+          <span data-m="37110" data-d="150">giving </span>
+          <span data-m="37260" data-d="150">away </span>
+          <span data-m="38410" data-d="80">and </span>
+          <span data-m="38490" data-d="60">we </span>
+          <span data-m="38550" data-d="330">don't </span>
+          <span data-m="38880" data-d="660">realise </span>
+          <span data-m="39810" data-d="90">the </span>
+          <span data-m="39900" data-d="780">mechanisms </span>
+          <span data-m="40680" data-d="120">that </span>
+          <span data-m="40800" data-d="210">will </span>
+          <span data-m="41010" data-d="450">enable </span>
+          <span data-m="41460" data-d="240">us </span>
+          <span data-m="41970" data-d="390">to </span>
+          <span data-m="42390" data-d="810">re-empower </span>
+          <span data-m="43200" data-d="600">ourselves </span>
+          <span data-m="44340" data-d="165">in </span>
+          <span data-m="44505" data-d="82">this </span>
+          <span data-m="44587" data-d="82">environment. </span>
+        </p>
+      </section>
+      <section data-media-src="https://lab.hyperaud.io/video/HALiteIntro.mp4">
+        <p>
+          <span data-m="8240" data-d="240">The </span>
+          <span data-m="8480" data-d="320">first </span>
+          <span data-m="8800" data-d="320">step </span>
+          <span data-m="9130" data-d="160">is </span>
+          <span data-m="9290" data-d="80">to </span>
+          <span data-m="9370" data-d="500">transcribe </span>
+          <span data-m="10010" data-d="240">your </span>
+          <span data-m="10240" data-d="500">content. </span>
+        </p>
+        <p>
+          <span data-m="11530" data-d="240">We </span>
+          <span data-m="11760" data-d="240">use </span>
+          <span data-m="12000" data-d="160">the </span>
+          <span data-m="12160" data-d="500">Deepgram </span>
+          <span data-m="12720" data-d="320">API </span>
+          <span data-m="13040" data-d="240">which </span>
+          <span data-m="13290" data-d="500">produces </span>
+          <span data-m="13920" data-d="240">high </span>
+          <span data-m="14160" data-d="400">quality </span>
+          <span data-m="14560" data-d="500">transcripts </span>
+          <span data-m="15290" data-d="240">in </span>
+          <span data-m="15530" data-d="320">double-</span>
+          <span data-m="15840" data-d="400">quick </span>
+          <span data-m="16240" data-d="460">time. </span>
+          <span data-m="17180" data-d="500">Deepgram </span>
+          <span data-m="17740" data-d="160">are </span>
+          <span data-m="17900" data-d="480">offering </span>
+          <span data-m="18380" data-d="500">45,000 </span>
+          <span data-m="19420" data-d="320">minutes </span>
+          <span data-m="19740" data-d="240">of </span>
+          <span data-m="19980" data-d="500">transcription </span>
+          <span data-m="20700" data-d="240">for </span>
+          <span data-m="20940" data-d="500">free. </span>
+        </p>
+      </section>
+    </article>
+  </div>
+  
+  <script src="js/hyperaudio-lite.js"></script>
+  <script src="js/hyperaudio-lite-extension.js"></script>
+  <script src="js/share-this.js"></script>
+  <script src="js/share-this-twitter.js"></script>
+  <script src="js/share-this-clipboard.js"></script>
+  <script src="js/caption.js"></script>
+  <script>
+  ShareThis({
+      sharers: [ ShareThisViaTwitter, ShareThisViaClipboard ],
+      selector: "article"
+  }).init();
+
+  // minimizedMode is still experimental - it aims to show the current words in the title, which can be seen on the browser tab.
+  let minimizedMode = false;
+  let autoScroll = true;
+  let doubleClick = false;
+  let webMonetization = true;
+  let playOnClick = false;
+
+  new HyperaudioLite("hypertranscript", "hyperplayer", minimizedMode, autoScroll, doubleClick, webMonetization, playOnClick);
+
+  // Override scroll parameters
+  //ht1.setScrollParameters(<duration>, <delay>, <offset>, <container>);
+
+  // this should create captions  
+  let cap1 = caption();
+  cap1.init("hypertranscript", "hyperplayer", '37' , '21'); // transcript Id, player Id, max chars, min chars for caption line
+  
+  </script>
+</body>
+</html>
