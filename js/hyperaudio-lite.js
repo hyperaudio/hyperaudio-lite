@@ -547,6 +547,33 @@ class HyperaudioLite {
     }
 
     const timeSecs = parseInt(target.getAttribute('data-m')) / 1000;
+    let element = target;
+
+    // check which section has been clicked on and switch if appropriate
+
+    while (element !== null && element.hasAttribute('data-media-src') === false) {  
+      element = element.parentNode;
+    }
+
+    let clickedSection = element;
+
+    // this needs to be abstracted for each type of player - reinstantiate the player?
+
+    if (this.player.src !== clickedSection.getAttribute('data-media-src')) {
+      this.player.src = clickedSection.getAttribute('data-media-src');
+
+      // switch section index
+
+      let sections = this.transcript.querySelectorAll('[data-media-src]');
+
+      sections.forEach((section, index) => {
+        if (section === clickedSection) {
+          this.sectionIndex = index;
+          console.log("new sectionIndex = "+this.sectionIndex);
+        }
+      });
+    }
+
     this.updateTranscriptVisualState(timeSecs);
 
     if (!isNaN(parseFloat(timeSecs))) {
@@ -791,6 +818,34 @@ class HyperaudioLite {
       }
     }
 
+    // mark all words in previous sections as read
+
+    this.wordArrays.forEach((section, i) => {
+      console.log(i);
+      console.log(this.sectionIndex);
+
+      if (i < this.sectionIndex) {
+        this.wordArrays[i].forEach(word => {
+          let classList = word.n.classList;
+          let parentClassList = word.n.parentNode.classList;
+          parentClassList.remove('active');
+          classList.add('read');
+          classList.remove('unread');
+          classList.remove('active');
+        });
+      } 
+      if (i > this.sectionIndex) {
+        this.wordArrays[i].forEach(word => {
+          let classList = word.n.classList;
+          let parentClassList = word.n.parentNode.classList;
+          classList.add('unread');
+          classList.remove('read');
+        });
+      }
+    });
+
+
+
     //this.wordArray.forEach((word, i) => {
     this.wordArrays[this.sectionIndex].forEach((word, i) => {
       let classList = word.n.classList;
@@ -800,7 +855,7 @@ class HyperaudioLite {
         classList.add('read');
         classList.remove('unread');
         classList.remove('active');
-        parentClassList.remove('active');
+        parentClassList.remove('active'); // todo - move this out of the if
       } else {
         classList.add('unread');
         classList.remove('read');
