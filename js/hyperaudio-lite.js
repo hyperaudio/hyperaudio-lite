@@ -765,7 +765,8 @@ class HyperaudioLite {
     // Binary search https://en.wikipedia.org/wiki/Binary_search_algorithm
     while (index <= words) {
       const guessIndex = index + ((words - index) >> 1); // >> 1 has the effect of halving and rounding down
-      const difference = this.wordArray[guessIndex].m / 1000 - currentTime; // wordArray[guessIndex].m represents start time of word
+      //const difference = this.wordArray[guessIndex].m / 1000 - currentTime; // wordArray[guessIndex].m represents start time of word
+      const difference = this.wordArrays[this.sectionIndex][guessIndex].m / 1000 - currentTime; // wordArray[guessIndex].m represents start time of word
 
       if (difference < 0) {
         // comes before the element
@@ -780,7 +781,8 @@ class HyperaudioLite {
       }
     }
 
-    this.wordArray.forEach((word, i) => {
+    //this.wordArray.forEach((word, i) => {
+    this.wordArrays[this.sectionIndex].forEach((word, i) => {
       let classList = word.n.classList;
       let parentClassList = word.n.parentNode.classList;
 
