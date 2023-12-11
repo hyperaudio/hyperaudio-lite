@@ -405,6 +405,7 @@ class HyperaudioLite {
 
     words.forEach((word, i) => {
       const m = parseInt(word.getAttribute('data-m'));
+      const d = parseInt(word.getAttribute('data-d'));
       let p = word.parentNode;
       while (p !== document) {
         if (
@@ -416,7 +417,7 @@ class HyperaudioLite {
         }
         p = p.parentNode;
       }
-      wordArray[i] = { n: words[i], m: m, p: p };
+      wordArray[i] = { n: words[i], m: m, d: d, p: p };
       wordArray[i].n.classList.add('unread');
     });
 
@@ -695,15 +696,24 @@ class HyperaudioLite {
 
         if (index >= this.wordArrays[this.sectionIndex].length) {
           console.log("END OF SECTION");
-          this.sectionIndex++;
-
-          // this needs to be abstracted for each type of player - reinstantiate the player?
-
-          this.player.src = this.transcript.querySelectorAll('section')[this.sectionIndex].getAttribute('data-media-src');
-          this.myPlayer.setTime(this.wordArrays[this.sectionIndex][0].m/1000);
-          this.myPlayer.play();
+          if ((this.sectionIndex + 1) < this.wordArrays.length) {
+            this.sectionIndex++;
+            // this needs to be abstracted for each type of player - reinstantiate the player?
+            this.player.src = this.transcript.querySelectorAll('section')[this.sectionIndex].getAttribute('data-media-src');
+            this.myPlayer.setTime(this.wordArrays[this.sectionIndex][0].m/1000);
+            this.myPlayer.play();
+          } else {
+            let lastDuration = this.wordArrays[this.sectionIndex][index-1].d;
+            console.log(lastDuration);
+            setTimeout(() => {
+              this.myPlayer.pause();
+              this.end = null;
+              console.log(this.currentTime);
+            }, lastDuration);
+          }
         }
       }
+
       if (this.webMonetization === true) {
         //check for payment pointer
         let activeElements = this.transcript.getElementsByClassName('active');
