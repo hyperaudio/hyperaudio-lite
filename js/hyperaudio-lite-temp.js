@@ -1,13 +1,10 @@
 /*! (C) The Hyperaudio Project. MIT @license: en.wikipedia.org/wiki/MIT_License. */
-/*! Version 2.2.1 */
+/*! Version 3.0.0 */
 
 'use strict';
 
 function nativePlayer(instance) {
   this.player = instance.player;
-  console.log("**** this.player = ");
-  console.log(this.player);
-
   this.player.addEventListener('pause', instance.pausePlayHead, false);
   this.player.addEventListener('play', instance.preparePlayHead, false);
   this.paused = true;
@@ -171,12 +168,12 @@ function youtubePlayer(instance) {
   }
 }
 
-// Note – The Spotify Player is in beta.
+// Note – The Spotify Player is in beta.
 // The API limits us to:
 // 1. A seek accuracy of nearest second
 // 2. An update frequency of one second (although a workaround is provided)
 // 3. Playing a file without previous iteraction will always play from start
-//    ie – a shared selection will highlight but not start at the start of
+//    ie – a shared selection will highlight but not start at the start of
 //    that selection. 
 
 function spotifyPlayer(instance) {
@@ -271,46 +268,27 @@ const hyperaudioPlayerOptions = {
 
 function hyperaudioPlayer(playerType, instance) {
   if (playerType !== null && playerType !== undefined) {
-    console.log(instance);
-    //return new playerType(instance);
-
-    /*** required for remixes ***/
-
+    console.log("playerType");
+    console.dir(playerType);
+    console.log("instance");
+    console.dir(instance);
     let myPlayers = [];
 
     const mediaSections = instance.transcript.querySelectorAll('[data-media-src]');
 
-    let baseId = instance.id;
-
-    if (mediaSections.length > 1) {
-      baseId = instance.id+"0";
-    }
-
     mediaSections.forEach((section, index) => {
 
-      console.log("index = "+index);
-
-      if (index > 0) {
-        //instance.id = baseId+index;
-        //instance.player = document.getElementById(instance.id);
-        instance.player = document.querySelectorAll('.hyperaudio-player')[index];
-        console.log("instance player = ");
-        console.log(instance.player);
-      } 
-
-      console.log(instance);
-
+      //todo base this on player id?
+      instance.id = "cachedHyperplayer"+index;
+      instance.player = document.getElementById(instance.id);
       myPlayers[index] = new playerType(instance);
     });
 
+    //return new playerType(instance);
 
     console.log("==== myPlayers ====");
     console.dir(myPlayers);
     return myPlayers;
-
-    /****************************/
-
-
   } else {
     console.warn("HYPERAUDIO LITE WARNING: data-player-type attribute should be set on player if not native, eg SoundCloud, YouTube, Vimeo, VideoJS");
   }
@@ -327,7 +305,6 @@ class HyperaudioLite {
     const windowHash = window.location.hash;
     const hashVar = windowHash.substring(1, windowHash.indexOf('='));
     
-
     if (hashVar === this.transcript.id) {
       this.hashArray = windowHash.substring(this.transcript.id.length + 2).split(',');
     } else {
@@ -365,7 +342,6 @@ class HyperaudioLite {
 
     this.myPlayer = null;
     this.playerPaused = true;
-    this.switchingPlayer = false;
 
     if (this.autoscroll === true) {
       this.scroller = window.Velocity || window.jQuery.Velocity;
@@ -386,57 +362,39 @@ class HyperaudioLite {
     this.player = document.getElementById(mediaElementId);
     this.cachedPlayers = [];
 
-
     // Grab the media source and type from the first section if it exists
     // and add it to the media element.
 
-    /*const mediaSrc = this.transcript.querySelector('[data-media-src]');
+    //const mediaSrc = this.transcript.querySelector('[data-media-src]');
+    const mediaSections = this.transcript.querySelectorAll('[data-media-src]');
 
-    if (mediaSrc !== null &&  mediaSrc !== undefined) {
+    /*if (mediaSrc !== null &&  mediaSrc !== undefined) {
       this.player.src = mediaSrc.getAttribute('data-media-src');
     }*/
 
-
-
-    /*** required for remixes ***/
-
-    console.log(">>>>>this.player");
-    console.log(this.player);
-
-    const mediaSections = this.transcript.querySelectorAll('[data-media-src]');
+    // Set the player.src
 
     if (mediaSections[0] !== null &&  mediaSections[0] !== undefined) {
       this.player.src = mediaSections[0].getAttribute('data-media-src');
     }
 
-    console.log(this.player.src);
-
-    console.log("mediaSections...");
-    console.log(mediaSections);
-
     // Set up the player cache (used for remixes)
 
-    console.log("this.player");
-    console.log(this.player);
-
     mediaSections.forEach((section, index) => {
-      if (index > 0) {
-        this.cachedPlayers[index] = this.player.cloneNode(true);
-        this.cachedPlayers[index].src = section.getAttribute('data-media-src');
-        this.cachedPlayers[index].currentTime = 0;
-        this.cachedPlayers[index].id = "cachedHyperplayer"+index;
-        this.cachedPlayers[index].style.display = 'none';
-        console.log("appending...");
-        this.player.after(this.cachedPlayers[index]);
-      } else {
-        this.cachedPlayers[index] = this.player;
-      }
+      this.cachedPlayers[index] = this.player.cloneNode(true);
+      
+      //this.cachedPlayers[index] = hyperaudioPlayer(hyperaudioPlayerOptions[this.playerType], this);
+      //console.log("source = ");
+      //console.log(source);
+      this.cachedPlayers[index].src = section.getAttribute('data-media-src');
+      this.cachedPlayers[index].currentTime = 0;
+      this.cachedPlayers[index].id = "cachedHyperplayer"+index;
+      this.cachedPlayers[index].style.display = 'none';
+
+      console.log("appending...");
+      this.player.after(this.cachedPlayers[index]);
     });
 
-    console.log("........this.player");
-    console.log(this.player);
-
-    /*******/
 
     if (this.player.tagName == 'VIDEO' || this.player.tagName == 'AUDIO') {
       //native HTML media elements
@@ -447,24 +405,8 @@ class HyperaudioLite {
     }
 
     //this.myPlayer = hyperaudioPlayer(hyperaudioPlayerOptions[this.playerType], this);
-
-    console.log("this.player");
-    console.log(this.player);
-    
     this.myPlayers = hyperaudioPlayer(hyperaudioPlayerOptions[this.playerType], this);
-
-    console.log("this.player");
-    console.log(this.player);
-
     this.myPlayer = this.myPlayers[0];
-    
-
-    console.log("myPlayer");
-    console.dir(this.myPlayer);
-
-    console.log("this.player");
-    console.log(this.player);
-
 
     this.parentElementIndex = 0;
     words[0].classList.add('active');
@@ -635,12 +577,6 @@ class HyperaudioLite {
   };
 
   setPlayHead = e => {
-
-    console.log("this.player");
-    console.log(this.player);
-
-    
-
     const target = e.target ? e.target : e.srcElement;
 
     // cancel highlight playback
@@ -669,30 +605,10 @@ class HyperaudioLite {
 
     let clickedSection = element;
 
-    console.log("clickedSection");
-    console.log(clickedSection);
-
-
     // this needs to be abstracted for each type of player - reinstantiate the player?
 
-    console.log("this.player");
-    console.log(this.player);
-
-    console.log(this.player.src);
-    console.log(this.myPlayer);
-    console.log(this.myPlayer.player.id);
-    let currentSrc = document.getElementById(this.myPlayer.player.id).getAttribute('src');
-    console.log(currentSrc);
-    console.log(clickedSection.getAttribute('data-media-src'));
-
-    //alert("2");
-
-
-
-    if (currentSrc !== clickedSection.getAttribute('data-media-src')) {
-      //this.player.src = clickedSection.getAttribute('data-media-src');
-
-
+    if (this.player.src !== clickedSection.getAttribute('data-media-src')) {
+      this.player.src = clickedSection.getAttribute('data-media-src');
 
       // switch section index
 
@@ -704,23 +620,9 @@ class HyperaudioLite {
           console.log("new sectionIndex = "+this.sectionIndex);
         }
       });
-
-      // display appropriate player
-
-      let allPlayers = document.querySelectorAll('.hyperaudio-player');
-      allPlayers.forEach(player => {
-        player.style.display = "none";
-      });
-
-      allPlayers[this.sectionIndex].style.display = "block";
-      this.myPlayer.pause();
-      this.myPlayer = this.myPlayers[this.sectionIndex];
-      this.myPlayer.play();
     }
 
     this.updateTranscriptVisualState(timeSecs);
-
-
 
     if (!isNaN(parseFloat(timeSecs))) {
       this.end = null;
@@ -867,65 +769,43 @@ class HyperaudioLite {
         //console.log(index);
         //console.log(this.wordArrays[this.sectionIndex].length);
 
-        // check to see if there is more than one section, implying a remix
 
-        
+
+
         if (index >= this.wordArrays[this.sectionIndex].length) {
           console.log("END OF SECTION");
-          let lastDuration = this.wordArrays[this.sectionIndex][index-1].d;
-          
+          //todo - don't use hardcoded player ids
+
+          document.querySelector('#hyperplayer').style.display = 'none';
           if ((this.sectionIndex + 1) < this.wordArrays.length) {
+            document.querySelector('#cachedHyperplayer'+(this.sectionIndex)).style.display = 'none';
             this.sectionIndex++;
+            document.querySelector('#cachedHyperplayer'+(this.sectionIndex)).style.display = 'block';
             // this needs to be abstracted for each type of player - reinstantiate the player?
             // this.player.src = this.transcript.querySelectorAll('section')[this.sectionIndex].getAttribute('data-media-src');
+            // this.player = this.cachedPlayers[this.sectionIndex].cloneNode(true); 
+            
+            //this.myPlayer.setTime(this.wordArrays[this.sectionIndex][0].m/1000);
+            //this.myPlayer.play();
+            this.myPlayer.pause();
+            console.log("sectionIndex = "+this.sectionIndex);
+            this.myPlayer = this.myPlayers[this.sectionIndex];
 
-            // this may not work with all types of player
-            document.querySelectorAll('.hyperaudio-player')[this.sectionIndex - 1].style.display = "none";
-            document.querySelectorAll('.hyperaudio-player')[this.sectionIndex].style.display = "block";
-
-            this.switchingPlayer = true;
             setTimeout(() => {
-              console.log("timeout 1 ----------------");
-              
-              console.log(lastDuration);
-
-              this.myPlayer.pause();
-              // swap the new player in
-              this.myPlayer = this.myPlayers[this.sectionIndex];
-              console.log(this.myPlayer);
-
-              this.myPlayer.setTime(this.wordArrays[this.sectionIndex][0].m/1000);
-              //alert("here");
               this.myPlayer.play();
-              this.switchingPlayer = false;
-              console.log(this.wordArrays[this.sectionIndex]);
-
-              //last word
-              //let lastWord = this.wordArrays[this.sectionIndex][this.wordArrays[this.sectionIndex].length-1];
-              //console.log(lastWord);
-              //let classList = lastWord.n.classList;
-              //classList.add('unread');
-              //classList.remove('read');
-              //classList.remove('active');
-              
-              //alert("here");
-
-            }, lastDuration);
-
-            
-
-            //this.myPlayer.pause();
-            
+              alert("play");
+            }, 1000);
+            //this.myPlayer.play();
+            //this.player.play();
+            //this.myPlayer = hyperaudioPlayer(hyperaudioPlayerOptions[this.playerType], this);
           } else {
+            let lastDuration = this.wordArrays[this.sectionIndex][index-1].d;
             //console.log(lastDuration);
-            if (this.switchingPlayer === false){
-              setTimeout(() => {
-                console.log("timeout 2 ----------------");
-                this.myPlayer.pause();
-                this.end = null;
-                console.log(this.currentTime);
-              }, lastDuration);
-            }
+            setTimeout(() => {
+              this.myPlayer.pause();
+              this.end = null;
+              //console.log(this.currentTime);
+            }, lastDuration);
           }
         }
       }
@@ -1048,7 +928,6 @@ class HyperaudioLite {
       } else {
         classList.add('unread');
         classList.remove('read');
-        classList.remove('active'); // TEST THIS!
       }
     });
 

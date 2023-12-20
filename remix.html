@@ -28,16 +28,15 @@
   </style>
 </head>
 <body>
-  <p>
+  <!--<p>
     <form id="searchForm" style="float:right">
-      <!-- comment out the following line if you don't need playback rate controls -->
       Playback Rate <span id="currentPbr">1</span><input id="pbr" type="range" value="1" min="0.5" max="3" step="0.1" style="width:10%">
       <input id="search" type="text" ><input type="submit" value="search">
     </form>
-  </p>
+  </p>-->
 
   <!-- Comment out the following line if you are using an alternative player. ie SoundCloud or YouTube -->
-  <video id="hyperplayer" class="hyperaudio-player" style="z-index: 5000000; position:relative; width:400px" controls>
+  <video id="hyperplayer" class="hyperaudio-player" preload="auto"  style="z-index: 5000000; position:relative; width:400px">
     <track id="hyperplayer-vtt" label="English" kind="subtitles" srclang="en" src="">
   </video>
 
@@ -168,7 +167,7 @@
           <span data-m="43200" data-d="600">ourselves </span>
           <span data-m="44340" data-d="165">in </span>
           <span data-m="44505" data-d="82">this </span>
-          <span data-m="44587" data-d="82">environment. </span>
+          <span data-m="44587" data-d="400">environment. </span>
         </p>
       </section>
       <section data-media-src="https://lab.hyperaud.io/video/HALiteIntro.mp4">
@@ -228,7 +227,8 @@
   let autoScroll = true;
   let doubleClick = false;
   let webMonetization = true;
-  let playOnClick = false;
+  let playOnClick = true;
+
 
   new HyperaudioLite("hypertranscript", "hyperplayer", minimizedMode, autoScroll, doubleClick, webMonetization, playOnClick);
 
