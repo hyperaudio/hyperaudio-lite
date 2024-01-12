@@ -6,7 +6,7 @@ Hyperaudio Lite - is an [Interactive Transcript](https://en.wikipedia.org/wiki/I
 
 You can use Hyperaudio Lite to provide Interactive Transcripts, this readme details why and how.
 
-- lightweight (less than 10Kb minified)
+- lightweight (around 10Kb minified)
 - no framework dependencies
 - MIT Licensed
 
