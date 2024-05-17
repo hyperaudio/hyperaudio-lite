@@ -4,9 +4,10 @@
  * Tests updated for version 2.1
  */
 
-const { test } = require("@jest/globals");
-const { HyperaudioLite } = require("../js/hyperaudio-lite");
-//import * as HyperaudioLite from '../js/hyperaudio-lite';
+// @vitest-environment jsdom
+
+import { describe, it, expect, beforeEach } from 'vitest';
+import { HyperaudioLite } from '../js/hyperaudio-lite';
 
 let wordArr = [];
 let ht = null;
@@ -39,8 +40,7 @@ function simulateClick(elem, clickType) {
   // Create our event (with options)
   let evt = new MouseEvent(clickType, {
     bubbles: true,
-    cancelable: true,
-    view: window,
+    cancelable: true
   });
   // If cancelled, don't dispatch our event
   let cancelled = !elem.dispatchEvent(evt);
