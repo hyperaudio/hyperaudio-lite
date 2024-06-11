@@ -123,6 +123,29 @@ var caption = function () {
       }
     });
 
+    console.log(data);
+
+    data.segments.map(function (segment, i, arr) {
+      var sentence = "";
+      segment.words.forEach(function (wordMeta) {
+        sentence += wordMeta.text;
+      });
+      console.log(msToTime(segment.start*1000) + " " + sentence);
+    });
+
+    function msToTime(duration) {
+      var milliseconds = Math.floor((duration % 1000) / 100),
+        seconds = Math.floor((duration / 1000) % 60),
+        minutes = Math.floor((duration / (1000 * 60)) % 60),
+        hours = Math.floor((duration / (1000 * 60 * 60)) % 24);
+    
+      hours = (hours < 10) ? "0" + hours : hours;
+      minutes = (minutes < 10) ? "0" + minutes : minutes;
+      seconds = (seconds < 10) ? "0" + seconds : seconds;
+    
+      return hours + ":" + minutes + ":" + seconds;
+    }
+
     function captionMeta(start, stop, text) {
       this.start = start;
       this.stop = stop;
