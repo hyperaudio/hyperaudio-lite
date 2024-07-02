@@ -21,6 +21,34 @@
       text-decoration:  #00f underline;
       text-decoration-thickness: 3px;
     }
+
+    #popover {
+      position: absolute;
+      background-color: #f9f9f9;
+      
+      border: 1px solid #ccc;
+      padding: 10px;
+      border-radius: 4px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+      display: none;
+      z-index: 1;
+      font-size: small;
+      font-family: Arial,Helvetica Neue,Helvetica,sans-serif;
+    }
+
+    #popover a {
+      text-decoration: none; 
+      color: #303030;
+      cursor: pointer;
+    }
+
+    #clipboard-text {
+      font-family: Courier New,Courier,Lucida Sans Typewriter,Lucida Typewriter,monospace; 
+    }
+
+    #clipboard-confirm {
+      font-size: medium;
+    }
     
   </style>
 </head>
@@ -37,6 +65,16 @@
   <video id="hyperplayer" class="hyperaudio-player" style="z-index: 5000000; position:relative; width:400px" src="" type="" controls>
     <track id="hyperplayer-vtt" label="English" kind="subtitles" srclang="en" src="">
   </video>
+
+  <div id="popover"><a id="popover-btn">Copy to clipboard <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="-130 -110 600 600"><path d="m161,152.9h190c0.1,0 0.1,0 0.2,0 10.8,0 19.6-7.1 19.6-16 0-1.5-14.1-82.7-14.1-82.7-1.3-7.9-9.6-13.8-19.4-13.8l-61.7,.1v-13.5c0-8.8-8.8-16-19.6-16-10.8,0-19.6,7.1-19.6,16v13.6l-61.8,.1c-9.8,0-18,5.9-19.4,13.8l-13.7,80.3c-1.2,14.3 13.5,18.1 19.5,18.1z" fill="currentcolor"/><path d="m427.5,78.9h-26.8c0,0 9.3,53.5 9.3,58 0,30.4-26.4,55.2-58.8,55.2h-190.2c-19.6,0.4-63.3-14.7-58.1-63.9l8.4-49.2h-26.8c-10.8,0-19.6,8.8-19.6,19.6v382.9c0,10.8 8.8,19.6 19.6,19.6h343c10.8,0 19.6-8.8 19.6-19.6v-383c0-10.8-8.8-19.6-19.6-19.6zm-76.5,320.1h-190c-10.8,0-19.6-8.8-19.6-19.6 0-10.8 8.8-19.6 19.6-19.6h190c10.8,0 19.6,8.8 19.6,19.6 0,10.8-8.7,19.6-19.6,19.6zm0-110.3h-190c-10.8,0-19.6-8.8-19.6-19.6 0-10.8 8.8-19.6 19.6-19.6h190c10.8,0 19.6,8.8 19.6,19.6 0,10.8-8.7,19.6-19.6,19.6z" fill="currentcolor"/></svg></a></div>
+
+  <dialog id="clipboard-dialog">
+      <h3>The following text has been copied to the clipboard</h3>
+      <p id=clipboard-text></p>
+      <div style="text-align: right;">
+        <button id="clipboard-confirm">ok</button>
+      </div>
+  </dialog>
 
   <!-- Uncomment the following lines for SoundCloud compatibility. Keep commented if you are using native or YouTube -->
   <!-- iFrame HTML can be found by clicking the embed button while viewing the audio on SoundCloud -->
@@ -998,15 +1036,8 @@
   
   <script src="js/hyperaudio-lite.js"></script>
   <script src="js/hyperaudio-lite-extension.js"></script>
-  <script src="js/share-this.js"></script>
-  <script src="js/share-this-twitter.js"></script>
-  <script src="js/share-this-clipboard.js"></script>
   <script src="js/caption.js"></script>
   <script>
-  ShareThis({
-      sharers: [ ShareThisViaTwitter, ShareThisViaClipboard ],
-      selector: "article"
-  }).init();
 
   // minimizedMode is still experimental - it aims to show the current words in the title, which can be seen on the browser tab.
   let minimizedMode = false;

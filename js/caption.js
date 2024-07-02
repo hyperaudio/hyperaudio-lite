@@ -123,14 +123,14 @@ var caption = function () {
       }
     });
 
-    console.log(data);
+    //console.log(data);
 
     data.segments.map(function (segment, i, arr) {
       var sentence = "";
       segment.words.forEach(function (wordMeta) {
         sentence += wordMeta.text;
       });
-      console.log(msToTime(segment.start*1000) + " " + sentence);
+      //console.log(msToTime(segment.start*1000) + " " + sentence);
     });
 
     function msToTime(duration) {
