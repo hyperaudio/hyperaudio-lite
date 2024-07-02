@@ -120,13 +120,10 @@ Essentially the Hyperaudio Lite library is made from 4 JavaScript files:
 
 1. `hyperaudio-lite.js` - the core that deals with the linking of media to words
 2. `hyperaudio-lite wrapper` - adds search, selection and playback rate functionality
-3. `share-this.js` - a fork of [share-this](https://github.com/MaxArt2501/share-this) library
-4. `share-this.twitter.js` - a fork of the Twitter sharing element of share-this
 
 and the associated CSS files:
 
-5. `hyperaudio-lite-player.css`
-6. `share-this.css`
+3. `hyperaudio-lite-player.css`
 
 We also link to [Velocity 1.5](https://github.com/julianshapiro/velocity) for autoscroll and Twitter widget JS for Twitter sharing.
 
@@ -145,14 +142,6 @@ and at the end of the `<body>`:
 ```html
   <script src="js/hyperaudio-lite.js"></script>
   <script src="js/hyperaudio-lite-wrapper.js"></script>
-  <script src="js/share-this.js"></script>
-  <script src="js/share-this-twitter.js"></script>
-  <script>
-    ShareThis({
-      sharers: [ ShareThisViaTwitter ],
-      selector: "article"
-    }).init();
-  </script>
 </body>
 ```
 
