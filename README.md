@@ -26,7 +26,7 @@ Vimeo Integration [https://hyperaudio.github.io/hyperaudio-lite/vimeo.html](http
 
 VideoJS Integration [https://hyperaudio.github.io/hyperaudio-lite/videojs.html](https://hyperaudio.github.io/hyperaudio-lite/videojs.html)
 
-VideoStack Integration [https://hyperaudio.github.io/hyperaudio-lite/vidstack.html](https://hyperaudio.github.io/hyperaudio-lite/vidstack.html)
+VidStack Integration [https://hyperaudio.github.io/hyperaudio-lite/vidstack.html](https://hyperaudio.github.io/hyperaudio-lite/vidstack.html)
 
 Spotify Integration [https://hyperaudio.github.io/hyperaudio-lite/spotify.html](https://hyperaudio.github.io/hyperaudio-lite/spotify.html)
 
