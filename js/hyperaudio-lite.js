@@ -1,5 +1,5 @@
 /*! (C) The Hyperaudio Project. MIT @license: en.wikipedia.org/wiki/MIT_License. */
-/*! Version 2.1.7 */
+/*! Version 2.2.0 */
 
 'use strict';
 
@@ -292,17 +292,52 @@ class HyperaudioLite {
       this.hashArray = [];
     }
 
-    document.addEventListener(
-      'selectionchange',
-      () => {
+    this.transcript.addEventListener('mouseup', () => {
+
+      const selection = window.getSelection();
+      const popover = document.getElementById('popover');
+      let selectionText;
+      
+      if (selection.toString().length > 0) {
+
+        selectionText = selection.toString().replaceAll("'", "`");
+
+        const range = selection.getRangeAt(0);
+        const rect = range.getBoundingClientRect();
+        
+        popover.style.left = `${rect.left + window.scrollX}px`;
+        popover.style.top = `${rect.bottom + window.scrollY}px`;
+        popover.style.display = 'block';
+
         const mediaFragment = this.getSelectionMediaFragment();
 
         if (mediaFragment !== null) {
           document.location.hash = mediaFragment;
         }
-      },
-      false,
-    );
+      } else {
+        popover.style.display = 'none';
+      }
+
+      const popoverBtn = document.getElementById('popover-btn');
+      popoverBtn.addEventListener('click', (e) => {
+        popover.style.display = 'none';
+        let cbText = selectionText + " " + document.location;
+        navigator.clipboard.writeText(cbText);
+
+        const dialog = document.getElementById("clipboard-dialog");
+        document.getElementById("clipboard-text").innerHTML = cbText;
+        dialog.showModal();
+
+        const confirmButton = document.getElementById("clipboard-confirm");
+        confirmButton.addEventListener("click", () => {
+          dialog.close();
+        });
+        
+        e.preventDefault();
+        return false;
+      });
+
+    });
 
     this.minimizedMode = minimizedMode;
     this.textShot = '';
@@ -385,8 +420,8 @@ class HyperaudioLite {
     //TODO convert to binary search for below for quicker startup
     if (this.start && this.end) {
       for (let i = 1; i < words.length; i++) {
-        const wordStart = parseInt(words[i].getAttribute('data-m')) / 1000;
-        if (wordStart > parseFloat(this.start) && parseFloat(this.end) > wordStart) {
+        const wordStart = Math.round(words[i].getAttribute('data-m') / 100) / 10;
+        if (wordStart >= parseFloat(this.start) && parseFloat(this.end) > wordStart) {
           words[i].classList.add('share-match');
         }
       }
