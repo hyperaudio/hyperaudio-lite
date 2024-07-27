@@ -94,7 +94,7 @@ test("getSelectionMediaFragment", () => {
       3
     );
   expect(ht.getSelectionMediaFragment()).toStrictEqual(
-    "hypertranscript=0.9,5.3"
+    "hypertranscript=0.88,5.21"
   );
 });
 
