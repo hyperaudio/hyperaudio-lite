@@ -335,7 +335,7 @@ then
 To run the tests:
 `yarn test` or `npm run test`
 
-Note: If you have issues runing the tests, try a more recent version of node. (node v17.0.0 should work).
+Note: If you have issues runing the tests, try a more recent version of node. (node v18.0.0 should work).
 
 ## :raised_hand: How do I create timed transcripts to use with Hyperaudio Lite? :raised_hand:
 
