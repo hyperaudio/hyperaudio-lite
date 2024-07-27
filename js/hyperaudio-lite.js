@@ -1,5 +1,5 @@
 /*! (C) The Hyperaudio Project. MIT @license: en.wikipedia.org/wiki/MIT_License. */
-/*! Version 2.2.0 */
+/*! Version 2.2.3 */
 
 'use strict';
 
@@ -420,7 +420,8 @@ class HyperaudioLite {
     //TODO convert to binary search for below for quicker startup
     if (this.start && this.end) {
       for (let i = 1; i < words.length; i++) {
-        const wordStart = Math.round(words[i].getAttribute('data-m') / 100) / 10;
+        let startTime = parseInt(words[i].getAttribute('data-m')) / 1000;
+        let wordStart = (Math.round(startTime * 100) / 100).toFixed(2);
         if (wordStart >= parseFloat(this.start) && parseFloat(this.end) > wordStart) {
           words[i].classList.add('share-match');
         }
@@ -451,100 +452,67 @@ class HyperaudioLite {
     return wordArr;
   };
 
+  getSelectionRange = () => {
+    const selection = window.getSelection();
+    if (selection.rangeCount === 0) return null;
+
+    const range = selection.getRangeAt(0);
+    
+    // Helper function to get the closest span
+    function getClosestSpan(node) {
+      while (node && node.nodeType !== Node.ELEMENT_NODE) {
+        node = node.parentNode;
+      }
+      return node.closest('span[data-m][data-d]');
+    }
+
+    // Get all relevant spans
+    const allSpans = Array.from(document.querySelectorAll('span[data-m][data-d]'));
+
+    // Find the first and last span that contain selected text
+    let startSpan = null;
+    let endSpan = null;
+    let selectedText = range.toString();
+    let trimmedSelectedText = selectedText.trim();
+
+    for (let span of allSpans) {
+      if (range.intersectsNode(span) && span.textContent.trim() !== '') {
+        if (!startSpan) startSpan = span;
+        endSpan = span;
+      }
+    }
+
+    if (!startSpan || !endSpan) return null;
+
+    // Adjust start span if selection starts with a space
+    let startIndex = allSpans.indexOf(startSpan);
+    while (selectedText.startsWith(' ') && startIndex < allSpans.length - 1) {
+      startIndex++;
+      startSpan = allSpans[startIndex];
+      selectedText = selectedText.slice(1);
+    }
+
+    // Calculate start time
+    let startTime = parseInt(startSpan.dataset.m) / 1000;
+
+    // Calculate end time
+    let endTime = (parseInt(endSpan.dataset.m) + parseInt(endSpan.dataset.d)) / 1000;
+
+    // Format to seconds at 2 decimal place precision
+    let startTimeFormatted = (Math.round(startTime * 100) / 100).toFixed(2);
+    let endTimeFormatted = (Math.round(endTime * 100) / 100).toFixed(2);
+
+    // Only return a range if there's actually selected text (excluding only spaces)
+    return trimmedSelectedText ? `${startTimeFormatted},${endTimeFormatted}` : null;
+  }
+
   getSelectionMediaFragment = () => {
-    let fragment = null;
-    let selection = null;
-
-    if (window.getSelection) {
-      selection = window.getSelection();
-    } else if (document.selection) {
-      selection = document.selection.createRange();
+    let range = this.getSelectionRange();
+    if (range === null) {
+      return null;
     }
-
-    // check to see if selection is actually inside the transcript
-    let insideTranscript = false;
-    let parentElement = selection.focusNode;
-    while (parentElement !== null) {
-      if (parentElement.id === this.transcript.id) {
-        insideTranscript = true;
-        break;
-      }
-      parentElement = parentElement.parentElement;
-    }
-
-    if (selection.toString() !== '' && insideTranscript === true && selection.focusNode !== null && selection.anchorNode !== null) {
-      
-      let fNode = selection.focusNode.parentNode;
-      let aNode = selection.anchorNode.parentNode;
-
-      if (aNode.tagName === "P") {
-        aNode = selection.anchorNode.nextElementSibling;
-      }
-
-      if (fNode.tagName === "P") {
-        fNode = selection.focusNode.nextElementSibling;
-      }
-
-      if (aNode.getAttribute('data-m') === null || aNode.className === 'speaker') {
-        aNode = aNode.nextElementSibling;
-      }
-
-      if (fNode.getAttribute('data-m') === null || fNode.className === 'speaker') {
-        fNode = fNode.previousElementSibling;
-      }
-
-      // if the selection starts with a space we want the next element
-      if(selection.toString().charAt(0) == " " && aNode !== null) {
-        aNode = aNode.nextElementSibling;
-      }
-
-      if (aNode !== null) {
-        let aNodeTime = parseInt(aNode.getAttribute('data-m'), 10);
-        let aNodeDuration = parseInt(aNode.getAttribute('data-d'), 10);
-        let fNodeTime;
-        let fNodeDuration;
-
-        if (fNode !== null && fNode.getAttribute('data-m') !== null) {
-          // if the selection ends in a space we want the previous element if it exists
-          if(selection.toString().slice(-1) == " " && fNode.previousElementSibling !== null) {
-            fNode = fNode.previousElementSibling;
-          }
-
-          fNodeTime = parseInt(fNode.getAttribute('data-m'), 10);
-          fNodeDuration = parseInt(fNode.getAttribute('data-d'), 10);
-
-          // if the selection starts with a space we want the next element
-
-        }
-
-        // 1 decimal place will do
-        aNodeTime = Math.round(aNodeTime / 100) / 10;
-        aNodeDuration = Math.round(aNodeDuration / 100) / 10;
-        fNodeTime = Math.round(fNodeTime / 100) / 10;
-        fNodeDuration = Math.round(fNodeDuration / 100) / 10;
-
-        let nodeStart = aNodeTime;
-        let nodeDuration = Math.round((fNodeTime + fNodeDuration - aNodeTime) * 10) / 10;
-
-        if (aNodeTime >= fNodeTime) {
-          nodeStart = fNodeTime;
-          nodeDuration = Math.round((aNodeTime + aNodeDuration - fNodeTime) * 10) / 10;
-        }
-
-        if (nodeDuration === 0 || nodeDuration === null || isNaN(nodeDuration)) {
-          nodeDuration = 10; // arbitary for now
-        }
-
-        if (isNaN(parseFloat(nodeStart))) {
-          fragment = null;
-        } else {
-          fragment = this.transcript.id + '=' + nodeStart + ',' + Math.round((nodeStart + nodeDuration) * 10) / 10;
-        }
-      }
-    }
-
-    return fragment;
-  };
+    return (this.transcript.id + '=' +range);
+  }
 
   setPlayHead = e => {
     const target = e.target ? e.target : e.srcElement;
