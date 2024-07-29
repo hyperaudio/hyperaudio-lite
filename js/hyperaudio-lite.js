@@ -500,7 +500,7 @@ class HyperaudioLite {
       // when no duration exists default to 1 second
       duration = 1000; 
     }
-    
+
     let endTime = (parseInt(endSpan.dataset.m) + duration) / 1000;
 
     // Format to seconds at 2 decimal place precision
@@ -632,6 +632,26 @@ class HyperaudioLite {
           }
         }
 
+        if (this.webMonetization === true) {
+          //check for payment pointer
+          let activeElements = this.transcript.getElementsByClassName('active');
+          let paymentPointer = this.checkPaymentPointer(activeElements[activeElements.length - 1]);
+    
+          if (paymentPointer !== null) {
+            let metaElements = document.getElementsByTagName('meta');
+            let wmMeta = document.querySelector("meta[name='monetization']");
+            if (wmMeta === null) {
+              wmMeta = document.createElement('meta');
+              wmMeta.name = 'monetization';
+              wmMeta.content = paymentPointer;
+              document.getElementsByTagName('head')[0].appendChild(wmMeta);
+            } else {
+              wmMeta.name = 'monetization';
+              wmMeta.content = paymentPointer;
+            }
+          }
+        }
+
         let interval = 0;
         if (this.wordArr[index]) {
           interval = this.wordArr[index].n.getAttribute('data-m') - this.currentTime * 1000;
@@ -641,6 +661,30 @@ class HyperaudioLite {
       }
     } else {
       this.clearTimer();
+    }
+  }
+
+  checkPaymentPointer = element => {
+    let paymentPointer = null;
+
+    if (typeof(element) != "undefined") {
+      paymentPointer = element.getAttribute('data-wm');
+    }
+
+    if (paymentPointer !== null) {
+      return paymentPointer;
+    } else {
+      let parent = null;
+
+      if (typeof element !== 'undefined') {
+        parent = element.parentElement;
+      }
+
+      if (parent === null) {
+        return null;
+      } else {
+        return this.checkPaymentPointer(parent);
+      }
     }
   }
 
