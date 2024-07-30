@@ -305,6 +305,9 @@ class HyperaudioLite {
     this.setupTranscriptWords();
     this.setupEventListeners(doubleClick, playOnClick);
     this.setupInitialPlayHead();
+    this.minimizedMode = minimizedMode;
+    this.autoscroll = autoscroll;
+    this.webMonetization = webMonetization;
   }
 
   // Setup hash for transcript selection
@@ -577,7 +580,10 @@ class HyperaudioLite {
 
   // Clear the timer for the playhead
   clearTimer() {
-    if (this.timer) clearTimeout(this.timer);
+    if (this.timer) {
+      clearTimeout(this.timer);
+      this.timer = null;
+    }
   }
 
   // Scroll to the paragraph containing the current word
