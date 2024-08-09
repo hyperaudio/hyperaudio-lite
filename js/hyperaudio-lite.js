@@ -1,5 +1,5 @@
 /*! (C) The Hyperaudio Project. MIT @license: en.wikipedia.org/wiki/MIT_License. */
-/*! Version 2.3.0 */
+/*! Version 2.3.1 */
 
 'use strict';
 
@@ -324,46 +324,48 @@ class HyperaudioLite {
 
   // Setup the popover for text selection
   setupPopover() {
-    this.transcript.addEventListener('mouseup', () => {
-      const selection = window.getSelection();
-      const popover = document.getElementById('popover');
-      let selectionText;
-
-      if (selection.toString().length > 0) {
-        selectionText = selection.toString().replaceAll("'", "`");
-        const range = selection.getRangeAt(0);
-        const rect = range.getBoundingClientRect();
-
-        popover.style.left = `${rect.left + window.scrollX}px`;
-        popover.style.top = `${rect.bottom + window.scrollY}px`;
-        popover.style.display = 'block';
-
-        const mediaFragment = this.getSelectionMediaFragment();
-
-        if (mediaFragment) {
-          document.location.hash = mediaFragment;
+    if (typeof popover !== 'undefined') {
+      this.transcript.addEventListener('mouseup', () => {
+        const selection = window.getSelection();
+        const popover = document.getElementById('popover');
+        let selectionText;
+  
+        if (selection.toString().length > 0) {
+          selectionText = selection.toString().replaceAll("'", "`");
+          const range = selection.getRangeAt(0);
+          const rect = range.getBoundingClientRect();
+  
+          popover.style.left = `${rect.left + window.scrollX}px`;
+          popover.style.top = `${rect.bottom + window.scrollY}px`;
+          popover.style.display = 'block';
+  
+          const mediaFragment = this.getSelectionMediaFragment();
+  
+          if (mediaFragment) {
+            document.location.hash = mediaFragment;
+          }
+        } else {
+          popover.style.display = 'none';
         }
-      } else {
-        popover.style.display = 'none';
-      }
-
-      const popoverBtn = document.getElementById('popover-btn');
-      popoverBtn.addEventListener('click', (e) => {
-        popover.style.display = 'none';
-        let cbText = `${selectionText} ${document.location}`;
-        navigator.clipboard.writeText(cbText);
-
-        const dialog = document.getElementById("clipboard-dialog");
-        document.getElementById("clipboard-text").innerHTML = cbText;
-        dialog.showModal();
-
-        const confirmButton = document.getElementById("clipboard-confirm");
-        confirmButton.addEventListener("click", () => dialog.close());
-
-        e.preventDefault();
-        return false;
+  
+        const popoverBtn = document.getElementById('popover-btn');
+        popoverBtn.addEventListener('click', (e) => {
+          popover.style.display = 'none';
+          let cbText = `${selectionText} ${document.location}`;
+          navigator.clipboard.writeText(cbText);
+  
+          const dialog = document.getElementById("clipboard-dialog");
+          document.getElementById("clipboard-text").innerHTML = cbText;
+          dialog.showModal();
+  
+          const confirmButton = document.getElementById("clipboard-confirm");
+          confirmButton.addEventListener("click", () => dialog.close());
+  
+          e.preventDefault();
+          return false;
+        });
       });
-    });
+    }
   }
 
   // Setup the media player
@@ -519,6 +521,7 @@ class HyperaudioLite {
     if (range === null) {
       return null;
     }
+    console.log(range);
     return (this.transcript.id + '=' +range);
   }
 
