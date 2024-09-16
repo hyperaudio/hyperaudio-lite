@@ -408,10 +408,10 @@ class HyperaudioLite {
 
   setupAutoScroll(autoscroll) {
     if (autoscroll) {
-      if (window.jQuery) {
-        this.scroller = window.jQuery.Velocity;
-      } else {
+      if (window.Velocity) {
         this.scroller = window.Velocity;
+      } else if (window.jQuery && window.jQuery.Velocity) {
+          this.scroller = window.jQuery.Velocity;
       }
     }
   }
