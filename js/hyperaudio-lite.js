@@ -1,5 +1,5 @@
 /*! (C) The Hyperaudio Project. MIT @license: en.wikipedia.org/wiki/MIT_License. */
-/*! Version 2.3.1 */
+/*! Version 2.3.2 */
 
 'use strict';
 
@@ -305,9 +305,11 @@ class HyperaudioLite {
     this.setupTranscriptWords();
     this.setupEventListeners(doubleClick, playOnClick);
     this.setupInitialPlayHead();
+    this.setupAutoScroll(autoscroll);
     this.minimizedMode = minimizedMode;
     this.autoscroll = autoscroll;
     this.webMonetization = webMonetization;
+    this.scrollerContainer = this.transcript;
   }
 
   // Setup hash for transcript selection
@@ -389,8 +391,29 @@ class HyperaudioLite {
   setupTranscriptWords() {
     const words = this.transcript.querySelectorAll('[data-m]');
     this.wordArr = this.createWordArray(words);
-    this.parentTag = words[0].parentElement.tagName;
+
+    // check for elements with data-m attributes that are not directly below <section>
+    // these will contain <p> or similar that we can scroll to
+
+    for (const word of words) {
+      let parentTagName = word.parentElement.tagName;
+      if (parentTagName !== "SECTION") {
+        this.parentTag = parentTagName;
+        break;
+      }
+    }
+
     this.parentElements = this.transcript.getElementsByTagName(this.parentTag);
+  }
+
+  setupAutoScroll(autoscroll) {
+    if (autoscroll) {
+      if (window.Velocity) {
+        this.scroller = window.Velocity;
+      } else if (window.jQuery && window.jQuery.Velocity) {
+          this.scroller = window.jQuery.Velocity;
+      }
+    }
   }
 
   // Setup event listeners for interactions
@@ -403,10 +426,6 @@ class HyperaudioLite {
     this.highlightedText = false;
     this.start = null;
 
-    if (this.autoscroll) {
-      this.scroller = window.Velocity || window.jQuery.Velocity;
-    }
-
     const playHeadEvent = doubleClick ? 'dblclick' : 'click';
     this.transcript.addEventListener(playHeadEvent, this.setPlayHead.bind(this), false);
     this.transcript.addEventListener(playHeadEvent, this.checkPlayHead.bind(this), false);
@@ -418,7 +437,7 @@ class HyperaudioLite {
     if (!isNaN(parseFloat(this.start))) {
       this.highlightedText = true;
       let indices = this.updateTranscriptVisualState(this.start);
-      if (indices.currentWordIndex > 0) {
+      if (indices.currentWordIndex > 0 && this.autoscroll) {
         this.scrollToParagraph(indices.currentParentElementIndex, indices.currentWordIndex);
       }
     }
@@ -591,6 +610,7 @@ class HyperaudioLite {
 
   // Scroll to the paragraph containing the current word
   scrollToParagraph(currentParentElementIndex, index) {
+
     const scrollNode = this.wordArr[index - 1].n.closest('p') || this.wordArr[index - 1].n;
 
     if (currentParentElementIndex !== this.parentElementIndex) {
@@ -620,7 +640,8 @@ class HyperaudioLite {
       } else {
         const indices = this.updateTranscriptVisualState(this.currentTime);
         const index = indices.currentWordIndex;
-        if (index > 0) {
+
+        if (index > 0 && this.autoscroll) {
           this.scrollToParagraph(indices.currentParentElementIndex, index);
         }
 
@@ -739,7 +760,7 @@ class HyperaudioLite {
       }
       this.wordArr[index - 1].n.parentNode.classList.add('active');
     }
-
+  
     const currentParentElementIndex = Array.from(this.parentElements).findIndex(el => el.classList.contains('active'));
 
     return {
