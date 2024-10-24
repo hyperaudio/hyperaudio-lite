@@ -127,7 +127,7 @@ and the associated CSS files:
 
 3. `hyperaudio-lite-player.css`
 
-We also link to [Velocity 1.5](https://github.com/julianshapiro/velocity) for autoscroll and Twitter widget JS for Twitter sharing.
+We also link to [Velocity 1.5](https://github.com/julianshapiro/velocity) for autoscroll.
 
 Add to your HTML file in the following way:
 
@@ -135,7 +135,6 @@ Add to your HTML file in the following way:
 <head>
   <link rel="stylesheet" href="css/hyperaudio-lite-player.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/velocity/1.5.0/velocity.js"></script>
-  <script src="https://platform.twitter.com/widgets.js"></script>
 </head>
 ```
 
