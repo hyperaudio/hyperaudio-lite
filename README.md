@@ -340,6 +340,13 @@ Note: If you have issues runing the tests, try a more recent version of node. (n
 1.  You can use our the [Hyperaudio Lite Editor](https://github.com/hyperaudio/hyperaudio-lite-editor)
 2.  You can convert from various formats with our [Converter](https://github.com/hyperaudio/ha-converter)
 
+## :money_with_wings: Support :money_with_wings:
+
+Please support The Hyperaudio Project by donating to our [Patreon account](https://patreon.com/hyperaudio).
+
 ---
 
 Find out more about the Hyperaudio Project at [hyper.audio](https://hyper.audio) or contact mark@hyperaud.io
+
+
+
