@@ -1,5 +1,5 @@
 /*! (C) The Hyperaudio Project. MIT @license: en.wikipedia.org/wiki/MIT_License. */
-/*! Version 2.3.2 */
+/*! Version 2.3.3 */
 
 'use strict';
 
@@ -309,7 +309,6 @@ class HyperaudioLite {
     this.minimizedMode = minimizedMode;
     this.autoscroll = autoscroll;
     this.webMonetization = webMonetization;
-    this.scrollerContainer = this.transcript;
   }
 
   // Setup hash for transcript selection
@@ -407,13 +406,8 @@ class HyperaudioLite {
   }
 
   setupAutoScroll(autoscroll) {
-    if (autoscroll) {
-      if (window.Velocity) {
-        this.scroller = window.Velocity;
-      } else if (window.jQuery && window.jQuery.Velocity) {
-          this.scroller = window.jQuery.Velocity;
-      }
-    }
+    this.autoscroll = autoscroll;
+    this.scrollContainer = this.transcript;
   }
 
   // Setup event listeners for interactions
@@ -608,28 +602,44 @@ class HyperaudioLite {
     }
   }
 
-  // Scroll to the paragraph containing the current word
   scrollToParagraph(currentParentElementIndex, index) {
-
-    const scrollNode = this.wordArr[index - 1].n.closest('p') || this.wordArr[index - 1].n;
-
     if (currentParentElementIndex !== this.parentElementIndex) {
-      if (this.autoscroll && typeof this.scroller !== 'undefined') {
-        if (scrollNode) {
-          this.scroller(scrollNode, 'scroll', {
-            container: this.scrollerContainer,
-            duration: this.scrollerDuration,
-            delay: this.scrollerDelay,
-            offset: this.scrollerOffset,
-          });
-        } else {
-          this.wordArr = this.createWordArray(this.transcript.querySelectorAll('[data-m]'));
-          this.parentElements = this.transcript.getElementsByTagName(this.parentTag);
+      if (this.autoscroll) {
+        const currentParagraph = this.parentElements[currentParentElementIndex];
+        if (currentParagraph) {
+          const containerRect = this.scrollContainer.getBoundingClientRect();
+          const paragraphRect = currentParagraph.getBoundingClientRect();
+          const targetTop = this.scrollContainer.scrollTop + (paragraphRect.top - containerRect.top);
+          this.smoothScrollTo(this.scrollContainer, targetTop, 800);
         }
       }
       this.parentElementIndex = currentParentElementIndex;
     }
   }
+
+  smoothScrollTo(container, targetTop, duration) {
+    if (this.scrollAnimationId) {
+      cancelAnimationFrame(this.scrollAnimationId);
+    }
+    const startTop = container.scrollTop;
+    const distance = targetTop - startTop;
+    if (distance === 0) return;
+    const startTime = performance.now();
+    const easeInOutCubic = t => t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+
+    const step = now => {
+      const elapsed = now - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      container.scrollTop = startTop + distance * easeInOutCubic(progress);
+      if (progress < 1) {
+        this.scrollAnimationId = requestAnimationFrame(step);
+      } else {
+        this.scrollAnimationId = null;
+      }
+    };
+    this.scrollAnimationId = requestAnimationFrame(step);
+  }
+
 
   // Check the status of the playhead and update the transcript
   checkStatus() {

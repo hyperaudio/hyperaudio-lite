@@ -127,14 +127,13 @@ and the associated CSS files:
 
 3. `hyperaudio-lite-player.css`
 
-We also link to [Velocity 1.5](https://github.com/julianshapiro/velocity) for autoscroll.
+Autoscroll uses the browser's native smooth scrolling.
 
 Add to your HTML file in the following way:
 
 ```HTML
 <head>
   <link rel="stylesheet" href="css/hyperaudio-lite-player.css">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/velocity/1.5.0/velocity.js"></script>
 </head>
 ```
 
