@@ -9,7 +9,7 @@ You can use Hyperaudio Lite to provide Interactive Transcripts, this readme deta
 - lightweight (around 10Kb minified)
 - no dependencies
 - no frameworks – just JS, HTML and CSS
-- no buid step
+- no build step
 - MIT Licensed
 
 ## :tiger: Hyperaudio Lite in the Wild :tiger:
