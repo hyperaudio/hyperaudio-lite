@@ -673,21 +673,18 @@ class HyperaudioLite {
         }
 
         if (this.webMonetization === true) {
-          //check for payment pointer
           let activeElements = this.transcript.getElementsByClassName('active');
           let paymentPointer = this.checkPaymentPointer(activeElements[activeElements.length - 1]);
-    
+
           if (paymentPointer !== null) {
-            let metaElements = document.getElementsByTagName('meta');
-            let wmMeta = document.querySelector("meta[name='monetization']");
-            if (wmMeta === null) {
-              wmMeta = document.createElement('meta');
-              wmMeta.name = 'monetization';
-              wmMeta.content = paymentPointer;
-              document.getElementsByTagName('head')[0].appendChild(wmMeta);
+            let wmLink = document.querySelector("link[rel='monetization']");
+            if (wmLink === null) {
+              wmLink = document.createElement('link');
+              wmLink.rel = 'monetization';
+              wmLink.href = paymentPointer;
+              document.getElementsByTagName('head')[0].appendChild(wmLink);
             } else {
-              wmMeta.name = 'monetization';
-              wmMeta.content = paymentPointer;
+              wmLink.href = paymentPointer;
             }
           }
         }

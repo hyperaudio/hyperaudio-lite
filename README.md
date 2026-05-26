@@ -280,11 +280,15 @@ cap1.init("hypertranscript", "hyperplayer", '37' , '21'); // transcript Id, play
 
 ## :money_with_wings: Web Monetization Support :money_with_wings:
 
-[Web Monetization](https://webmonetization.org/) is a JavaScript browser API that allows the creation of a payment stream from the user agent to the website and a [proposed](https://discourse.wicg.io/t/proposal-web-monetization-a-new-revenue-model-for-the-web/3785) [W3C](https://www.w3.org/) standard.
+[Web Monetization](https://webmonetization.org/) is a browser API, stewarded by the [Interledger Foundation](https://interledger.org/), that lets visitors stream micropayments to the sites they're reading. There is currently no native browser support — visitors need a [Web Monetization agent](https://webmonetization.org/supporters/get-started/) (browser extension) installed to actually pay.
 
-You can use this with Hyperaudio Lite to apportion streaming funds (from viewers with Web Monetization compatible wallets and browser extensions) to different sources depending on the transcript or part of the transcript you are currently listening to.
+With Hyperaudio Lite you can apportion those streamed funds to different recipients depending on which transcript — or which part of the transcript — the viewer is currently listening to.
 
-To activate set the Web Monetization parameter when instantiating a new `HyperaudioLite` object to `true`, for example:
+See [`active.html`](./active.html) for a working example.
+
+### How to enable it
+
+Set the Web Monetization parameter to `true` when instantiating `HyperaudioLite`:
 
 ```javascript
 let minimizedMode = false;
@@ -296,16 +300,16 @@ let playOnClick = true;
 new HyperaudioLite("hypertranscript", "hyperplayer", minimizedMode, autoScroll, doubleClick, webMonetization, playOnClick);
 ```
 
-If you then set the `data-wm` attributes in your transcript streaming will be switched to that payment pointer when encountered.
+Then add `data-wm` attributes (containing wallet URLs) to elements in your transcript. As playback moves between elements, Hyperaudio Lite injects a `<link rel="monetization" href="...">` element into the page `<head>`, pointed at the currently active wallet URL.
 
 ```html
-   <article data-wm="$ilp.uphold.com/123article">
+   <article data-wm="https://ilp.uphold.com/123article">
 
-      <section data-wm="$ilp.uphold.com/123section">
+      <section data-wm="https://ilp.uphold.com/123section">
 
         <h5 data-m="0">How do we make people more aware of their personal data?</h5>
 
-        <p data-wm="$ilp.uphold.com/123Doc">
+        <p data-wm="https://ilp.uphold.com/123Doc">
           <span data-m="4470" data-d="0" class="speaker">Doc: </span>
           <span data-m="4470" data-d="270">We </span>
           <span data-m="4740" data-d="240">have </span>
@@ -314,7 +318,10 @@ If you then set the `data-wm` attributes in your transcript streaming will be sw
           ...
 ```
 
-*Note* – if a `data-wm` attribute is not present in an element Hyperaudio Lite will check the parent (and parent's parent etc) until it finds one. 
+*Note* – if a `data-wm` attribute is not present on an element, Hyperaudio Lite walks up to the parent (and the parent's parent, etc.) until it finds one.
+
+*Note* – the value of `data-wm` should be a full wallet URL (e.g. `https://ilp.uphold.com/...`), not the older `$`-prefixed payment-pointer shorthand. The shorthand form is no longer recognised by current Web Monetization agents.
+
 
 ## :construction_worker: Testing :construction_worker:
 
