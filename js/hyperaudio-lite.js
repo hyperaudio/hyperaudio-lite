@@ -22,6 +22,7 @@ class BasePlayer {
   attachEventListeners(instance) {
     this.player.addEventListener('pause', instance.pausePlayHead.bind(instance), false);
     this.player.addEventListener('play', instance.preparePlayHead.bind(instance), false);
+    this.player.addEventListener('seeked', instance.handleSeeked.bind(instance), false);
   }
 
   // Method to get the current time of the player
@@ -295,6 +296,7 @@ class HyperaudioLite {
     this.setPlayHead = this.setPlayHead.bind(this);
     this.checkPlayHead = this.checkPlayHead.bind(this);
     this.clearTimer = this.clearTimer.bind(this);
+    this.handleSeeked = this.handleSeeked.bind(this);
   }
 
   // Initialize the HyperaudioLite instance
@@ -577,6 +579,29 @@ class HyperaudioLite {
   pausePlayHead() {
     this.clearTimer();
     this.myPlayer.paused = true;
+  }
+
+  // Update transcript visual state + scroll position to match a seek (works while paused).
+  // Does not toggle the word-level `.active` class — `updateTranscriptVisualState`
+  // still defers that to the playing-state path.
+  handleSeeked() {
+    (async () => {
+      this.currentTime = await this.myPlayer.getTime();
+      const indices = this.updateTranscriptVisualState(this.currentTime);
+      if (indices.currentWordIndex > 0 && this.autoscroll) {
+        this.scrollToParagraph(indices.currentParentElementIndex, indices.currentWordIndex);
+      }
+    })();
+  }
+
+  // Temporarily disable autoscroll (e.g. while a user is editing the transcript).
+  pauseAutoscroll() {
+    this.autoscroll = false;
+  }
+
+  // Re-enable autoscroll after a pauseAutoscroll() call.
+  resumeAutoscroll() {
+    this.autoscroll = true;
   }
 
   // Check the playhead position and update the transcript

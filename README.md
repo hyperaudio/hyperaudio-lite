@@ -159,6 +159,19 @@ let playOnClick = true;
 new HyperaudioLite("hypertranscript", "hyperplayer", minimizedMode, autoScroll, doubleClick, webMonetization, playOnClick);
 ```
 
+### Autoscroll behaviour
+
+When `autoScroll` is enabled, the transcript follows playback and also follows seeks while paused — scrubbing the media (drag the seek bar, jump in the native controls, set `currentTime`) re-aligns the transcript's read/unread state and scroll position to the new playhead.
+
+To temporarily disable autoscroll (e.g. while a user is editing the transcript), call `pauseAutoscroll()` and re-enable it with `resumeAutoscroll()`:
+
+```javascript
+const player = new HyperaudioLite("hypertranscript", "hyperplayer", false, true, false, false, true);
+player.pauseAutoscroll();
+// ...later
+player.resumeAutoscroll();
+```
+
 If you want to use the native audio/video capabilities of your browser, you would define your player something like this:
 
 ```html
