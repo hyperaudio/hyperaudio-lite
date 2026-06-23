@@ -172,6 +172,20 @@ player.pauseAutoscroll();
 player.resumeAutoscroll();
 ```
 
+### Driving the transcript from a custom seek bar
+
+If you're building your own seek bar (or any other custom scrubbing UI) and want the transcript to follow it live, call `updateTranscriptVisualState(currentTime, forceActiveWord)`:
+
+```javascript
+mySeekBar.addEventListener('input', () => {
+  const t = (mySeekBar.value / mySeekBar.max) * media.duration;
+  media.currentTime = t;
+  player.updateTranscriptVisualState(t, true);
+});
+```
+
+The second argument, `forceActiveWord`, defaults to `false`. When `true`, the word-level `.active` class is added even while the media is paused — needed so that default CSS (`.active > .active`) continues to highlight the active word during a paused scrub. Pass `true` from any custom seek/scrub handler that runs while paused. The library's own internal `seeked` listener already passes `true`, so consumers relying only on the native player controls don't need to do anything.
+
 If you want to use the native audio/video capabilities of your browser, you would define your player something like this:
 
 ```html
