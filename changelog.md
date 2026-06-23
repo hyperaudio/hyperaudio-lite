@@ -1,3 +1,7 @@
+# Version 2.4.7
+
+- Fixed multi-instance YouTube wiring: when more than one HAL instance backed by a YouTube iframe was created on the same page, `window.onYouTubeIframeAPIReady` was overwritten by each new instance, so only the last instance's `YT.Player` actually got set up — leaving earlier instances unable to seek, play, pause, or follow playback. Each instance now chains onto any existing callback (and wires up immediately if the API is already loaded). Resolves #226.
+
 # Version 2.4.6
 
 - `multiplayer.html` demo now coordinates its two players so only one plays at a time — pressing play on either pauses the other. The library itself is unchanged; consumers running multiple instances on a page can apply the same pattern. (See `youtube-multiplayer.html` for a known remaining case of the same UX issue.)
