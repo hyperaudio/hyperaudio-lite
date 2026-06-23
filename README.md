@@ -20,7 +20,7 @@ Active word version [https://hyperaudio.github.io/hyperaudio-lite/active.html](h
 
 Alternatively styled version [https://lab.hyperaud.io/mozfest2021/interviews/lance_weiler/](https://lab.hyperaud.io/mozfest2021/interviews/lance_weiler/)
 
-YouTube Integration [https://hyperaudio.github.io/hyperaudio-lite/youtube.html](https://hyperaudio.github.io/hyperaudio-lite/youtube.html)
+YouTube Integration [https://hyperaudio.github.io/hyperaudio-lite/youtube.html](https://hyperaudio.github.io/hyperaudio-lite/youtube.html) — and a [multiplayer version](https://hyperaudio.github.io/hyperaudio-lite/youtube-multiplayer.html) with two YouTube players on one page
 
 SoundCloud Integration [https://hyperaudio.github.io/hyperaudio-lite/soundcloud.html](https://hyperaudio.github.io/hyperaudio-lite/soundcloud.html)
 
