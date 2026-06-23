@@ -224,6 +224,32 @@
 
       new HyperaudioLite("hypertranscript1", "hyperplayer1", minimizedMode, autoScroll, doubleClick, webMonetization);
       new HyperaudioLite("hypertranscript2", "hyperplayer2", minimizedMode, autoScroll, doubleClick, webMonetization);
+
+      // Coordinate the two players so only one plays at a time.
+      // YouTube iframes don't fire native play/pause events, so we hook the
+      // IFrame API once it's loaded (HAL already loads the API script) and
+      // wrap each iframe in a YT.Player purely for event-listening.
+      function setupYouTubeCoordination() {
+        const yt1 = new YT.Player('hyperplayer1');
+        const yt2 = new YT.Player('hyperplayer2');
+        [[yt1, yt2], [yt2, yt1]].forEach(([p, other]) => {
+          p.addEventListener('onStateChange', e => {
+            if (e.data === YT.PlayerState.PLAYING && typeof other.pauseVideo === 'function') {
+              other.pauseVideo();
+            }
+          });
+        });
+      }
+
+      if (window.YT && window.YT.Player) {
+        setupYouTubeCoordination();
+      } else {
+        const prev = window.onYouTubeIframeAPIReady;
+        window.onYouTubeIframeAPIReady = function () {
+          if (typeof prev === 'function') prev();
+          setupYouTubeCoordination();
+        };
+      }
     </script>
   </body>
 </html>
