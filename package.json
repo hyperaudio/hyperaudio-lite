@@ -1,6 +1,6 @@
 {
   "name": "Hyperaudio-Lite",
-  "version": "2.4.5",
+  "version": "2.4.6",
   "license": "MIT",
   "devDependencies": {
     "jest": "^29.7.0",

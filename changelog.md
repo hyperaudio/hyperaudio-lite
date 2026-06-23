@@ -1,3 +1,7 @@
+# Version 2.4.6
+
+- `multiplayer.html` demo now coordinates its two players so only one plays at a time — pressing play on either pauses the other. The library itself is unchanged; consumers running multiple instances on a page can apply the same pattern. (See `youtube-multiplayer.html` for a known remaining case of the same UX issue.)
+
 # Version 2.4.5
 
 - Documented the `forceActiveWord` parameter on `updateTranscriptVisualState` in the README, with an example of driving the transcript from a custom seek bar.

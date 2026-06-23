@@ -1,4 +1,4 @@
-<!-- Version 2.4.5 -->
+<!-- Version 2.4.6 -->
 <!DOCTYPE html>
 <html>
 <head>
@@ -1073,6 +1073,12 @@
 
   new HyperaudioLite("hypertranscript1", "hyperplayer1", minimizedMode, autoScroll, doubleClick);
   new HyperaudioLite("hypertranscript2", "hyperplayer2", minimizedMode, autoScroll, doubleClick);
+
+  // Coordinate the two players so only one plays at a time.
+  const nativeMedia = document.getElementById('hyperplayer1');
+  const scWidget = SC.Widget(document.getElementById('hyperplayer2'));
+  nativeMedia.addEventListener('play', () => scWidget.pause());
+  scWidget.bind(SC.Widget.Events.PLAY, () => nativeMedia.pause());
 
   </script>
 </body>
