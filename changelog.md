@@ -1,3 +1,8 @@
+# Version 2.4.4
+
+- Word-level `.active` class now updates on scrub-while-paused, so the default `.active > .active` CSS no longer goes blank during a paused scrub. Resolves #220.
+- `updateTranscriptVisualState` accepts an optional second argument (`forceActiveWord`) that lets callers opt into adding the word-level `.active` even when paused; `handleSeeked` passes `true`. Other call paths (playback loop, click handler) keep their existing behaviour, so this fixes the seek path without double-highlighting on click-while-paused.
+
 # Version 2.4.3
 
 - Transcript now follows media seeks, including scrub-while-paused — the read/unread visual state and scroll position re-align to the new playhead even when paused. Resolves #222.

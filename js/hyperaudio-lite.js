@@ -1,5 +1,5 @@
 /*! (C) The Hyperaudio Project. MIT @license: en.wikipedia.org/wiki/MIT_License. */
-/*! Version 2.4.3 */
+/*! Version 2.4.4 */
 
 'use strict';
 
@@ -582,12 +582,12 @@ class HyperaudioLite {
   }
 
   // Update transcript visual state + scroll position to match a seek (works while paused).
-  // Does not toggle the word-level `.active` class — `updateTranscriptVisualState`
-  // still defers that to the playing-state path.
+  // Forces the word-level `.active` class — without this, the default
+  // `.active > .active` CSS shows nothing on scrub-while-paused.
   handleSeeked() {
     (async () => {
       this.currentTime = await this.myPlayer.getTime();
-      const indices = this.updateTranscriptVisualState(this.currentTime);
+      const indices = this.updateTranscriptVisualState(this.currentTime, true);
       if (indices.currentWordIndex > 0 && this.autoscroll) {
         this.scrollToParagraph(indices.currentParentElementIndex, indices.currentWordIndex);
       }
@@ -751,7 +751,7 @@ class HyperaudioLite {
   }
 
   // Update the visual state of the transcript based on the current time
-  updateTranscriptVisualState(currentTime) {
+  updateTranscriptVisualState(currentTime, forceActiveWord = false) {
     let index = 0;
     let words = this.wordArr.length - 1;
 
@@ -787,7 +787,7 @@ class HyperaudioLite {
     Array.from(this.parentElements).forEach(el => el.classList.remove('active'));
 
     if (index > 0) {
-      if (!this.myPlayer.paused) {
+      if (!this.myPlayer.paused || forceActiveWord) {
         this.wordArr[index - 1].n.classList.add('active');
       }
       this.wordArr[index - 1].n.parentNode.classList.add('active');
