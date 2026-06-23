@@ -1,3 +1,7 @@
+# Version 2.4.5
+
+- Documented the `forceActiveWord` parameter on `updateTranscriptVisualState` in the README, with an example of driving the transcript from a custom seek bar.
+
 # Version 2.4.4
 
 - Word-level `.active` class now updates on scrub-while-paused, so the default `.active > .active` CSS no longer goes blank during a paused scrub. Resolves #220.
