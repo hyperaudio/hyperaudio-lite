@@ -1,5 +1,5 @@
 /*! (C) The Hyperaudio Project. MIT @license: en.wikipedia.org/wiki/MIT_License. */
-/*! Version 2.4.6 */
+/*! Version 2.4.7 */
 
 'use strict';
 
@@ -142,8 +142,19 @@ class YouTubePlayer extends BasePlayer {
       firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
     }
 
-    // Set the global callback for the YouTube IFrame API
-    window.onYouTubeIframeAPIReady = this.onYouTubeIframeAPIReady.bind(this, instance);
+    // If the API has already loaded (e.g. another instance was created first
+    // and the script has finished loading), wire up immediately. Otherwise
+    // chain onto any existing onYouTubeIframeAPIReady so multiple instances on
+    // the same page don't clobber each other's setup.
+    if (window.YT && window.YT.Player) {
+      this.onYouTubeIframeAPIReady(instance);
+    } else {
+      const prev = window.onYouTubeIframeAPIReady;
+      window.onYouTubeIframeAPIReady = () => {
+        if (typeof prev === 'function') prev();
+        this.onYouTubeIframeAPIReady(instance);
+      };
+    }
   }
 
   // Callback when YouTube IFrame API is ready
