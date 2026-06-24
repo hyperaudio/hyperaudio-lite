@@ -2,6 +2,15 @@
   "name": "Hyperaudio-Lite",
   "version": "2.4.8",
   "license": "MIT",
+  "main": "./js/hyperaudio-lite.js",
+  "module": "./js/hyperaudio-lite.mjs",
+  "exports": {
+    ".": {
+      "import": "./js/hyperaudio-lite.mjs",
+      "require": "./js/hyperaudio-lite.js",
+      "default": "./js/hyperaudio-lite.js"
+    }
+  },
   "devDependencies": {
     "jest": "^29.7.0",
     "jest-environment-jsdom": "^29.7.0"
