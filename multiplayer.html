@@ -3,8 +3,9 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>Multiplayer Test</title>
+  <title>Hyperaudio Lite — multiplayer demo</title>
   <link rel="stylesheet" href="css/hyperaudio-lite-player.css">
+  <link rel="stylesheet" href="css/examples.css">
   <link rel="stylesheet" href="css/share-this.css">
   <script src="https://platform.twitter.com/widgets.js"></script>
   <style>
@@ -37,7 +38,7 @@
     }
   </style>
 </head>
-<body>
+<body data-demo="multiplayer">
 
   <!--*******************************************************************-->
   <!--****** I n t e r a c t i v e   T r a n s c r i p t   1 ************-->
@@ -1075,5 +1076,6 @@
   scWidget.bind(SC.Widget.Events.PLAY, () => nativeMedia.pause());
 
   </script>
+  <script src="js/example-nav.js"></script>
 </body>
 </html>

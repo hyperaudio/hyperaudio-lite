@@ -4,8 +4,9 @@
 <html lang="en">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>Connect with SoundCloud</title>
+    <title>Hyperaudio Lite — SoundCloud demo</title>
     <link rel="stylesheet" href="css/hyperaudio-lite-player.css">
+    <link rel="stylesheet" href="css/examples.css">
     <style>
       /* uncomment the following CSS for active parent / word indicator */ 
       
@@ -49,7 +50,7 @@
     }
     </style>
   </head>
-  <body>
+  <body data-demo="soundcloud">
       <p>
         <form id="searchForm" style="float:right">
           <input id="search" type="text" ><input type="submit" value="search">
@@ -120,5 +121,6 @@
       <script>
       new HyperaudioLite({ transcript: "hypertranscript", player: "hyperplayer" });
       </script>
+    <script src="js/example-nav.js"></script>
   </body>
 </html>

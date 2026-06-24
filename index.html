@@ -5,8 +5,9 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>Hyperaudio - BBCRD | Education | Ethics of personal data in the era of QS and IoT</title>
+  <title>Hyperaudio Lite — interactive transcripts</title>
   <link rel="stylesheet" href="css/hyperaudio-lite-player.css">
+  <link rel="stylesheet" href="css/examples.css">
   <style>
     /* uncomment the following CSS for active parent / word indicator */ 
     
@@ -52,7 +53,14 @@
     
   </style>
 </head>
-<body>
+<body data-demo="index">
+
+  <section class="hl-intro">
+    <h1>Hyperaudio Lite</h1>
+    <p>A lightweight, dependency-free library that ties a transcript to its audio or video: words highlight as the media plays, and clicking a word jumps the player to that moment. No frameworks, no build step.</p>
+    <p>The demo below uses a native HTML5 video element. The same approach works with the other players listed here &mdash; pick a variant:</p>
+  </section>
+  <div id="hl-demo-grid"></div>
   
   <p>
     <form id="searchForm" style="float:right">
@@ -1054,5 +1062,6 @@
   cap1.init("hypertranscript", "hyperplayer", '37' , '21'); // transcript Id, player Id, max chars, min chars for caption line
   
   </script>
+  <script src="js/example-nav.js"></script>
 </body>
 </html>

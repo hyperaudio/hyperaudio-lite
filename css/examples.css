@@ -1,0 +1,160 @@
+/*
+ * examples.css — light polish + shared chrome for the Hyperaudio Lite demos.
+ *
+ * Demo styling only; not part of the library. Loaded after
+ * hyperaudio-lite-player.css so the chrome can sit alongside the player styles.
+ * Keeps the transcript + player as the visual focus.
+ *
+ * (C) The Hyperaudio Project. MIT licensed.
+ */
+
+:root {
+  --hl-ink: #1b1b1b;
+  --hl-muted: #6a6a6a;
+  --hl-line: #e4e4e7;
+  --hl-accent: #1f6feb;
+  --hl-bg-soft: #f7f7f8;
+}
+
+/* Centre the demo in a comfortable column. The library's player CSS sets a
+   serif body font; keep that for the transcript but give the page chrome a
+   clean system sans. */
+body {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0 20px 56px;
+  color: var(--hl-ink);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+.hyperaudio-transcript {
+  font-family: "Palatino Linotype", "Book Antiqua", Palatino, Georgia, serif;
+}
+
+/* ---- header chrome ---- */
+.hl-chrome {
+  margin: 0 -20px 28px;
+  padding: 0 20px;
+  border-bottom: 1px solid var(--hl-line);
+}
+
+.hl-chrome-inner {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 16px 0 12px;
+}
+
+.hl-brand {
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--hl-ink);
+  text-decoration: none;
+}
+
+.hl-demo-name {
+  font-size: 0.85rem;
+  color: var(--hl-muted);
+  padding: 2px 9px;
+  background: var(--hl-bg-soft);
+  border: 1px solid var(--hl-line);
+  border-radius: 999px;
+}
+
+.hl-repo {
+  margin-left: auto;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--hl-accent);
+  text-decoration: none;
+}
+.hl-repo:hover { text-decoration: underline; }
+
+/* ---- demo nav ---- */
+.hl-demo-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+  padding-bottom: 14px;
+}
+
+.hl-demo-nav a {
+  font-size: 0.82rem;
+  color: var(--hl-muted);
+  text-decoration: none;
+}
+.hl-demo-nav a:hover { color: var(--hl-ink); }
+.hl-demo-nav a.is-current {
+  color: var(--hl-ink);
+  font-weight: 600;
+}
+
+/* ---- index orientation + demo grid ---- */
+.hl-intro {
+  margin: 0 0 28px;
+}
+.hl-intro h1 {
+  font-size: 1.6rem;
+  letter-spacing: -0.02em;
+  margin: 0 0 8px;
+}
+.hl-intro p {
+  max-width: 60ch;
+  color: #333;
+  margin: 0 0 12px;
+}
+
+#hl-demo-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 12px;
+  margin: 0 0 36px;
+}
+
+.hl-demo-card {
+  display: block;
+  padding: 14px 16px;
+  border: 1px solid var(--hl-line);
+  border-radius: 10px;
+  text-decoration: none;
+  color: inherit;
+  background: #fff;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+}
+.hl-demo-card:hover {
+  border-color: #c9c9cf;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  transform: translateY(-1px);
+}
+.hl-demo-card.is-current {
+  border-color: var(--hl-accent);
+}
+.hl-demo-card-name {
+  display: block;
+  font-weight: 600;
+  font-size: 0.95rem;
+  margin-bottom: 3px;
+}
+.hl-demo-card-blurb {
+  display: block;
+  font-size: 0.82rem;
+  color: var(--hl-muted);
+  line-height: 1.45;
+}
+
+/* ---- footer ---- */
+.hl-footer {
+  margin: 48px -20px 0;
+  padding: 18px 20px 0;
+  border-top: 1px solid var(--hl-line);
+  font-size: 0.82rem;
+  color: var(--hl-muted);
+  text-align: center;
+}
+.hl-footer a {
+  color: var(--hl-accent);
+  text-decoration: none;
+}
+.hl-footer a:hover { text-decoration: underline; }

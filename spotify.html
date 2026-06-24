@@ -5,8 +5,9 @@
 
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>Spotify Version</title>
+  <title>Hyperaudio Lite — Spotify demo</title>
   <link rel="stylesheet" href="css/hyperaudio-lite-player.css">
+  <link rel="stylesheet" href="css/examples.css">
   <style>
     /* uncomment the following CSS for active parent / word indicator */
 
@@ -54,7 +55,7 @@
   <script src="https://open.spotify.com/embed/iframe-api/v1" async></script>
 </head>
 
-<body>
+<body data-demo="spotify">
   <p>
   <form id="searchForm" style="float:right">
     <input id="search" type="text"><input type="submit" value="search">
@@ -152,6 +153,7 @@
   <script>
     new HyperaudioLite({ transcript: "hypertranscript", player: "hyperplayer" });
   </script>
+  <script src="js/example-nav.js"></script>
 </body>
 
 </html>

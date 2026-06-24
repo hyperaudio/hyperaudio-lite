@@ -5,8 +5,9 @@
 
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>Vidstack Version</title>
+  <title>Hyperaudio Lite — Vidstack demo</title>
   <link rel="stylesheet" href="css/hyperaudio-lite-player.css">
+  <link rel="stylesheet" href="css/examples.css">
 
   <link rel="stylesheet" href="https://cdn.vidstack.io/player/theme.css" />
   <link rel="stylesheet" href="https://cdn.vidstack.io/player/video.css" />
@@ -55,7 +56,7 @@
   </style>
 </head>
 
-<body>
+<body data-demo="vidstack">
   <p>
   <form id="searchForm" style="float:right">
     <input id="search" type="text"><input type="submit" value="search">
@@ -1033,6 +1034,7 @@
   <script>
     new HyperaudioLite({ transcript: "hypertranscript", player: "hyperplayer" });
   </script>
+  <script src="js/example-nav.js"></script>
 </body>
 
 </html>
