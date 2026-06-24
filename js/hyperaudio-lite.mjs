@@ -1,5 +1,5 @@
 /*! (C) The Hyperaudio Project. MIT @license: en.wikipedia.org/wiki/MIT_License. */
-/*! Version 2.4.8 */
+/*! Version 2.4.9 */
 
 'use strict';
 
@@ -794,7 +794,12 @@ class HyperaudioLite {
       } else if (difference > 0) {
         words = guessIndex - 1;
       } else {
-        index = guessIndex;
+        // Exact match: treat the matched word as having just started, so
+        // wordArr[index - 1] (used downstream as the active word) points to
+        // this word, not the previous one. Without the +1 we'd land an
+        // off-by-one at every word boundary — visible on every click,
+        // since clicks set currentTime to a word's exact start time.
+        index = guessIndex + 1;
         break;
       }
     }
