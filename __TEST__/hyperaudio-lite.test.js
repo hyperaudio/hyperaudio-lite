@@ -298,6 +298,46 @@ test("scrollToParagraph updates parentElementIndex", () => {
   expect(ht.parentElementIndex).toBe(1);
 });
 
+test("scrollOffset defaults to 0", () => {
+  const customHt = new HyperaudioLite({ transcript: "hypertranscript", player: "hyperplayer" });
+  expect(customHt.scrollOffset).toBe(0);
+});
+
+test("scrollOffset can be set via options object", () => {
+  const customHt = new HyperaudioLite({
+    transcript: "hypertranscript",
+    player: "hyperplayer",
+    scrollOffset: 80,
+  });
+  expect(customHt.scrollOffset).toBe(80);
+});
+
+test("scrollOffset is subtracted from scrollToParagraph target", () => {
+  // Set up an instance with a non-zero offset, then capture what
+  // smoothScrollTo would be called with. The offset should be subtracted
+  // from targetTop, clamped to >= 0.
+  const customHt = new HyperaudioLite({
+    transcript: "hypertranscript",
+    player: "hyperplayer",
+    scrollOffset: 30,
+  });
+  customHt.autoscroll = true;
+  customHt.parentElementIndex = 0;
+  let captured = null;
+  customHt.smoothScrollTo = (container, targetTop, duration) => {
+    captured = targetTop;
+  };
+  // Compute what an offset-of-zero call would produce, then verify the
+  // offset-aware call lands 30 lower (or 0 if clamping kicks in).
+  const containerRect = customHt.scrollContainer.getBoundingClientRect();
+  const paragraph = customHt.parentElements[1];
+  const paragraphRect = paragraph.getBoundingClientRect();
+  const expectedWithoutOffset = customHt.scrollContainer.scrollTop + (paragraphRect.top - containerRect.top);
+  const expected = Math.max(0, expectedWithoutOffset - 30);
+  customHt.scrollToParagraph(1, 6);
+  expect(captured).toBe(expected);
+});
+
 test("checkPaymentPointer returns correct payment pointer", () => {
   const p1 = document.getElementById('p1');
   expect(ht.checkPaymentPointer(p1)).toBe("payment-pointer");

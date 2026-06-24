@@ -183,6 +183,7 @@ All options:
 | `doubleClick` | `false` | Require a double-click instead of a single click for word interaction |
 | `minimizedMode` | `false` | Show the current word in the browser tab title (experimental) |
 | `webMonetization` | `false` | Inject `<link rel="monetization">` from `data-wm` payment pointers in the transcript |
+| `scrollOffset` | `0` | Pixels to subtract from the autoscroll target (useful when a sticky header overlaps the transcript) |
 
 #### Deprecated positional form
 
