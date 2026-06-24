@@ -147,6 +147,20 @@ and at the end of the `<body>`:
 </body>
 ```
 
+### Using as an ES module or CommonJS
+
+Hyperaudio Lite is also distributed as ES module and CommonJS forms alongside the classic script, so modern frontend projects (Vite, webpack, Rollup, etc.) and Node-based tooling can consume it directly without vendoring or patching:
+
+```javascript
+// ESM
+import { HyperaudioLite } from 'hyperaudio-lite';
+
+// CommonJS
+const { HyperaudioLite } = require('hyperaudio-lite');
+```
+
+The classic `<script>` form still works exactly as before. Bundlers and Node resolve to `js/hyperaudio-lite.mjs` (ESM) or `js/hyperaudio-lite.js` (CJS) automatically via the package's `exports` map.
+
 Finally instantiate the Transcript Player:
 
 ```javascript
