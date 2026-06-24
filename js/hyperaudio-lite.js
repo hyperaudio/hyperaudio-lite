@@ -312,9 +312,32 @@ function hyperaudioPlayer(playerType, instance) {
 
 // Main class for HyperaudioLite functionality
 class HyperaudioLite {
-  constructor(transcriptId, mediaElementId, minimizedMode, autoscroll, doubleClick, webMonetization, playOnClick) {
-    this.transcript = document.getElementById(transcriptId);
-    this.init(mediaElementId, minimizedMode, autoscroll, doubleClick, webMonetization, playOnClick);
+  // Constructor accepts EITHER form:
+  //   new HyperaudioLite({ transcript, player, autoScroll, ... })   -- recommended
+  //   new HyperaudioLite(transcriptId, mediaElementId, ...flags)    -- deprecated, kept for BC
+  // The positional form continues to work indefinitely across the 2.x line.
+  constructor(...args) {
+    let opts;
+    if (typeof args[0] === 'object' && args[0] !== null) {
+      // Options-object form. Apply sensible defaults so common cases stay short.
+      opts = {
+        minimizedMode: false,
+        autoScroll: true,
+        doubleClick: false,
+        webMonetization: false,
+        playOnClick: true,
+        ...args[0],
+      };
+    } else {
+      // Legacy positional form. Pass values through without applying defaults
+      // so existing callers get identical behaviour (undefined stays undefined).
+      HyperaudioLite._warnPositionalOnce();
+      const [transcript, player, minimizedMode, autoScroll, doubleClick, webMonetization, playOnClick] = args;
+      opts = { transcript, player, minimizedMode, autoScroll, doubleClick, webMonetization, playOnClick };
+    }
+
+    this.transcript = document.getElementById(opts.transcript);
+    this.init(opts.player, opts.minimizedMode, opts.autoScroll, opts.doubleClick, opts.webMonetization, opts.playOnClick);
 
     // Ensure correct binding for class methods
     this.preparePlayHead = this.preparePlayHead.bind(this);
@@ -323,6 +346,20 @@ class HyperaudioLite {
     this.checkPlayHead = this.checkPlayHead.bind(this);
     this.clearTimer = this.clearTimer.bind(this);
     this.handleSeeked = this.handleSeeked.bind(this);
+  }
+
+  // Throttled deprecation warning — fires at most once per page load
+  // regardless of how many positional-form constructions happen.
+  static _warnPositionalOnce() {
+    if (HyperaudioLite._positionalWarned) return;
+    HyperaudioLite._positionalWarned = true;
+    if (typeof console !== 'undefined' && console.warn) {
+      console.warn(
+        'HyperaudioLite: the positional-argument constructor is deprecated. ' +
+        'Pass an options object instead — see the README. The positional form ' +
+        'continues to work across the 2.x line.'
+      );
+    }
   }
 
   // Initialize the HyperaudioLite instance
