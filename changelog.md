@@ -1,3 +1,7 @@
+# Version 2.4.8
+
+- Fixed a stale `.active` class on rewind/scrub-backward: `updateTranscriptVisualState` only removed `active` from words *before* the playhead, so seeking backward left a trail of contradictory `active unread` words ahead of the new position. The else-branch now clears `active` too, and `setPlayHead` was reordered to mark its clicked word after the visual-state update (so the click-while-paused active-mark survives the new sweep). Resolves #231. Bug introduced in v2.4.3 (seek-follow work).
+
 # Version 2.4.7
 
 - Fixed multi-instance YouTube wiring: when more than one HAL instance backed by a YouTube iframe was created on the same page, `window.onYouTubeIframeAPIReady` was overwritten by each new instance, so only the last instance's `YT.Player` actually got set up — leaving earlier instances unable to seek, play, pause, or follow playback. Each instance now chains onto any existing callback (and wires up immediately if the API is already loaded). Resolves #226.
