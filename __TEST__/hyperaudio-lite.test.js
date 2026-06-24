@@ -257,6 +257,19 @@ test("updateTranscriptVisualState marks words as read", () => {
   expect(spans[5].classList.contains('unread')).toBe(true);
 });
 
+test("updateTranscriptVisualState marks the matched word as active at exact word boundaries", () => {
+  // Regression for #235: clicking a word sets currentTime to the word's exact
+  // start time. The binary search used to return index = matchedIndex (treating
+  // the matched word as "not yet started") so wordArr[index - 1] — the previous
+  // word — was marked active. Visible as the wrong word lighting up on every click.
+  ht.myPlayer = { paused: false };
+  const word = document.getElementsByTagName('span')[4];
+  const exactStart = parseInt(word.dataset.m) / 1000;
+  ht.updateTranscriptVisualState(exactStart);
+  expect(word.classList.contains('active')).toBe(true);
+  expect(document.getElementsByTagName('span')[3].classList.contains('active')).toBe(false);
+});
+
 test("updateTranscriptVisualState clears stale .active on rewind", () => {
   // Play forward past the 5th word — that word ends up active.
   ht.myPlayer = { paused: false };

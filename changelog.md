@@ -1,3 +1,7 @@
+# Version 2.4.9
+
+- Fixed a long-standing off-by-one in the transcript visual-state binary search: at exact word boundaries (which is what every word-click produces, since the click sets `currentTime` to the word's exact start), the search returned the matched index and downstream code marked `wordArr[index - 1]` (the **previous** word) as active. Visible as the wrong word lighting up on every word-click with the default `playOnClick: true` setting. Resolves #235.
+
 # Version 2.4.8
 
 - Fixed a stale `.active` class on rewind/scrub-backward: `updateTranscriptVisualState` only removed `active` from words *before* the playhead, so seeking backward left a trail of contradictory `active unread` words ahead of the new position. The else-branch now clears `active` too, and `setPlayHead` was reordered to mark its clicked word after the visual-state update (so the click-while-paused active-mark survives the new sweep). Resolves #231. Bug introduced in v2.4.3 (seek-follow work).
