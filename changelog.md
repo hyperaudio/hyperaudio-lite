@@ -1,3 +1,42 @@
+# Version 2.5.0
+
+Refactor release. Four focused improvements; no breaking changes (the positional constructor keeps working — see "Migration" below).
+
+## New
+
+- **Options-object constructor** (#217). `HyperaudioLite` now accepts a self-documenting options object:
+  ```javascript
+  new HyperaudioLite({
+    transcript: "hypertranscript",
+    player: "hyperplayer",
+    autoScroll: true,
+    playOnClick: true,
+  });
+  ```
+  Defaults: `autoScroll: true`, `playOnClick: true`, others `false`. The positional form (`new HyperaudioLite("t", "p", false, true, ...)`) keeps working indefinitely across the 2.x line and emits a throttled console deprecation notice (once per page load). See README for the full options table.
+- **ESM and CommonJS distribution** (#218). The library now ships `js/hyperaudio-lite.mjs` alongside the existing classic-script `hyperaudio-lite.js`. `package.json` declares `main`, `module`, and `exports` so bundlers and Node consumers resolve the right file automatically:
+  ```javascript
+  import { HyperaudioLite } from 'hyperaudio-lite';        // ESM
+  const { HyperaudioLite } = require('hyperaudio-lite');   // CJS
+  ```
+  The classic `<script>` form is unchanged.
+- **`scrollOffset` option** (#230). Pixels to subtract from the autoscroll landing point, for layouts whose sticky/overlapping header would otherwise cover the active paragraph. Default `0`. Settable on the instance after construction too.
+
+## Internal
+
+- **`BasePlayer` is now properly abstract** (#214). Its `getTime`/`setTime`/`play`/`pause` methods throw `"must be implemented by subclasses"`; the HTML5 defaults moved into `NativePlayer`. No runtime behaviour change for existing players, but new player adapters can no longer silently inherit broken HTML5 behaviour.
+
+## Migration
+
+- **No required changes.** Existing positional-constructor callers continue to work as before. The deprecation warning is informational only.
+- **Recommended migration** to the new options-object form is documented in the README. All 10 bundled demo HTML files have been migrated; they're a good reference.
+
+## Inherited fixes (shipped in 2.4.x, included here)
+
+- Stale `.active` class cleared on rewind/scrub-backward (#231, originally in 2.4.8)
+- Off-by-one in `updateTranscriptVisualState`: clicking a word no longer highlights the previous word (#235, originally in 2.4.9)
+- Multi-instance YouTube wiring fix (#226, originally in 2.4.7)
+
 # Version 2.4.9
 
 - Fixed a long-standing off-by-one in the transcript visual-state binary search: at exact word boundaries (which is what every word-click produces, since the click sets `currentTime` to the word's exact start), the search returned the matched index and downstream code marked `wordArr[index - 1]` (the **previous** word) as active. Visible as the wrong word lighting up on every word-click with the default `playOnClick: true` setting. Resolves #235.
