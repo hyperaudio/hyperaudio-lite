@@ -161,16 +161,36 @@ const { HyperaudioLite } = require('hyperaudio-lite');
 
 The classic `<script>` form still works exactly as before. Bundlers and Node resolve to `js/hyperaudio-lite.mjs` (ESM) or `js/hyperaudio-lite.js` (CJS) automatically via the package's `exports` map.
 
-Finally instantiate the Transcript Player:
+Finally instantiate the Transcript Player. Pass an options object identifying the transcript and player elements (by `id`), plus any optional behaviour flags:
 
 ```javascript
-let minimizedMode = false;
-let autoScroll = true;
-let doubleClick = false;
-let webMonetization = false;
-let playOnClick = true;
+new HyperaudioLite({
+  transcript: "hypertranscript",
+  player: "hyperplayer",
+  autoScroll: true,
+  playOnClick: true,
+});
+```
 
-new HyperaudioLite("hypertranscript", "hyperplayer", minimizedMode, autoScroll, doubleClick, webMonetization, playOnClick);
+All options:
+
+| Option | Default | Description |
+|---|---|---|
+| `transcript` | _(required)_ | Element id of the transcript container |
+| `player` | _(required)_ | Element id of the audio/video element (or third-party player iframe) |
+| `autoScroll` | `true` | Scroll the transcript to follow playback and seeks |
+| `playOnClick` | `true` | Start playback when the user clicks a word |
+| `doubleClick` | `false` | Require a double-click instead of a single click for word interaction |
+| `minimizedMode` | `false` | Show the current word in the browser tab title (experimental) |
+| `webMonetization` | `false` | Inject `<link rel="monetization">` from `data-wm` payment pointers in the transcript |
+
+#### Deprecated positional form
+
+The original positional-argument form still works for backward compatibility across the 2.x line, but is no longer recommended:
+
+```javascript
+// Deprecated — emits a console warning
+new HyperaudioLite("hypertranscript", "hyperplayer", false, true, false, false, true);
 ```
 
 ### Autoscroll behaviour
@@ -180,7 +200,7 @@ When `autoScroll` is enabled, the transcript follows playback and also follows s
 To temporarily disable autoscroll (e.g. while a user is editing the transcript), call `pauseAutoscroll()` and re-enable it with `resumeAutoscroll()`:
 
 ```javascript
-const player = new HyperaudioLite("hypertranscript", "hyperplayer", false, true, false, false, true);
+const player = new HyperaudioLite({ transcript: "hypertranscript", player: "hyperplayer" });
 player.pauseAutoscroll();
 // ...later
 player.resumeAutoscroll();

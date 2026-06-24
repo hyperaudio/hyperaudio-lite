@@ -1039,14 +1039,12 @@
   <script src="js/caption.js"></script>
   <script>
 
-  // minimizedMode is still experimental - it aims to show the current words in the title, which can be seen on the browser tab.
-  let minimizedMode = false;
-  let autoScroll = true;
-  let doubleClick = false;
-  let webMonetization = false;
-  let playOnClick = false;
-
-  new HyperaudioLite("hypertranscript", "hyperplayer", minimizedMode, autoScroll, doubleClick, webMonetization, playOnClick);
+  new HyperaudioLite({
+    transcript: "hypertranscript",
+    player: "hyperplayer",
+    autoScroll: true,
+    playOnClick: false,
+  });
 
   // Override scroll parameters
   //ht1.setScrollParameters(<duration>, <delay>, <offset>, <container>);

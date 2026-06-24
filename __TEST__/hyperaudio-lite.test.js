@@ -23,6 +23,65 @@ test("initialization with parameters", () => {
   expect(customHt.playOnClick).toBe(true);
 });
 
+test("initialization with options object — all flags explicit", () => {
+  const customHt = new HyperaudioLite({
+    transcript: "hypertranscript",
+    player: "hyperplayer",
+    minimizedMode: true,
+    autoScroll: true,
+    doubleClick: true,
+    webMonetization: true,
+    playOnClick: true,
+  });
+
+  expect(customHt.minimizedMode).toBe(true);
+  expect(customHt.autoscroll).toBe(true);
+  expect(customHt.doubleClick).toBe(true);
+  expect(customHt.webMonetization).toBe(true);
+  expect(customHt.playOnClick).toBe(true);
+});
+
+test("initialization with options object — defaults applied for omitted flags", () => {
+  const customHt = new HyperaudioLite({
+    transcript: "hypertranscript",
+    player: "hyperplayer",
+  });
+
+  // Defaults from the constructor: minimizedMode=false, autoScroll=true,
+  // doubleClick=false, webMonetization=false, playOnClick=true.
+  expect(customHt.minimizedMode).toBe(false);
+  expect(customHt.autoscroll).toBe(true);
+  expect(customHt.doubleClick).toBe(false);
+  expect(customHt.webMonetization).toBe(false);
+  expect(customHt.playOnClick).toBe(true);
+});
+
+test("positional constructor emits a deprecation warning (once)", () => {
+  // Reset the throttle flag so the warning will fire for this test, regardless
+  // of test order.
+  HyperaudioLite._positionalWarned = false;
+  const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+
+  new HyperaudioLite("hypertranscript", "hyperplayer", false, true, false, false, true);
+  new HyperaudioLite("hypertranscript", "hyperplayer", false, true, false, false, true);
+
+  // Throttled to once per page load, regardless of how many positional calls happen.
+  expect(warnSpy).toHaveBeenCalledTimes(1);
+  expect(warnSpy.mock.calls[0][0]).toMatch(/positional-argument constructor is deprecated/);
+
+  warnSpy.mockRestore();
+});
+
+test("options-object constructor does NOT emit a deprecation warning", () => {
+  HyperaudioLite._positionalWarned = false;
+  const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+
+  new HyperaudioLite({ transcript: "hypertranscript", player: "hyperplayer" });
+
+  expect(warnSpy).not.toHaveBeenCalled();
+  warnSpy.mockRestore();
+});
+
 function createWordArrayResult(words) {
   for (let i = 0; i < words.length; ++i) {
     const m = parseInt(words[i].getAttribute("data-m"));
