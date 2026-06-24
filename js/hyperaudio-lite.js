@@ -326,6 +326,7 @@ class HyperaudioLite {
         doubleClick: false,
         webMonetization: false,
         playOnClick: true,
+        scrollOffset: 0,
         ...args[0],
       };
     } else {
@@ -338,6 +339,10 @@ class HyperaudioLite {
 
     this.transcript = document.getElementById(opts.transcript);
     this.init(opts.player, opts.minimizedMode, opts.autoScroll, opts.doubleClick, opts.webMonetization, opts.playOnClick);
+    // scrollOffset is read directly by scrollToParagraph; consumers can also
+    // set/change it on the instance after construction (e.g. for layouts that
+    // resize their sticky header).
+    this.scrollOffset = opts.scrollOffset || 0;
 
     // Ensure correct binding for class methods
     this.preparePlayHead = this.preparePlayHead.bind(this);
@@ -701,8 +706,8 @@ class HyperaudioLite {
         if (currentParagraph) {
           const containerRect = this.scrollContainer.getBoundingClientRect();
           const paragraphRect = currentParagraph.getBoundingClientRect();
-          const targetTop = this.scrollContainer.scrollTop + (paragraphRect.top - containerRect.top);
-          this.smoothScrollTo(this.scrollContainer, targetTop, 800);
+          const targetTop = this.scrollContainer.scrollTop + (paragraphRect.top - containerRect.top) - (this.scrollOffset || 0);
+          this.smoothScrollTo(this.scrollContainer, Math.max(0, targetTop), 800);
         }
       }
       this.parentElementIndex = currentParentElementIndex;
