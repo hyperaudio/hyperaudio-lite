@@ -1,5 +1,5 @@
 /*! (C) The Hyperaudio Project. MIT @license: en.wikipedia.org/wiki/MIT_License. */
-/*! Version 2.4.7 */
+/*! Version 2.4.8 */
 
 'use strict';
 
@@ -557,13 +557,17 @@ class HyperaudioLite {
     this.highlightedText = false;
     this.clearActiveClasses();
 
+    const timeSecs = parseInt(target.dataset.m) / 1000;
+    this.updateTranscriptVisualState(timeSecs);
+
+    // Mark the clicked word as active AFTER updateTranscriptVisualState (which
+    // now wipes stale .active in its else-branch to fix #231). When playing,
+    // the playback loop owns the active word; when paused, we explicitly mark
+    // the clicked word so the user sees what they clicked.
     if (this.myPlayer.paused && target.dataset.m) {
       target.classList.add('active');
       target.parentNode.classList.add('active');
     }
-
-    const timeSecs = parseInt(target.dataset.m) / 1000;
-    this.updateTranscriptVisualState(timeSecs);
 
     if (!isNaN(timeSecs)) {
       this.end = null;
@@ -790,7 +794,7 @@ class HyperaudioLite {
         parentClassList.remove('active');
       } else {
         classList.add('unread');
-        classList.remove('read');
+        classList.remove('read', 'active');
       }
     });
 

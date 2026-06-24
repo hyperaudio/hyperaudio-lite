@@ -257,6 +257,22 @@ test("updateTranscriptVisualState marks words as read", () => {
   expect(spans[5].classList.contains('unread')).toBe(true);
 });
 
+test("updateTranscriptVisualState clears stale .active on rewind", () => {
+  // Play forward past the 5th word — that word ends up active.
+  ht.myPlayer = { paused: false };
+  ht.updateTranscriptVisualState(5);
+  // Then rewind to time 0. Words that were ahead of the playhead used to keep
+  // their .active class because the else-branch only removed 'read', not
+  // 'active' — leaving contradictory `active unread` words behind the new
+  // playhead. (regression for #231)
+  ht.updateTranscriptVisualState(0, true);
+  const spans = document.querySelectorAll('span');
+  const staleActives = Array.from(spans).filter(
+    s => s.classList.contains('active') && s.classList.contains('unread')
+  );
+  expect(staleActives).toHaveLength(0);
+});
+
 test("setPlayHead updates currentTime and plays if playOnClick is true", () => {
   ht.playOnClick = true;
   ht.myPlayer = { setTime: jest.fn(), play: jest.fn(), paused: true };
