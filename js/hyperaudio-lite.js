@@ -25,26 +25,23 @@ class BasePlayer {
     this.player.addEventListener('seeked', instance.handleSeeked.bind(instance), false);
   }
 
-  // Method to get the current time of the player
+  // Contract methods — subclasses must implement these for their player's API.
+  // BasePlayer is intentionally abstract; previous HTML5 defaults now live in
+  // NativePlayer so non-native subclasses can't silently inherit wrong behaviour.
   getTime() {
-    return Promise.resolve(this.player.currentTime);
+    throw new Error('getTime must be implemented by subclasses');
   }
 
-  // Method to set the current time of the player
   setTime(seconds) {
-    this.player.currentTime = seconds;
+    throw new Error('setTime must be implemented by subclasses');
   }
 
-  // Method to play the media
   play() {
-    this.player.play();
-    this.paused = false;
+    throw new Error('play must be implemented by subclasses');
   }
 
-  // Method to pause the media
   pause() {
-    this.player.pause();
-    this.paused = true;
+    throw new Error('pause must be implemented by subclasses');
   }
 }
 
@@ -53,6 +50,24 @@ class NativePlayer extends BasePlayer {
   // Initialize the native HTML5 player
   initPlayer(instance) {
     return instance.player;
+  }
+
+  getTime() {
+    return Promise.resolve(this.player.currentTime);
+  }
+
+  setTime(seconds) {
+    this.player.currentTime = seconds;
+  }
+
+  play() {
+    this.player.play();
+    this.paused = false;
+  }
+
+  pause() {
+    this.player.pause();
+    this.paused = true;
   }
 }
 
