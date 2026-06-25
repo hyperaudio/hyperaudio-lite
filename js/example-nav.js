@@ -90,23 +90,6 @@
   function buildPage(key, current, idx) {
     var page = el('main', { class: 'hl-page', role: 'main' });
 
-    if (key === 'index') {
-      // Homepage: intro + grid, no iframe at the top.
-      page.appendChild(el('section', { class: 'hl-intro' }, [
-        el('h1', { text: 'Hyperaudio Lite' }),
-        el('p', { text: 'A lightweight, dependency-free library that ties a transcript to its audio or video: words highlight as the media plays, and clicking a word jumps the player to that moment. No frameworks, no build step.' }),
-        el('p', { text: 'Pick a demo to see the library wired up to a particular player.' })
-      ]));
-      var grid = el('div', { id: 'hl-demo-grid' });
-      DEMOS.forEach(function (d, i) {
-        grid.appendChild(el('a', { class: 'hl-demo-card', href: d.key === 'index' ? 'index.html' : (d.key + '.html') }, [
-          el('span', { class: 'hl-demo-card-name', text: d.name }),
-          el('span', { class: 'hl-demo-card-blurb', text: d.blurb })
-        ]));
-      });
-      page.appendChild(grid);
-    }
-
     // Eyebrow + title + blurb + iframe + source bar for every demo (including index).
     page.appendChild(el('div', { class: 'hl-eyebrow' }, [
       el('span', {}, ['Demo ', el('strong', { text: padNum(idx + 1) }), ' / ' + padNum(DEMOS.length)]),

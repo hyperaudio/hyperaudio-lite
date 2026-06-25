@@ -241,58 +241,6 @@ body {
   color: var(--text);
 }
 
-/* index page intro + grid */
-.hl-intro {
-  margin: 0 0 24px;
-}
-.hl-intro h1 {
-  font-family: var(--display);
-  font-size: clamp(2.4rem, 5vw, 3.4rem);
-  line-height: 1.02;
-  letter-spacing: -0.02em;
-  margin: 0 0 12px;
-}
-.hl-intro p {
-  max-width: 60ch;
-  color: var(--muted);
-  margin: 0 0 12px;
-  font-size: 1.04rem;
-}
-
-#hl-demo-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 10px;
-  margin: 18px 0 36px;
-}
-.hl-demo-card {
-  display: block;
-  padding: 14px 16px;
-  border: 1px solid var(--rule);
-  border-radius: 2px;
-  text-decoration: none;
-  color: inherit;
-  background: var(--bg-2);
-  transition: border-color 120ms ease, transform 120ms ease;
-}
-.hl-demo-card:hover {
-  border-color: var(--accent);
-  transform: translateY(-1px);
-}
-.hl-demo-card-name {
-  display: block;
-  font-family: var(--display);
-  font-weight: 600;
-  font-size: 1rem;
-  margin-bottom: 2px;
-}
-.hl-demo-card-blurb {
-  display: block;
-  font-size: 0.82rem;
-  color: var(--muted);
-  line-height: 1.4;
-}
-
 /* footer */
 .hl-footer {
   border-top: 1px solid var(--rule);
@@ -330,6 +278,7 @@ body.is-demo {
 }
 body.is-demo .hyperaudio-player,
 body.is-demo media-player,
+body.is-demo .video-js,
 body.is-demo > iframe,
 body.is-demo > video,
 body.is-demo > audio {
@@ -361,6 +310,9 @@ body.is-demo .hyperaudio-transcript .speaker {
   font-weight: 500;
   margin-right: 4px;
 }
+body.is-demo .hyperaudio-transcript .read {
+  color: var(--text);
+}
 body.is-demo .hyperaudio-transcript .active {
   color: var(--accent);
 }
@@ -377,7 +329,9 @@ body.is-demo #searchForm {
   align-items: center;
 }
 body.is-demo #searchForm input[type="text"] {
-  flex: 1;
+  width: 220px;
+  max-width: 100%;
+  margin-left: auto;
   font: inherit;
   padding: 7px 10px;
   border: 1px solid var(--rule);
@@ -678,6 +632,5 @@ body.demo-multiplayer .hl-frame {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .hl-source-btn,
-  .hl-demo-card { transition: none; }
+  .hl-source-btn { transition: none; }
 }
