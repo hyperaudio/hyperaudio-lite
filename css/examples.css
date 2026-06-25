@@ -323,8 +323,6 @@ body.is-demo .hyperaudio-transcript .active > .active {
 body.is-demo .hyperaudio-transcript .search-mark {
   background: var(--accent);
   color: var(--bg-2);
-  padding: 0 2px;
-  border-radius: 2px;
 }
 body.is-demo #searchForm {
   margin: 0 0 18px;
