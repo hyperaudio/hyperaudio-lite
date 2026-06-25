@@ -1,3 +1,22 @@
+# Version 2.5.1
+
+Patch release. Focused on the demo wrapper's search behaviour plus a polish pass on the example pages.
+
+## Fixed
+
+- **Search now finds partial words** (#241). `searchPhrase()` in `js/hyperaudio-lite-extension.js` previously required exact equality between a query word and a transcript span; searching `fri` against a transcript containing `Friday` matched nothing. The matcher now uses `.includes()` against the normalised span text, so substrings are surfaced. Multi-word phrases still walk consecutive spans — each phrase word must be contained by the matching span.
+- **Search highlight is scoped to the matched run.** The pink (default) / accent-coloured (in the demo pages) highlight now wraps just the matched substring in a `<mark class="search-mark">` rather than the whole word.
+- **Search highlight no longer reflows text.** Dropped the 1–2px horizontal padding from `.search-mark` so wrapping a substring doesn't shift surrounding words.
+
+## Changed
+
+- **`js/hyperaudio-lite-extension.js` modernised.** `const`/`let`, arrow functions, optional chaining, `textContent` over `innerHTML` for inserted nodes, and a single source of truth for the punctuation regex. No public API change.
+- **CSS class for the search highlight renamed** from `.search-match` to `.search-mark` in `css/hyperaudio-lite-player.css`. The span still gets `.search-match` for any consumer that targets it, but the visual highlight rule now applies to the inner `<mark>`. If you were styling `.search-match` for visual highlight purposes, retarget at `.search-mark`.
+
+## Demos
+
+The example pages have been rebuilt around an iframe-and-shell pattern. Each top-level demo page (`index.html`, `youtube.html`, …) is now a tiny shell that loads the actual demo from `demos/<key>.html`. The shell adds a **View source** panel that fetches and displays the iframed file's HTML inline, plus **Open standalone** and **On GitHub** links. Each demo also gets its own theme — palette, type direction and a single signature element — while the chrome stays consistent. None of this affects the library; it's all under `demos/`, `css/examples.css` and `js/example-nav.js`.
+
 # Version 2.5.0
 
 Refactor release. Four focused improvements; no breaking changes (the positional constructor keeps working — see "Migration" below).
