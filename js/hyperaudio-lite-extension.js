@@ -4,19 +4,46 @@
 'use strict';
 
 // Example wrapper for hyperaudio-lite with search and playback-rate controls.
-// Highlights every transcript span whose normalised text contains the search
-// phrase. Multi-word phrases walk consecutive spans — each phrase word must be
-// contained by the matching span.
+// Walks consecutive [data-m] spans for multi-word phrases; for each matching
+// span wraps just the matched substring in a <mark class="search-mark"> so the
+// highlight covers the query, not the whole word.
 
 const SEARCH_PUNCT = /[.,\-\/#!$%\^&\*;:{}=_`~()\?\s]/g;
 const normalise = (text) => text.toLowerCase().replace(SEARCH_PUNCT, '');
+
+const clearPreviousSearch = () => {
+  document.querySelectorAll('mark.search-mark').forEach((mark) => {
+    mark.replaceWith(document.createTextNode(mark.textContent));
+  });
+  document.querySelectorAll('.search-match').forEach((el) => {
+    el.classList.remove('search-match');
+    el.normalize(); // merge adjacent text nodes left behind by the unwrap
+  });
+};
+
+// Wrap the first occurrence of `needle` (case-insensitive) inside `span`'s
+// text with <mark class="search-mark">. Punctuation stays outside the mark.
+const highlightSubstring = (span, needle) => {
+  const original = span.textContent;
+  const idx = original.toLowerCase().indexOf(needle);
+  if (idx < 0) return;
+  const before = original.slice(0, idx);
+  const hit = original.slice(idx, idx + needle.length);
+  const after = original.slice(idx + needle.length);
+  span.textContent = '';
+  if (before) span.append(before);
+  const mark = document.createElement('mark');
+  mark.className = 'search-mark';
+  mark.textContent = hit;
+  span.append(mark);
+  if (after) span.append(after);
+};
 
 const searchPhrase = (phrase) => {
   const spans = document.querySelectorAll('[data-m]');
   if (!spans.length) return;
 
-  document.querySelectorAll('.search-match')
-    .forEach((el) => el.classList.remove('search-match'));
+  clearPreviousSearch();
 
   const needles = phrase
     .toLowerCase()
@@ -28,13 +55,14 @@ const searchPhrase = (phrase) => {
   const lastStart = spans.length - needles.length;
   for (let i = 0; i <= lastStart; i++) {
     const hit = needles.every((needle, j) =>
-      normalise(spans[i + j].innerHTML).includes(needle)
+      normalise(spans[i + j].textContent).includes(needle)
     );
-    if (hit) {
-      for (let j = 0; j < needles.length; j++) {
-        spans[i + j].classList.add('search-match');
-      }
-    }
+    if (!hit) continue;
+    needles.forEach((needle, j) => {
+      const span = spans[i + j];
+      span.classList.add('search-match');
+      highlightSubstring(span, needle);
+    });
   }
 };
 
