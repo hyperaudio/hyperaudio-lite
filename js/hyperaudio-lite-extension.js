@@ -1,76 +1,57 @@
 /*! (C) The Hyperaudio Project. MIT @license: en.wikipedia.org/wiki/MIT_License. */
-/*! Version 2.1.1b */
+/*! Version 2.5.1 */
 
 'use strict';
-// Example wrapper for hyperaudio-lite with search and playbackRate included
 
-let searchForm = document.getElementById('searchForm');
+// Example wrapper for hyperaudio-lite with search and playback-rate controls.
+// Highlights every transcript span whose normalised text contains the search
+// phrase. Multi-word phrases walk consecutive spans — each phrase word must be
+// contained by the matching span.
 
-if (searchForm) {
-  searchForm.addEventListener('submit', function(event){
-    searchPhrase(document.getElementById('search').value);
-    event.preventDefault();
-  }, false);
-}
+const SEARCH_PUNCT = /[.,\-\/#!$%\^&\*;:{}=_`~()\?\s]/g;
+const normalise = (text) => text.toLowerCase().replace(SEARCH_PUNCT, '');
 
+const searchPhrase = (phrase) => {
+  const spans = document.querySelectorAll('[data-m]');
+  if (!spans.length) return;
 
-let searchPhrase = function (phrase) {
-	
-  let htmlWords = document.querySelectorAll('[data-m]');
-  let htmlWordsLen = htmlWords.length;
-	
-  let phraseWords = phrase.split(" ");
-  let phraseWordsLen = phraseWords.length;
-  let matchedTimes = [];
+  document.querySelectorAll('.search-match')
+    .forEach((el) => el.classList.remove('search-match'));
 
-  // clear matched times
-  let searchMatched = document.querySelectorAll('.search-match');
+  const needles = phrase
+    .toLowerCase()
+    .split(/\s+/)
+    .map((w) => w.replace(SEARCH_PUNCT, ''))
+    .filter(Boolean);
+  if (!needles.length) return;
 
-  searchMatched.forEach((match) => {
-    match.classList.remove('search-match');
-  });
-
-  for (let i = 0; i < htmlWordsLen; i++) {
-    let numWordsMatched = 0;
-    let potentiallyMatched = [];
-
-    for (let j = 0; j < phraseWordsLen; j++) {
-      let wordIndex = i + numWordsMatched;
-
-      if (wordIndex >= htmlWordsLen) {
-        break;
-      }
-
-      // regex removes punctuation - NB for htmlWords case we also remove the space
-
-      if (phraseWords[j].toLowerCase() == htmlWords[wordIndex].innerHTML.toLowerCase().replace(/[\.,-\/#!$%\^&\*;:{}=\-_`~()\? ]/g,"")) {
-        potentiallyMatched.push(htmlWords[wordIndex].getAttribute('data-m'));
-        numWordsMatched++;
-      } else {
-        break;
-      }
-
-      // if the num of words matched equal the search phrase we have a winner!
-      if (numWordsMatched >= phraseWordsLen) {
-        matchedTimes = matchedTimes.concat(potentiallyMatched);
+  const lastStart = spans.length - needles.length;
+  for (let i = 0; i <= lastStart; i++) {
+    const hit = needles.every((needle, j) =>
+      normalise(spans[i + j].innerHTML).includes(needle)
+    );
+    if (hit) {
+      for (let j = 0; j < needles.length; j++) {
+        spans[i + j].classList.add('search-match');
       }
     }
   }
+};
 
-  // display
-  matchedTimes.forEach(matchedTime => {
-    document.querySelectorAll("[data-m='"+matchedTime+"']")[0].classList.add("search-match");
+document.getElementById('searchForm')?.addEventListener('submit', (event) => {
+  event.preventDefault();
+  searchPhrase(document.getElementById('search').value);
+});
+
+window.addEventListener('load', () => {
+  const pbr = document.getElementById('pbr');
+  const display = document.getElementById('currentPbr');
+  if (!pbr) return;
+
+  pbr.addEventListener('input', () => {
+    if (display) display.textContent = pbr.value;
+    if (typeof hyperplayer !== 'undefined') {
+      hyperplayer.playbackRate = pbr.value;
+    }
   });
-}
-
-window.onload = function() {
-	const playbackRateCtrl = document.getElementById('pbr');
-	const currentPlaybackRate = document.getElementById('currentPbr');
-
-  if (playbackRateCtrl !== null) {
-    playbackRateCtrl.addEventListener('input', function(){
-      currentPlaybackRate.innerHTML = playbackRateCtrl.value;
-      hyperplayer.playbackRate = playbackRateCtrl.value;
-    },false);
-  }
-}
+});
