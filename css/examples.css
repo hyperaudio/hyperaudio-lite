@@ -1,160 +1,683 @@
 /*
- * examples.css — light polish + shared chrome for the Hyperaudio Lite demos.
+ * examples.css — chrome + per-demo themes for the Hyperaudio Lite demo pages.
  *
- * Demo styling only; not part of the library. Loaded after
- * hyperaudio-lite-player.css so the chrome can sit alongside the player styles.
- * Keeps the transcript + player as the visual focus.
+ * Loaded by both the shell pages (parent) and the iframed demo pages (child).
+ * Shell pages get the header / nav / iframe frame / source panel / footer.
+ * Iframe pages get the centred player + transcript layout.
+ * Each <body> opts in to one of ten themes via `class="demo-<key>"`. Themes
+ * override CSS variables; no theme touches layout rules.
+ *
+ * Demo styling only — not part of the library. Loaded after
+ * hyperaudio-lite-player.css so transcript word states still win.
  *
  * (C) The Hyperaudio Project. MIT licensed.
  */
 
+/* ---------------------------------------------------------------- */
+/*  base tokens (overridden per demo)                               */
+/* ---------------------------------------------------------------- */
+
 :root {
-  --hl-ink: #1b1b1b;
-  --hl-muted: #6a6a6a;
-  --hl-line: #e4e4e7;
-  --hl-accent: #1f6feb;
-  --hl-bg-soft: #f7f7f8;
+  --bg: #f7f5ef;
+  --bg-2: #ffffff;
+  --text: #161616;
+  --muted: #6a6a6a;
+  --rule: #e0ddd4;
+  --accent: #c54a2d;
+  --accent-soft: rgba(197, 74, 45, 0.12);
+
+  --display: "PT Serif", Georgia, "Times New Roman", serif;
+  --body: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, sans-serif;
+  --mono: ui-monospace, "SF Mono", "Menlo", "Cascadia Code", "Consolas", monospace;
+
+  --maxw: 920px;
 }
 
-/* Centre the demo in a comfortable column. The library's player CSS sets a
-   serif body font; keep that for the transcript but give the page chrome a
-   clean system sans. */
+/* ---------------------------------------------------------------- */
+/*  page reset + chrome (shell pages)                               */
+/* ---------------------------------------------------------------- */
+
 body {
-  max-width: 900px;
-  margin: 0 auto;
-  padding: 0 20px 56px;
-  color: var(--hl-ink);
-  font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--body);
+  font-size: 16px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
 }
 
-.hyperaudio-transcript {
-  font-family: "Palatino Linotype", "Book Antiqua", Palatino, Georgia, serif;
-}
-
-/* ---- header chrome ---- */
 .hl-chrome {
-  margin: 0 -20px 28px;
-  padding: 0 20px;
-  border-bottom: 1px solid var(--hl-line);
+  border-bottom: 1px solid var(--rule);
 }
 
 .hl-chrome-inner {
+  max-width: var(--maxw);
+  margin: 0 auto;
+  padding: 18px 24px 14px;
   display: flex;
   align-items: baseline;
   flex-wrap: wrap;
-  gap: 12px;
-  padding: 16px 0 12px;
+  gap: 14px;
 }
 
 .hl-brand {
-  font-size: 1.15rem;
+  font-family: var(--display);
   font-weight: 700;
+  font-size: 1.05rem;
   letter-spacing: -0.01em;
-  color: var(--hl-ink);
+  color: var(--text);
   text-decoration: none;
 }
 
 .hl-demo-name {
-  font-size: 0.85rem;
-  color: var(--hl-muted);
-  padding: 2px 9px;
-  background: var(--hl-bg-soft);
-  border: 1px solid var(--hl-line);
-  border-radius: 999px;
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.hl-demo-name::before {
+  content: "· ";
+  color: var(--rule);
+  margin-right: 2px;
 }
 
 .hl-repo {
   margin-left: auto;
-  font-size: 0.85rem;
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
   font-weight: 500;
-  color: var(--hl-accent);
+  color: var(--accent);
   text-decoration: none;
+  border-bottom: 1px solid var(--accent);
+  padding-bottom: 2px;
 }
-.hl-repo:hover { text-decoration: underline; }
+.hl-repo:hover { opacity: 0.75; }
 
-/* ---- demo nav ---- */
+/* demo nav strip */
 .hl-demo-nav {
+  max-width: var(--maxw);
+  margin: 0 auto;
+  padding: 10px 24px 14px;
   display: flex;
   flex-wrap: wrap;
-  gap: 4px 16px;
-  padding-bottom: 14px;
+  gap: 4px 18px;
+  border-bottom: 1px solid var(--rule);
 }
-
 .hl-demo-nav a {
-  font-size: 0.82rem;
-  color: var(--hl-muted);
+  font-family: var(--mono);
+  font-size: 0.74rem;
+  letter-spacing: 0.04em;
+  color: var(--muted);
   text-decoration: none;
 }
-.hl-demo-nav a:hover { color: var(--hl-ink); }
+.hl-demo-nav a:hover { color: var(--text); }
 .hl-demo-nav a.is-current {
-  color: var(--hl-ink);
+  color: var(--text);
   font-weight: 600;
 }
+.hl-demo-nav a.is-current::before {
+  content: "▸ ";
+  color: var(--accent);
+}
 
-/* ---- index orientation + demo grid ---- */
-.hl-intro {
+/* ---------------------------------------------------------------- */
+/*  demo presentation (shell pages)                                 */
+/* ---------------------------------------------------------------- */
+
+.hl-page {
+  max-width: var(--maxw);
+  margin: 0 auto;
+  padding: 36px 24px 24px;
+}
+
+.hl-eyebrow {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted);
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+.hl-eyebrow strong {
+  font-weight: 500;
+  color: var(--accent);
+}
+.hl-eyebrow .hl-eyebrow-sig {
+  flex: 1;
+  height: 1px;
+  background: var(--rule);
+}
+
+.hl-title {
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: clamp(2rem, 4.2vw, 3.1rem);
+  line-height: 1.05;
+  letter-spacing: -0.018em;
+  margin: 14px 0 12px;
+}
+
+.hl-blurb {
+  max-width: 56ch;
+  color: var(--muted);
   margin: 0 0 28px;
+  font-size: 1.02rem;
+}
+
+/* the iframe frame */
+.hl-frame {
+  position: relative;
+  border: 1px solid var(--rule);
+  border-radius: 2px;
+  background: var(--bg-2);
+  overflow: hidden;
+}
+.hl-frame iframe {
+  display: block;
+  width: 100%;
+  height: 640px;
+  border: 0;
+  background: var(--bg-2);
+}
+
+/* source toolbar under the frame */
+.hl-source-bar {
+  display: flex;
+  gap: 8px;
+  margin-top: 14px;
+  flex-wrap: wrap;
+}
+.hl-source-btn {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text);
+  background: transparent;
+  border: 1px solid var(--rule);
+  padding: 8px 14px;
+  border-radius: 2px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: border-color 120ms ease, color 120ms ease;
+}
+.hl-source-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.hl-source-btn[aria-expanded="true"] {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.hl-source-btn .hl-source-icon {
+  display: inline-block;
+  margin-right: 6px;
+  opacity: 0.75;
+}
+
+.hl-source-panel {
+  display: none;
+  margin-top: 14px;
+  border: 1px solid var(--rule);
+  border-radius: 2px;
+  background: var(--bg-2);
+  max-height: 540px;
+  overflow: auto;
+}
+.hl-source-panel.is-open { display: block; }
+.hl-source-panel pre {
+  margin: 0;
+  padding: 18px 22px;
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  line-height: 1.55;
+  white-space: pre;
+  color: var(--text);
+}
+
+/* index page intro + grid */
+.hl-intro {
+  margin: 0 0 24px;
 }
 .hl-intro h1 {
-  font-size: 1.6rem;
+  font-family: var(--display);
+  font-size: clamp(2.4rem, 5vw, 3.4rem);
+  line-height: 1.02;
   letter-spacing: -0.02em;
-  margin: 0 0 8px;
+  margin: 0 0 12px;
 }
 .hl-intro p {
   max-width: 60ch;
-  color: #333;
+  color: var(--muted);
   margin: 0 0 12px;
+  font-size: 1.04rem;
 }
 
 #hl-demo-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 12px;
-  margin: 0 0 36px;
+  gap: 10px;
+  margin: 18px 0 36px;
 }
-
 .hl-demo-card {
   display: block;
   padding: 14px 16px;
-  border: 1px solid var(--hl-line);
-  border-radius: 10px;
+  border: 1px solid var(--rule);
+  border-radius: 2px;
   text-decoration: none;
   color: inherit;
-  background: #fff;
-  transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+  background: var(--bg-2);
+  transition: border-color 120ms ease, transform 120ms ease;
 }
 .hl-demo-card:hover {
-  border-color: #c9c9cf;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  border-color: var(--accent);
   transform: translateY(-1px);
-}
-.hl-demo-card.is-current {
-  border-color: var(--hl-accent);
 }
 .hl-demo-card-name {
   display: block;
+  font-family: var(--display);
   font-weight: 600;
-  font-size: 0.95rem;
-  margin-bottom: 3px;
+  font-size: 1rem;
+  margin-bottom: 2px;
 }
 .hl-demo-card-blurb {
   display: block;
   font-size: 0.82rem;
-  color: var(--hl-muted);
-  line-height: 1.45;
+  color: var(--muted);
+  line-height: 1.4;
 }
 
-/* ---- footer ---- */
+/* footer */
 .hl-footer {
-  margin: 48px -20px 0;
-  padding: 18px 20px 0;
-  border-top: 1px solid var(--hl-line);
-  font-size: 0.82rem;
-  color: var(--hl-muted);
-  text-align: center;
+  border-top: 1px solid var(--rule);
+  margin-top: 40px;
+}
+.hl-footer-inner {
+  max-width: var(--maxw);
+  margin: 0 auto;
+  padding: 22px 24px;
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: space-between;
 }
 .hl-footer a {
-  color: var(--hl-accent);
+  color: var(--accent);
   text-decoration: none;
 }
-.hl-footer a:hover { text-decoration: underline; }
+.hl-footer a:hover { opacity: 0.75; }
+
+/* ---------------------------------------------------------------- */
+/*  iframe-page layout (demos/*.html)                               */
+/*  Triggered by `body.is-demo` (set on iframe pages).              */
+/* ---------------------------------------------------------------- */
+
+body.is-demo {
+  padding: 24px 28px 36px;
+  max-width: 760px;
+  margin: 0 auto;
+}
+body.is-demo .hyperaudio-player,
+body.is-demo media-player,
+body.is-demo > iframe,
+body.is-demo > video,
+body.is-demo > audio {
+  display: block;
+  max-width: 100%;
+  margin: 0 auto 18px;
+}
+body.is-demo .hyperaudio-transcript {
+  font-family: var(--display);
+  font-size: 1.04rem;
+  line-height: 1.7;
+  color: var(--text);
+  border: 1px solid var(--rule);
+  border-radius: 2px;
+  background: var(--bg-2);
+  padding: 18px 20px;
+  height: 380px;
+  overflow-y: auto;
+}
+body.is-demo .hyperaudio-transcript p {
+  margin: 0 0 1em;
+}
+body.is-demo .hyperaudio-transcript .speaker {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent);
+  font-weight: 500;
+  margin-right: 4px;
+}
+body.is-demo .hyperaudio-transcript .active {
+  color: var(--accent);
+}
+body.is-demo .hyperaudio-transcript .active > .active {
+  background: var(--accent-soft);
+  border-radius: 2px;
+}
+body.is-demo #searchForm {
+  margin: 0 0 18px;
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+body.is-demo #searchForm input[type="text"] {
+  flex: 1;
+  font: inherit;
+  padding: 7px 10px;
+  border: 1px solid var(--rule);
+  border-radius: 2px;
+  background: var(--bg-2);
+  color: var(--text);
+}
+body.is-demo #searchForm input[type="submit"],
+body.is-demo #searchForm button {
+  font: inherit;
+  padding: 7px 12px;
+  border: 1px solid var(--rule);
+  background: var(--bg-2);
+  color: var(--text);
+  cursor: pointer;
+  border-radius: 2px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+body.is-demo #searchForm input[type="submit"]:hover,
+body.is-demo #searchForm button:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+body.is-demo #pbr { accent-color: var(--accent); }
+
+/* ---------------------------------------------------------------- */
+/*  per-demo themes                                                 */
+/* ---------------------------------------------------------------- */
+
+/* 01 · index · Native video — warm paper editorial. */
+body.demo-index {
+  --bg: #f4f1ea;
+  --bg-2: #fbf9f4;
+  --text: #1a1a1a;
+  --muted: #6f6961;
+  --rule: #d8d1c2;
+  --accent: #b6432f;
+  --accent-soft: rgba(182, 67, 47, 0.12);
+  --display: "PT Serif", Georgia, "Times New Roman", serif;
+}
+
+/* 02 · active · Active word — typographic, hand-set feel. */
+body.demo-active {
+  --bg: #ece7d8;
+  --bg-2: #f5f1e4;
+  --text: #161616;
+  --muted: #756d5e;
+  --rule: #c9c3b3;
+  --accent: #b95930;
+  --accent-soft: rgba(185, 89, 48, 0.16);
+  --display: "Hoefler Text", "Iowan Old Style", Cambria, Georgia, serif;
+}
+body.demo-active .hl-title {
+  font-style: italic;
+  letter-spacing: -0.025em;
+}
+/* Signature: highlight the literal word "word" in the title to demonstrate
+   the active-word effect. The DEMOS entry name ends in " word"; CSS gives the
+   tail span its highlight when example-nav.js wraps it. */
+body.demo-active .hl-title .hl-title-mark {
+  background: var(--accent);
+  color: var(--bg-2);
+  padding: 0 0.18em;
+  border-radius: 2px;
+  font-style: italic;
+}
+
+/* 03 · youtube · "broadcast" — pale grey with a thin scan-bar. */
+body.demo-youtube {
+  --bg: #efefef;
+  --bg-2: #ffffff;
+  --text: #131313;
+  --muted: #6c6c6c;
+  --rule: #d4d4d4;
+  --accent: #d64a3c;
+  --accent-soft: rgba(214, 74, 60, 0.12);
+  --display: system-ui, "Inter", "Helvetica Neue", sans-serif;
+}
+body.demo-youtube .hl-page { position: relative; }
+body.demo-youtube .hl-page::before {
+  content: "";
+  position: absolute;
+  top: 18px;
+  left: 24px;
+  right: 24px;
+  height: 2px;
+  background: repeating-linear-gradient(
+    90deg,
+    var(--accent) 0 14px,
+    transparent 14px 22px
+  );
+}
+body.demo-youtube .hl-title {
+  font-stretch: condensed;
+  text-transform: uppercase;
+  letter-spacing: -0.012em;
+}
+
+/* 04 · youtube-multiplayer · "channels" — paper with deep teal. */
+body.demo-youtube-multiplayer {
+  --bg: #f5f3ed;
+  --bg-2: #ffffff;
+  --text: #131313;
+  --muted: #6e6b65;
+  --rule: #d6d4cd;
+  --accent: #2f7a72;
+  --accent-soft: rgba(47, 122, 114, 0.12);
+  --display: "PT Serif", Georgia, serif;
+}
+body.demo-youtube-multiplayer .hl-eyebrow strong::before {
+  content: "CH ";
+  letter-spacing: 0.14em;
+}
+
+/* 05 · vimeo · "filmic" — cinema dark with cream + sky. */
+body.demo-vimeo {
+  --bg: #0e1521;
+  --bg-2: #131c2b;
+  --text: #efe9d8;
+  --muted: #8c8579;
+  --rule: #232b3a;
+  --accent: #93b6e6;
+  --accent-soft: rgba(147, 182, 230, 0.16);
+  --display: "Iowan Old Style", "Hoefler Text", Cambria, Georgia, serif;
+}
+body.demo-vimeo .hl-title { font-style: italic; }
+body.demo-vimeo .hl-frame {
+  border-color: var(--rule);
+  background: #060a12;
+}
+body.demo-vimeo .hl-frame::before {
+  content: "16 : 9";
+  position: absolute;
+  top: 10px;
+  left: 12px;
+  font-family: var(--mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.18em;
+  color: var(--accent);
+  opacity: 0.75;
+  z-index: 1;
+  pointer-events: none;
+}
+body.demo-vimeo .hl-frame::after {
+  content: "REEL · 02";
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  font-family: var(--mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.18em;
+  color: var(--accent);
+  opacity: 0.75;
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* 06 · vidstack · "modern tool" — white with violet stripe. */
+body.demo-vidstack {
+  --bg: #fafafa;
+  --bg-2: #ffffff;
+  --text: #0e0e10;
+  --muted: #71717a;
+  --rule: #e4e4e7;
+  --accent: #6a3aff;
+  --accent-soft: rgba(106, 58, 255, 0.10);
+  --display: system-ui, "Inter", "Helvetica Neue", sans-serif;
+}
+body.demo-vidstack .hl-chrome {
+  border-top: 3px solid var(--accent);
+  background: linear-gradient(180deg, var(--accent-soft) 0%, transparent 100%);
+}
+body.demo-vidstack .hl-title {
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+
+/* 07 · videojs · "industrial / blueprint" — putty with navy + signal orange. */
+body.demo-videojs {
+  --bg: #e8e4d8;
+  --bg-2: #f1ede1;
+  --text: #0e1c2c;
+  --muted: #5a6675;
+  --rule: #c8c4b8;
+  --accent: #ee7227;
+  --accent-soft: rgba(238, 114, 39, 0.14);
+  --display: system-ui, "Inter", "Helvetica Neue", sans-serif;
+}
+body.demo-videojs .hl-frame { border-width: 1px; }
+body.demo-videojs .hl-frame::before,
+body.demo-videojs .hl-frame::after {
+  content: "+";
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--mono);
+  color: var(--accent);
+  pointer-events: none;
+  z-index: 1;
+  font-size: 1rem;
+}
+body.demo-videojs .hl-frame::before { top: -1px; left: -1px; }
+body.demo-videojs .hl-frame::after { bottom: -1px; right: -1px; }
+body.demo-videojs .hl-title {
+  font-weight: 800;
+  font-stretch: condensed;
+  text-transform: uppercase;
+  letter-spacing: -0.005em;
+}
+
+/* 08 · soundcloud · "audio warmth" — peach with hot orange + wave. */
+body.demo-soundcloud {
+  --bg: #fff1e6;
+  --bg-2: #ffe6d4;
+  --text: #2a1b15;
+  --muted: #8a6855;
+  --rule: #f0d8c5;
+  --accent: #ff5500;
+  --accent-soft: rgba(255, 85, 0, 0.12);
+  --display: "SF Pro Rounded", system-ui, "Inter", sans-serif;
+}
+body.demo-soundcloud .hl-title {
+  font-weight: 800;
+  letter-spacing: -0.025em;
+}
+body.demo-soundcloud .hl-blurb::after {
+  content: "";
+  display: block;
+  margin-top: 14px;
+  height: 16px;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 16' preserveAspectRatio='none'><path d='M0 8 Q 10 0 20 8 T 40 8 T 60 8 T 80 8 T 100 8 T 120 8 T 140 8 T 160 8 T 180 8 T 200 8' fill='none' stroke='%23ff5500' stroke-width='1.5'/></svg>");
+  background-repeat: repeat-x;
+  background-size: 80px 16px;
+  opacity: 0.6;
+}
+
+/* 09 · spotify · "late night" — charcoal with bright green. */
+body.demo-spotify {
+  --bg: #121212;
+  --bg-2: #181818;
+  --text: #efefef;
+  --muted: #8a8a8a;
+  --rule: #2a2a2a;
+  --accent: #1ed760;
+  --accent-soft: rgba(30, 215, 96, 0.12);
+  --display: system-ui, "Inter", "Helvetica Neue", sans-serif;
+}
+body.demo-spotify .hl-page { position: relative; padding-left: 36px; }
+body.demo-spotify .hl-page::before {
+  content: "";
+  position: absolute;
+  left: 24px;
+  top: 38px;
+  bottom: 0;
+  width: 2px;
+  background: var(--accent);
+  opacity: 0.7;
+}
+body.demo-spotify .hl-title {
+  font-weight: 800;
+  font-stretch: condensed;
+  letter-spacing: -0.018em;
+}
+
+/* 10 · multiplayer · "duet" — cream + ink with vermilion bridge. */
+body.demo-multiplayer {
+  --bg: #f5f1ec;
+  --bg-2: #fbf8f3;
+  --text: #1c1f24;
+  --muted: #6e6862;
+  --rule: #d8d1c4;
+  --accent: #c64223;
+  --accent-soft: rgba(198, 66, 35, 0.12);
+  --display: "PT Serif", Georgia, "Times New Roman", serif;
+}
+body.demo-multiplayer .hl-title { font-style: italic; }
+body.demo-multiplayer .hl-frame {
+  border-left: 4px solid var(--accent);
+}
+
+/* ---------------------------------------------------------------- */
+/*  responsive                                                       */
+/* ---------------------------------------------------------------- */
+
+@media (max-width: 640px) {
+  .hl-chrome-inner,
+  .hl-demo-nav,
+  .hl-page,
+  .hl-footer-inner { padding-left: 18px; padding-right: 18px; }
+  .hl-repo { margin-left: 0; }
+  .hl-frame iframe { height: 540px; }
+  body.demo-spotify .hl-page { padding-left: 30px; }
+  body.demo-spotify .hl-page::before { left: 18px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hl-source-btn,
+  .hl-demo-card { transition: none; }
+}
