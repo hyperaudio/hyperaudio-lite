@@ -43,8 +43,11 @@
   color: #777;
 }
 
-.hyperaudio-transcript .search-match {
+.hyperaudio-transcript .search-mark {
   background-color: pink;
+  color: inherit;
+  padding: 0 1px;
+  border-radius: 2px;
 }
 
 .hyperaudio-transcript .share-match {
