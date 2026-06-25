@@ -1,29 +1,49 @@
 /*! (C) The Hyperaudio Project. MIT @license: en.wikipedia.org/wiki/MIT_License. */
-/*! Version 2.1.4 */
+/*! Version 2.1.5 */
 'use strict';
 
-var caption = function () {
-  var cap = {};
+const caption = function () {
+  const cap = {};
 
   function formatSeconds(seconds) {
-    if (typeof seconds == 'number') {
+    if (typeof seconds === 'number') {
       //console.log("seconds = "+seconds);
-      return new Date(seconds.toFixed(3) * 1000).toISOString().substring(11,23);
+      return new Date(seconds.toFixed(3) * 1000).toISOString().substring(11, 23);
     } else {
-      console.log('warning - attempting to format the non number: ' + seconds);
+      console.log(`warning - attempting to format the non number: ${seconds}`);
       return null;
     }
   }
 
   function convertTimecodeToSrt(timecode) {
     //the same as VTT format but milliseconds separated by a comma
-    return timecode.substring(0,8) + "," + timecode.substring(9,12);
+    return timecode.substring(0, 8) + ',' + timecode.substring(9, 12);
   }
 
-  cap.init = function (transcriptId, playerId, maxLength, minLength, label, srclang) {
-    var transcript = document.getElementById(transcriptId);
-    var words = transcript.querySelectorAll('[data-m]');
-    var data = {};
+  // Inverse of formatSeconds: "HH:MM:SS.mmm" -> seconds (number).
+  function timecodeToSeconds(timecode) {
+    if (typeof timecode !== 'string') {
+      return NaN;
+    }
+    const parts = timecode.split(':');
+    if (parts.length !== 3) {
+      return NaN;
+    }
+    return (parseInt(parts[0], 10) * 3600) + (parseInt(parts[1], 10) * 60) + parseFloat(parts[2]);
+  }
+
+  cap.init = function (transcriptId, playerId, maxLength, minLength, label, srclang, parent) {
+
+    let transcript = document.getElementById(transcriptId);
+
+    if (parent) {
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(parent.innerHTML, 'text/html');
+      transcript = doc.getElementById(transcriptId);
+    }
+
+    const words = transcript.querySelectorAll('[data-m]');
+    const data = {};
     data.segments = [];
 
     function segmentMeta(speaker, start, duration, chars) {
@@ -40,19 +60,38 @@ var caption = function () {
       this.text = text;
     }
 
-    var thisWordMeta;
-    var thisSegmentMeta = null;
+    let thisWordMeta;
+    let thisSegmentMeta = null;
 
     // defaults
-    var maxLineLength = 37;
-    var minLineLength = 21;
-    var maxWordDuration = 2; //seconds
+    let maxLineLength = 37;
+    let minLineLength = 21;
+    const maxWordDuration = 2; //seconds
 
-    var captionsVtt = 'WEBVTT\n';
-    var captionsSrt = '';
+    // Timing safeguards (applied after segmentation, before serialisation).
+    // These only ever EXTEND a cue that is too short to read comfortably,
+    // using the silent gap before the next cue. They never alter the text,
+    // the cue order/count, or the line splitting, and never create overlaps,
+    // so the VTT/SRT format and the segmentation are unchanged.
+    // To disable: set readingSpeedCps = Infinity and minCaptionDuration = 0.
+    const readingSpeedCps = 17;    // max characters/second a viewer can read (Netflix/BBC ~ 15-17)
+    const minCaptionDuration = 1;  // seconds - shortest time a cue should stay on screen
+    const minCaptionGap = 0.04;    // seconds - gap preserved before the next cue when extending
 
-    var endSentenceDelimiter = /[\.。?؟!]/g;
-    var midSentenceDelimiter = /[,、–，،و:，…‥]/g;
+    // Orphan handling: a short trailing fragment (e.g. a lone word like "cloud.")
+    // left over at the end of a sentence is folded back into the previous caption
+    // of the SAME sentence instead of being stranded on its own line/cue, as long
+    // as the resulting line stays within orphanLineTolerance of maxLineLength.
+    // To disable: set orphanMaxWords = 0 and orphanMaxChars = 0.
+    const orphanMaxWords = 1;       // fold back leftovers of at most this many words...
+    const orphanMaxChars = 14;      // ...or at most this many visible characters
+    const orphanLineTolerance = 12; // chars the merged line may exceed maxLineLength by
+
+    let captionsVtt = 'WEBVTT\n';
+    let captionsSrt = '';
+
+    const endSentenceDelimiter = /[\.。?؟!]/g;
+    const midSentenceDelimiter = /[,、–，،و:，…‥]/g;
 
     if (!isNaN(maxLength) && maxLength != null) {
       maxLineLength = maxLength;
@@ -62,7 +101,7 @@ var caption = function () {
       minLineLength = minLength;
     }
 
-    words.forEach(function (word, i) {
+    words.forEach((word, i) => {
       if (thisSegmentMeta === null) {
         // create segment meta object
         thisSegmentMeta = new segmentMeta('', null, 0, 0, 0);
@@ -77,20 +116,20 @@ var caption = function () {
 
         thisSegmentMeta.speaker = word.innerText;
       } else {
-        var thisStart = parseInt(word.getAttribute('data-m')) / 1000;
-        var thisDuration = parseInt(word.getAttribute('data-d')) / 1000;
+        let thisStart = parseInt(word.getAttribute('data-m'), 10) / 1000;
+        let thisDuration = parseInt(word.getAttribute('data-d'), 10) / 1000;
 
         if (isNaN(thisStart)) {
           thisStart = 0;
         }
 
-        // data-d (duration) is an optional attribute, if it doesn't exist 
+        // data-d (duration) is an optional attribute, if it doesn't exist
         // use the start time of the next word (if it exists) or for the last word
-        // pick a sensible duration.  
+        // pick a sensible duration.
 
         if (isNaN(thisDuration)) {
           if (i < (words.length - 1)) {
-            thisDuration = (parseInt(words[i+1].getAttribute('data-m') - 1) / 1000) - thisStart;
+            thisDuration = (parseInt(words[i + 1].getAttribute('data-m') - 1, 10) / 1000) - thisStart;
             if (thisDuration > maxWordDuration) {
               thisDuration = maxWordDuration;
             }
@@ -99,7 +138,7 @@ var caption = function () {
           }
         }
 
-        var thisText = word.innerText;
+        const thisText = word.innerText;
 
         thisWordMeta = new wordMeta(thisStart, thisDuration, thisText);
 
@@ -115,7 +154,7 @@ var caption = function () {
         thisSegmentMeta.words.push(thisWordMeta);
 
         // remove spaces first just in case
-        var lastChar = thisText.replace(/\s/g, '').slice(-1);
+        const lastChar = thisText.replace(/\s/g, '').slice(-1);
         if (lastChar.match(endSentenceDelimiter)) {
           data.segments.push(thisSegmentMeta);
           thisSegmentMeta = null;
@@ -123,28 +162,7 @@ var caption = function () {
       }
     });
 
-    //console.log(data);
-
-    data.segments.map(function (segment, i, arr) {
-      var sentence = "";
-      segment.words.forEach(function (wordMeta) {
-        sentence += wordMeta.text;
-      });
-      //console.log(msToTime(segment.start*1000) + " " + sentence);
-    });
-
-    function msToTime(duration) {
-      var milliseconds = Math.floor((duration % 1000) / 100),
-        seconds = Math.floor((duration / 1000) % 60),
-        minutes = Math.floor((duration / (1000 * 60)) % 60),
-        hours = Math.floor((duration / (1000 * 60 * 60)) % 24);
-    
-      hours = (hours < 10) ? "0" + hours : hours;
-      minutes = (minutes < 10) ? "0" + minutes : minutes;
-      seconds = (seconds < 10) ? "0" + seconds : seconds;
-    
-      return hours + ":" + minutes + ":" + seconds;
-    }
+    //console.log(data.segments);
 
     function captionMeta(start, stop, text) {
       this.start = start;
@@ -152,29 +170,40 @@ var caption = function () {
       this.text = text;
     }
 
-    var captions = [];
-    var thisCaption = null;
+    const captions = [];
+    let thisCaption = null;
 
-    data.segments.map(function (segment, i, arr) {
+    data.segments.forEach((segment, i, arr) => {
+      // Captions pushed from here on belong to this segment (one sentence,
+      // one speaker) - used to fold a trailing orphan word back safely.
+      const segmentStartCount = captions.length;
+
       // If the entire segment fits on a line, add it to the captions.
       if (segment.chars < maxLineLength) {
 
-        if (segment.duration === 0){
-          if (i < arr.length) {
-            segment.duration = arr[i+1].start - segment.start; 
-          } else {
-            segment.duration = 5 * 1000;
-          }
-        } 
+        // Prefer the last word's actual end time over the accumulated
+        // duration, which only sums word durations and undercounts the
+        // segment whenever there are silent gaps between words.
+        const lastWord = segment.words[segment.words.length - 1];
+        let segmentStop;
+        if (lastWord !== undefined && !isNaN(lastWord.start + lastWord.duration)) {
+          segmentStop = lastWord.start + lastWord.duration;
+        } else if (segment.duration > 0) {
+          segmentStop = segment.start + segment.duration;
+        } else if (i + 1 < arr.length) {
+          segmentStop = arr[i + 1].start;
+        } else {
+          segmentStop = segment.start + 5;
+        }
 
         thisCaption = new captionMeta(
           formatSeconds(segment.start),
-          formatSeconds(segment.start + segment.duration),
+          formatSeconds(segmentStop),
           '',
         );
 
-        segment.words.forEach(function (wordMeta) {
-          thisCaption.text += wordMeta.text;
+        segment.words.forEach((word) => {
+          thisCaption.text += word.text;
         });
 
         thisCaption.text += '\n';
@@ -185,29 +214,29 @@ var caption = function () {
       } else {
         // The number of chars in this segment is longer than our single line maximum
 
-        var charCount = 0;
-        var lineText = '';
-        var firstLine = true;
-        var lastOutTime;
-        var lastInTime = null;
+        let charCount = 0;
+        let lineText = '';
+        let firstLine = true;
+        let lastOutTime;
+        let lastInTime = null;
 
-        segment.words.forEach(function (wordMeta, index) {
-          var lastChar = wordMeta.text.replace(/\s/g, '').slice(-1);
+        segment.words.forEach((word, index) => {
+          const lastChar = word.text.replace(/\s/g, '').slice(-1);
 
           if (lastInTime === null) {
             // if it doesn't exist yet set the caption start time to the word's start time.
-            lastInTime = wordMeta.start;
+            lastInTime = word.start;
           }
 
           // Are we over the minimum length of a line and hitting a good place to split mid-sentence?
-          if (charCount + wordMeta.text.length > minLineLength && lastChar.match(midSentenceDelimiter)) {
+          if (charCount + word.text.length > minLineLength && lastChar.match(midSentenceDelimiter)) {
             if (firstLine === true) {
               thisCaption = new captionMeta(
                 formatSeconds(lastInTime),
-                formatSeconds(wordMeta.start + wordMeta.duration),
+                formatSeconds(word.start + word.duration),
                 '',
               );
-              thisCaption.text += lineText + wordMeta.text + '\n';
+              thisCaption.text += lineText + word.text + '\n';
 
               //check for last word in segment, if it is we can push a one line caption, if not – move on to second line
 
@@ -222,8 +251,8 @@ var caption = function () {
             } else {
               // We're on the second line ... we're over the minimum chars and in a good place to split – let's push the caption
 
-              thisCaption.stop = formatSeconds(wordMeta.start + wordMeta.duration);
-              thisCaption.text += lineText + wordMeta.text;
+              thisCaption.stop = formatSeconds(word.start + word.duration);
+              thisCaption.text += lineText + word.text;
               //console.log("2. pushing because we're on the second line and have a good place to split");
               //console.log(thisCaption);
               captions.push(thisCaption);
@@ -239,10 +268,10 @@ var caption = function () {
             // we're not over the minimum length with a suitable splitting point
 
             // If we add this word are we over the maximum?
-            if (charCount + wordMeta.text.length > maxLineLength) {
+            if (charCount + word.text.length > maxLineLength) {
               if (firstLine === true) {
                 if (lastOutTime === undefined) {
-                  lastOutTime = wordMeta.start + wordMeta.duration;
+                  lastOutTime = word.start + word.duration;
                 }
 
                 thisCaption = new captionMeta(formatSeconds(lastInTime), formatSeconds(lastOutTime), '');
@@ -269,19 +298,19 @@ var caption = function () {
               }
 
               // do the stuff we need to do to start a new line
-              charCount = wordMeta.text.length;
-              lineText = wordMeta.text;
-              lastInTime = wordMeta.start; 
+              charCount = word.text.length;
+              lineText = word.text;
+              lastInTime = word.start; // Why do we do this??????
             } else {
               // We're not over the maximum with this word, update the line length and add the word to the text
 
-              charCount += wordMeta.text.length;
-              lineText += wordMeta.text;
+              charCount += word.text.length;
+              lineText += word.text;
             }
           }
 
           // for every word update the lastOutTime
-          lastOutTime = wordMeta.start + wordMeta.duration;
+          lastOutTime = word.start + word.duration;
         });
 
         // we're out of words for this segment - decision time!
@@ -294,66 +323,132 @@ var caption = function () {
           captions.push(thisCaption);
           thisCaption = null;
         } else {
-          // caption hadn't been started yet - create one!
+          // caption hadn't been started yet - the loop pushed the last caption and
+          // left a fragment behind. Rather than strand a lone word like "cloud." in
+          // its own cue, fold it back into the previous caption of this same segment
+          // when it is short enough and the merged line stays within tolerance.
           if (lastInTime !== null) {
-            thisCaption = new captionMeta(formatSeconds(lastInTime), formatSeconds(lastOutTime), lineText);
-            //console.log("4. pushing at end of segment when new caption has yet to be created");
-            //console.log(thisCaption);
-            captions.push(thisCaption);
-            thisCaption = null;
+            const orphanText = lineText.replace(/\s+/g, ' ').trim();
+            const orphanWords = orphanText === '' ? 0 : orphanText.split(' ').length;
+            const isOrphan = orphanWords > 0 &&
+              (orphanWords <= orphanMaxWords || orphanText.length <= orphanMaxChars);
+            const prev = captions[captions.length - 1];
+
+            let merged = false;
+            if (isOrphan && captions.length > segmentStartCount && prev !== undefined) {
+              // append the fragment to the previous caption's last line
+              const prevLines = prev.text.replace(/\n+$/, '').split('\n');
+              const lastLine = prevLines[prevLines.length - 1].replace(/\s+$/, '');
+              const candidate = `${lastLine} ${orphanText}`.trim();
+              if (candidate.length <= maxLineLength + orphanLineTolerance) {
+                prevLines[prevLines.length - 1] = candidate;
+                prev.text = prevLines.join('\n');
+                prev.stop = formatSeconds(lastOutTime); // extend timing to cover the folded word
+                merged = true;
+              }
+            }
+
+            if (!merged) {
+              thisCaption = new captionMeta(formatSeconds(lastInTime), formatSeconds(lastOutTime), lineText);
+              //console.log("4. pushing at end of segment when new caption has yet to be created");
+              //console.log(thisCaption);
+              captions.push(thisCaption);
+              thisCaption = null;
+            }
           }
         }
       }
     });
 
-    captions.forEach(function (caption, i) {
-      captionsVtt += '\n' + caption.start + ' --> ' + caption.stop + '\n' + caption.text + '\n';
+    // Enforce a comfortable minimum on-screen time for each cue. A cue is
+    // extended (never shortened) so it lasts at least minCaptionDuration and
+    // long enough to read its text at readingSpeedCps, but only as far as the
+    // next cue's start (minus minCaptionGap) so cues never overlap. The final
+    // cue can extend freely. Cues already long enough are left untouched.
+    function applyTimingSafeguards(caps) {
+      for (let c = 0; c < caps.length; c++) {
+        const start = timecodeToSeconds(caps[c].start);
+        const stop = timecodeToSeconds(caps[c].stop);
+        if (isNaN(start) || isNaN(stop) || stop <= start) {
+          continue; // skip malformed or zero-length cues
+        }
+
+        // visible characters, counting a single space per line break
+        const chars = caps[c].text.replace(/\s+/g, ' ').trim().length;
+        const needed = Math.max(minCaptionDuration, chars / readingSpeedCps);
+
+        if (stop - start >= needed) {
+          continue; // already comfortable
+        }
+
+        let desiredStop = start + needed;
+
+        if (c + 1 < caps.length) {
+          const nextStart = timecodeToSeconds(caps[c + 1].start);
+          if (!isNaN(nextStart)) {
+            const maxStop = nextStart - minCaptionGap;
+            if (desiredStop > maxStop) {
+              desiredStop = maxStop;
+            }
+          }
+        }
+
+        if (desiredStop > stop) {
+          caps[c].stop = formatSeconds(desiredStop);
+        }
+      }
+    }
+
+    applyTimingSafeguards(captions);
+
+    //console.log("start creating captions");
+
+    captions.forEach((caption, i) => {
+      captionsVtt += `\n${caption.start} --> ${caption.stop}\n${caption.text}\n`;
       //console.log(caption.start + ' --> ' + caption.stop + '\n' + caption.text);
-      captionsSrt += '\n' + (i + 1) + '\n' + convertTimecodeToSrt(caption.start) + ' --> ' + convertTimecodeToSrt(caption.stop) + '\n' + caption.text + '\n';
+      captionsSrt += `\n${i + 1}\n${convertTimecodeToSrt(caption.start)} --> ${convertTimecodeToSrt(caption.stop)}\n${caption.text}\n`;
     });
 
-    var video = document.getElementById(playerId);
+    const video = document.getElementById(playerId);
 
     if (video !== null) {
-      video.addEventListener("loadedmetadata", function listener() {
+      video.addEventListener('loadedmetadata', function listener() {
+        const track = document.getElementById(`${playerId}-vtt`);
 
-        var track = document.getElementById(playerId+'-vtt');
-
-        if (track !== null){
-          track.kind = "captions";
+        if (track !== null) {
+          track.kind = 'captions';
 
           if (label !== undefined) {
             //console.log("setting label as "+label);
             track.label = label;
           }
-  
+
           if (srclang !== undefined) {
             //console.log("setting srclang as "+srclang);
             track.srclang = srclang;
           }
 
-          track.src = "data:text/vtt,"+encodeURIComponent(captionsVtt);
-          video.textTracks[0].mode = "showing";
-          video.removeEventListener("loadedmetadata", listener, true);
+          track.src = `data:text/vtt,${encodeURIComponent(captionsVtt)}`;
+          video.textTracks[0].mode = 'showing';
+          video.removeEventListener('loadedmetadata', listener, true);
         }
-        
       }, true);
-  
+
       if (video.textTracks !== undefined && video.textTracks[0] !== undefined) {
-        video.textTracks[0].mode = "showing";
+        video.textTracks[0].mode = 'showing';
       }
     }
 
     function captionsObj(vtt, srt, data) {
-      // clean up – remove any double blank lines 
+      // clean up – remove any double blank lines
       // and blank line at the start of srt
 
-      if (srt.charAt(0) !== "1") {
+      if (srt.charAt(0) !== '1') {
         srt = srt.slice(1);
       }
 
-      this.vtt = vtt.replaceAll("\n\n\n","\n\n");
-      this.srt = srt.replaceAll("\n\n\n","\n\n");
+      this.vtt = vtt.replaceAll('\n\n\n', '\n\n');
+      this.srt = srt.replaceAll('\n\n\n', '\n\n');
       this.data = captions;
     }
 
