@@ -268,7 +268,7 @@ You will also need to define your interactive transcript – something like thi
 ```
 *Note – it is up to you where you define your media source. In our examples we include it in the transcript itself using the `data-media-src` attribute.*
 
-View the source code of [https://hyperaudio.github.io/hyperaudio-lite/](https://hyperaudio.github.io/hyperaudio-lite/) for a complete example.
+For a complete example see [`demos/index.html`](./demos/index.html) — or use the **View source** button on any demo page at [hyperaudio.github.io/hyperaudio-lite/](https://hyperaudio.github.io/hyperaudio-lite/).
 
 See a version with multiple players in a single page [https://hyperaudio.github.io/hyperaudio-lite/multiplayer.html](https://hyperaudio.github.io/hyperaudio-lite/multiplayer.html)
 
@@ -348,7 +348,7 @@ cap1.init("hypertranscript", "hyperplayer", '37' , '21'); // transcript Id, play
 
 With Hyperaudio Lite you can apportion those streamed funds to different recipients depending on which transcript — or which part of the transcript — the viewer is currently listening to.
 
-See [`active.html`](./active.html) for a working example.
+See [`demos/active.html`](./demos/active.html) for a working example.
 
 ### How to enable it
 
