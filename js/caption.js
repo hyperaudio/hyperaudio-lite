@@ -1,5 +1,5 @@
 /*! (C) The Hyperaudio Project. MIT @license: en.wikipedia.org/wiki/MIT_License. */
-/*! Version 2.1.5 */
+/*! Version 2.1.6 */
 'use strict';
 
 const caption = function () {
@@ -412,27 +412,39 @@ const caption = function () {
     const video = document.getElementById(playerId);
 
     if (video !== null) {
-      video.addEventListener('loadedmetadata', function listener() {
+      const applyCaptions = function () {
         const track = document.getElementById(`${playerId}-vtt`);
 
         if (track !== null) {
           track.kind = 'captions';
 
           if (label !== undefined) {
-            //console.log("setting label as "+label);
             track.label = label;
           }
 
           if (srclang !== undefined) {
-            //console.log("setting srclang as "+srclang);
             track.srclang = srclang;
           }
 
           track.src = `data:text/vtt,${encodeURIComponent(captionsVtt)}`;
-          video.textTracks[0].mode = 'showing';
-          video.removeEventListener('loadedmetadata', listener, true);
+          if (video.textTracks[0] !== undefined) {
+            video.textTracks[0].mode = 'showing';
+          }
         }
-      }, true);
+      };
+
+      // If the media's metadata has already loaded, 'loadedmetadata' will not
+      // fire again, so apply the captions now; otherwise apply on a single-use
+      // listener. This prevents a listener persisting with a stale captionsVtt
+      // closure and re-applying it when a different media subsequently loads.
+      if (video.readyState >= 1 /* HAVE_METADATA */) {
+        applyCaptions();
+      } else {
+        video.addEventListener('loadedmetadata', function listener() {
+          applyCaptions();
+          video.removeEventListener('loadedmetadata', listener, true);
+        }, true);
+      }
 
       if (video.textTracks !== undefined && video.textTracks[0] !== undefined) {
         video.textTracks[0].mode = 'showing';
