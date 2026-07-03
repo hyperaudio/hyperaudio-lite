@@ -1,0 +1,42 @@
+name: Publish to npm
+
+# Publishes to npm via OIDC trusted publishing whenever a GitHub release is
+# published. No npm tokens are stored anywhere — npmjs.com is configured to
+# trust this repository + workflow (package settings -> Trusted Publisher),
+# and provenance is generated automatically so the npm page shows a verified
+# "built from this commit" badge.
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+  id-token: write # required for OIDC trusted publishing + provenance
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          registry-url: https://registry.npmjs.org
+
+      # Trusted publishing requires npm >= 11.5.1
+      - run: npm install -g npm@latest
+
+      - run: npm ci
+
+      - name: Check release tag matches package.json version
+        run: |
+          pkg="v$(node -p "require('./package.json').version")"
+          if [ "$pkg" != "$GITHUB_REF_NAME" ]; then
+            echo "package.json version ($pkg) does not match release tag ($GITHUB_REF_NAME)" >&2
+            exit 1
+          fi
+
+      # prepublishOnly runs the ESM build + full test suite as a final guard
+      - run: npm publish
