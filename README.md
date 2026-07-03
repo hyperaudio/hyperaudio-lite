@@ -378,6 +378,12 @@ Next, make sure you include the `caption.js` file:
 <script src="js/caption.js"></script>
 ```
 
+Or, in a project using the npm package, import it from the `caption` subpath:
+
+```javascript
+import { caption } from 'hyperaudio-lite/caption'; // or require('hyperaudio-lite/caption')
+```
+
 and finally add this snippet of JavaScript after instantiating the `HyperaudioLite` object:
 
 ```javascript

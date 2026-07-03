@@ -1,6 +1,6 @@
 {
   "name": "hyperaudio-lite",
-  "version": "2.6.0",
+  "version": "2.6.1",
   "description": "A lightweight transcript player for making audio and video interactive — no frameworks, no build step",
   "license": "MIT",
   "repository": {
@@ -29,12 +29,19 @@
       "import": "./js/hyperaudio-lite.mjs",
       "require": "./js/hyperaudio-lite.js",
       "default": "./js/hyperaudio-lite.js"
+    },
+    "./caption": {
+      "types": "./js/caption.d.ts",
+      "require": "./js/caption.js",
+      "default": "./js/caption.js"
     }
   },
   "files": [
     "js/hyperaudio-lite.js",
     "js/hyperaudio-lite.mjs",
-    "js/hyperaudio-lite.d.ts"
+    "js/hyperaudio-lite.d.ts",
+    "js/caption.js",
+    "js/caption.d.ts"
   ],
   "devDependencies": {
     "jest": "^29.7.0",

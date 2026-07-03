@@ -1,3 +1,17 @@
+# Version 2.6.1
+
+Patch release: the npm package now includes `caption.js`.
+
+## New
+
+- **`hyperaudio-lite/caption` subpath export.** The caption generator ships in the npm tarball with its own type declarations:
+  ```javascript
+  import { caption } from 'hyperaudio-lite/caption'; // or require()
+  const result = caption().init("hypertranscript", "hyperplayer", 37, 21);
+  // result.vtt, result.srt, result.data
+  ```
+  The classic `<script src="js/caption.js">` form is unchanged.
+
 # Version 2.6.0
 
 Bug-fix and API release. Six shipped bugs fixed — including a 2.5.0 regression that broke click-to-play on three players — plus teardown, extensibility and accessibility APIs, a per-tick performance rework, CI, and test coverage for `caption.js`.
