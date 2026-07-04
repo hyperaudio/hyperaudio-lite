@@ -1,4 +1,4 @@
-# Version 2.6.2 (unreleased)
+# Version 2.6.2
 
 ## Fixed
 
