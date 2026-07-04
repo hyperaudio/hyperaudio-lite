@@ -1,3 +1,9 @@
+# Version 2.6.2 (unreleased)
+
+## Fixed
+
+- **Search marks land on words with internal punctuation** (#260). `searchPhrase()` compares punctuation-stripped text, but `highlightSubstring()` looked the stripped needle up in the *raw* span text with `indexOf`, so a query like `speaker-2` matched `[SPEAKER-2]` (the span gained `search-match`) yet never received its `<mark class="search-mark">`. The highlighter now walks the raw text, skipping punctuation inside the match, so the mark covers the visible word (dash included) while leading/trailing punctuation stays outside. Affected any match containing a stripped character: hyphenated words, dotted abbreviations, bracketed speaker labels.
+
 # Version 2.6.1
 
 Patch release: the npm package now includes `caption.js`.
