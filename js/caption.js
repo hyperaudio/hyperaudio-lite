@@ -135,6 +135,12 @@ const caption = function () {
             if (thisDuration > maxWordDuration) {
               thisDuration = maxWordDuration;
             }
+            if (thisDuration < 0) {
+              // the next word's data-m can sit at or before this word's
+              // (duplicate stamps on split tokens, or out-of-order times after
+              // edits) — a negative duration would invert the cue downstream
+              thisDuration = 0;
+            }
           } else {
             thisDuration = 5; // sensible default for the last word
           }
@@ -376,9 +382,18 @@ const caption = function () {
     function applyTimingSafeguards(caps) {
       for (let c = 0; c < caps.length; c++) {
         const start = timecodeToSeconds(caps[c].start);
-        const stop = timecodeToSeconds(caps[c].stop);
-        if (isNaN(start) || isNaN(stop) || stop <= start) {
-          continue; // skip malformed or zero-length cues
+        let stop = timecodeToSeconds(caps[c].stop);
+        if (isNaN(start) || isNaN(stop)) {
+          continue; // skip malformed cues
+        }
+
+        // An inverted or zero-length cue (stop <= start) — zero/duplicate word
+        // durations, or out-of-order times after edits — is REPAIRED rather
+        // than skipped: browsers drop such cues from a VTT track, and some SRT
+        // consumers reject the whole file. Treating its stop as the start lets
+        // the extension below give it a readable length.
+        if (stop <= start) {
+          stop = start;
         }
 
         // visible characters, counting a single space per line break
@@ -399,6 +414,12 @@ const caption = function () {
               desiredStop = maxStop;
             }
           }
+        }
+
+        // never emit stop <= start, even when the next cue starts at or before
+        // this one (out-of-order cue starts) — a minimal cue beats a dropped one
+        if (desiredStop <= start) {
+          desiredStop = start + minCaptionGap;
         }
 
         if (desiredStop > stop) {

@@ -209,3 +209,38 @@ test("cue timing data round-trips through the data property", () => {
   expect(result.data[0].start).toBe("00:00:01.000");
   expect(flat(result.data[0].text)).toBe("Offset start.");
 });
+
+test("a missing data-d next to a non-increasing data-m never goes negative (hyperaudio-lite-editor#411)", () => {
+  // "Alone." has no data-d and the NEXT word's data-m sits before its own
+  // (out-of-order times after edits; duplicate stamps on split tokens are the
+  // milder case). The derived duration went negative, producing a cue with
+  // stop < start — dropped by browsers, and formatSeconds wrapped the negative
+  // to a ~24h timestamp.
+  buildTranscript([
+    [2000, null, "Alone."],
+    [1500, 300, "Next."],
+  ]);
+  const cues = parseVtt(caption().init("transcript", null).vtt);
+
+  expect(cues.length).toBeGreaterThanOrEqual(1);
+  for (const cue of cues) {
+    expect(cue.stop > cue.start).toBe(true);   // lexicographic works for HH:MM:SS.mmm
+    expect(cue.stop.startsWith("23:59")).toBe(false);
+  }
+});
+
+test("an inverted or zero-length cue is repaired to a readable length, not skipped (hyperaudio-lite-editor#411)", () => {
+  // A single-word cue whose word has an explicit zero duration serialized as
+  // stop == start; the timing safeguard stepped over exactly these, so the
+  // zero-length cue shipped (and browsers dropped it from the track).
+  buildTranscript([
+    [0, 500, "One."],
+    [5000, 0, "Beep."],
+  ]);
+  const cues = parseVtt(caption().init("transcript", null).vtt);
+
+  expect(cues).toHaveLength(2);
+  expect(cues[1].start).toBe("00:00:05.000");
+  // repaired: extended to the 1s minimum on-screen time
+  expect(cues[1].stop).toBe("00:00:06.000");
+});
