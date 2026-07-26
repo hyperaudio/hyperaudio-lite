@@ -432,6 +432,31 @@ test("pausePlayHead clears timer and sets paused to true", () => {
   jest.useRealTimers();
 });
 
+test("handleSeeked reschedules polling while playback continues (regression for #264)", async () => {
+  const inst = new HyperaudioLite({
+    transcript: "hypertranscript",
+    player: "hyperplayer",
+    autoScroll: false,
+  });
+  inst.myPlayer = {
+    paused: false,
+    getTime: jest.fn().mockResolvedValue(3.95),
+  };
+  const clearTimerSpy = jest.spyOn(inst, "clearTimer");
+  const checkStatusSpy = jest.spyOn(inst, "checkStatus").mockImplementation(() => {});
+
+  inst.handleSeeked();
+  await Promise.resolve();
+
+  expect(clearTimerSpy).toHaveBeenCalledTimes(1);
+  expect(checkStatusSpy).toHaveBeenCalledTimes(1);
+  expect(clearTimerSpy.mock.invocationCallOrder[0]).toBeLessThan(
+    checkStatusSpy.mock.invocationCallOrder[0]
+  );
+
+  inst.destroy();
+});
+
 test("share-link hash triggers initial autoscroll (regression for #246)", () => {
   // init() used to run setupInitialPlayHead() while this.autoscroll was still
   // false (setupEventListeners reset it; the real value was applied later by

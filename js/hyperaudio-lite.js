@@ -773,6 +773,10 @@ class HyperaudioLite {
       if (indices.currentWordIndex > 0 && this.autoscroll) {
         this.scrollToParagraph(indices.currentParentElementIndex, indices.currentWordIndex);
       }
+      if (!this.myPlayer.paused) {
+        this.clearTimer();
+        this.checkStatus();
+      }
     })();
   }
 
