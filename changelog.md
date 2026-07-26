@@ -1,3 +1,10 @@
+# Version 2.6.3
+
+## Fixed
+
+- **Highlighting no longer freezes after seeking during playback** (#264). `handleSeeked()` updated the transcript's visual state but left the word-advance timer scheduled from the *pre-seek* position, so seeking out of a long silence into dense speech could leave the highlight frozen until the stale timer eventually fired (a 5-minute gap → a 5-minute-late tick). The seek handler now reschedules polling from the new position while playing, and leaves paused seeks untouched.
+- **Caption timing never produces negative or inverted cues** (hyperaudio/hyperaudio-lite-editor#411). When a word had no `data-d`, its duration was derived from the next span's `data-m` with only an upper cap — if the next `data-m` sat at or before the word's start (duplicate stamps on split tokens, or out-of-order times after edits) the duration went negative, yielding a cue with `stop < start`. Such cues were then *skipped* by the timing safeguard, so they serialized broken: browsers drop them from the VTT track, some SRT consumers reject the whole file, and a below-zero result wrapped to a `~23:59:59` timestamp. The derived duration is now clamped at zero, and the safeguard *repairs* inverted/zero-length cues (extending them to the minimum readable duration, capped at the next cue's start) rather than stepping over them.
+
 # Version 2.6.2
 
 ## Fixed

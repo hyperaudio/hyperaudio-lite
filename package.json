@@ -1,6 +1,6 @@
 {
   "name": "hyperaudio-lite",
-  "version": "2.6.2",
+  "version": "2.6.3",
   "description": "A lightweight transcript player for making audio and video interactive — no frameworks, no build step",
   "license": "MIT",
   "repository": {
