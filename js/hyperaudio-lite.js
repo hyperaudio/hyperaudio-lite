@@ -732,8 +732,16 @@ class HyperaudioLite {
     // the playback loop owns the active word; when paused, we explicitly mark
     // the clicked word so the user sees what they clicked.
     if (this.myPlayer.paused && target.dataset.m) {
+      if (this.activeWordElement && this.activeWordElement !== target) {
+        this.activeWordElement.classList.remove('active');
+      }
+      if (this.activeParentElement && this.activeParentElement !== target.parentNode) {
+        this.activeParentElement.classList.remove('active');
+      }
       target.classList.add('active');
       target.parentNode.classList.add('active');
+      this.activeWordElement = target;
+      this.activeParentElement = target.parentNode;
     }
 
     if (!isNaN(timeSecs)) {
