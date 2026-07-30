@@ -716,6 +716,43 @@ test("smoothScrollTo jumps directly under prefers-reduced-motion (#259)", () => 
   delete window.matchMedia;
 });
 
+test("user input cancels an active transcript scroll animation (#266)", () => {
+  const inst = new HyperaudioLite({
+    transcript: "hypertranscript",
+    player: "hyperplayer",
+  });
+  const originalRequestAnimationFrame = global.requestAnimationFrame;
+  const originalCancelAnimationFrame = global.cancelAnimationFrame;
+  let nextAnimationId = 1;
+  global.requestAnimationFrame = jest.fn(() => nextAnimationId++);
+  global.cancelAnimationFrame = jest.fn();
+
+  try {
+    for (const eventName of ["wheel", "touchstart", "keydown"]) {
+      inst.scrollContainer.scrollTop = 0;
+      inst.smoothScrollTo(inst.scrollContainer, 500, 800);
+      const animationId = inst.scrollAnimationId;
+
+      inst.scrollContainer.dispatchEvent(new Event(eventName, { bubbles: true }));
+
+      expect(global.cancelAnimationFrame).toHaveBeenLastCalledWith(animationId);
+      expect(inst.scrollAnimationId).toBeNull();
+    }
+  } finally {
+    inst.destroy();
+    if (originalRequestAnimationFrame === undefined) {
+      delete global.requestAnimationFrame;
+    } else {
+      global.requestAnimationFrame = originalRequestAnimationFrame;
+    }
+    if (originalCancelAnimationFrame === undefined) {
+      delete global.cancelAnimationFrame;
+    } else {
+      global.cancelAnimationFrame = originalCancelAnimationFrame;
+    }
+  }
+});
+
 test("registerPlayer() adds a custom player type (#253)", () => {
   class FakePlayer {
     constructor(instance) {
