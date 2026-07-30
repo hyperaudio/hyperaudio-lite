@@ -73,6 +73,8 @@ export declare class HyperaudioLite {
   pauseAutoscroll(): void;
   /** Re-enable autoscroll after pauseAutoscroll(). */
   resumeAutoscroll(): void;
+  /** Rebuild cached word and parent references after transcript DOM edits. */
+  refreshWords(): Array<{ n: HTMLElement; m: number; p: Node }>;
   /** Remove all listeners added by this instance and stop the polling loop. */
   destroy(): void;
 }
