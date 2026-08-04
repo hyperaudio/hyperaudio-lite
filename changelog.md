@@ -1,3 +1,9 @@
+# Version 2.6.4
+
+## Fixed
+
+- **Copy to clipboard no longer replaces apostrophes with backticks** (#280). `setupPopover()` sanitised the selection with `replaceAll("'", "`")` before copying — escaping inherited from `js/share-this-clipboard.js`, where it is required because that sharer interpolates the text into an inline `onclick` handler. In the library the text only ever reaches `clipboard.writeText()` and `textContent`, both of which take arbitrary strings, so the substitution had no purpose and corrupted every copied quotation containing an apostrophe: `There's this other space` arrived as `` There`s this other space ``.
+
 # Version 2.6.3
 
 ## Fixed
