@@ -478,7 +478,7 @@ class HyperaudioLite {
         const popover = document.getElementById('popover');
 
         if (selection.toString().length > 0) {
-          this.selectionText = selection.toString().replaceAll("'", "`");
+          this.selectionText = selection.toString();
           const range = selection.getRangeAt(0);
           const rect = range.getBoundingClientRect();
 
