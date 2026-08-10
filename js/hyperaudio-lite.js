@@ -658,28 +658,33 @@ class HyperaudioLite {
     // Get all relevant spans
     const allSpans = Array.from(this.transcript.querySelectorAll('[data-m]'));
 
-    // Find the first and last span that contain selected text
+    // Find the first and last spans that contribute non-whitespace text.
+    // Range#intersectsNode also returns true when only a word's trailing
+    // whitespace is selected, so inspect the actual intersection.
     let startSpan = null;
     let endSpan = null;
-    let selectedText = range.toString();
-    let trimmedSelectedText = selectedText.trim();
 
     for (let span of allSpans) {
-      if (range.intersectsNode(span) && span.textContent.trim() !== '') {
+      if (!range.intersectsNode(span)) continue;
+
+      const spanRange = document.createRange();
+      spanRange.selectNodeContents(span);
+      const intersection = range.cloneRange();
+
+      if (intersection.compareBoundaryPoints(Range.START_TO_START, spanRange) < 0) {
+        intersection.setStart(spanRange.startContainer, spanRange.startOffset);
+      }
+      if (intersection.compareBoundaryPoints(Range.END_TO_END, spanRange) > 0) {
+        intersection.setEnd(spanRange.endContainer, spanRange.endOffset);
+      }
+
+      if (!intersection.collapsed && intersection.toString().trim() !== '') {
         if (!startSpan) startSpan = span;
         endSpan = span;
       }
     }
 
     if (!startSpan || !endSpan) return null;
-
-    // Adjust start span if selection starts with a space
-    let startIndex = allSpans.indexOf(startSpan);
-    while (selectedText.startsWith(' ') && startIndex < allSpans.length - 1) {
-      startIndex++;
-      startSpan = allSpans[startIndex];
-      selectedText = selectedText.slice(1);
-    }
 
     // Calculate start time
     let startTime = parseInt(startSpan.dataset.m) / 1000;
@@ -700,8 +705,7 @@ class HyperaudioLite {
     let startTimeFormatted = (Math.round(startTime * 100) / 100).toFixed(2);
     let endTimeFormatted = (Math.round(endTime * 100) / 100).toFixed(2);
 
-    // Only return a range if there's actually selected text (excluding only spaces)
-    return trimmedSelectedText ? `${startTimeFormatted},${endTimeFormatted}` : null;
+    return `${startTimeFormatted},${endTimeFormatted}`;
   }
 
   getSelectionMediaFragment = () => {
