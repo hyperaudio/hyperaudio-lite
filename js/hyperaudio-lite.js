@@ -619,7 +619,7 @@ class HyperaudioLite {
     //TODO convert to binary search for below for quicker startup
     if (this.start && this.end) {
       const words = this.transcript.querySelectorAll('[data-m]');
-      for (let i = 1; i < words.length; i++) {
+      for (let i = 0; i < words.length; i++) {
         let startTime = parseInt(words[i].getAttribute('data-m')) / 1000;
         let wordStart = (Math.round(startTime * 100) / 100).toFixed(2);
         if (wordStart >= parseFloat(this.start) && parseFloat(this.end) > wordStart) {
