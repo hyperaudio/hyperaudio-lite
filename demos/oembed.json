@@ -1,0 +1,13 @@
+{
+  "version": "1.0",
+  "type": "rich",
+  "provider_name": "Hyperaudio",
+  "provider_url": "https://hyper.audio/",
+  "title": "Hyperaudio Lite — interactive transcript",
+  "width": 640,
+  "height": 480,
+  "thumbnail_url": "https://hyperaudio.github.io/hyperaudio-lite/demos/preview.png",
+  "thumbnail_width": 640,
+  "thumbnail_height": 480,
+  "html": "<iframe src=\"https://hyperaudio.github.io/hyperaudio-lite/demos/embed.html\" width=\"640\" height=\"480\" frameborder=\"0\" allow=\"autoplay; fullscreen\" allowfullscreen></iframe>"
+}
