@@ -18,7 +18,14 @@
   <meta property="og:video:type" content="text/html">
   <meta property="og:video:width" content="640">
   <meta property="og:video:height" content="480">
-  
+
+  <!-- oEmbed discovery — lets consumers that use oEmbed autodiscovery (rather
+       than OpenGraph parsing) find oembed.json. The ?url= param is spec-required
+       even though the static endpoint ignores it. -->
+  <link rel="alternate" type="application/json+oembed"
+        href="https://hyperaudio.github.io/hyperaudio-lite/demos/oembed.json?url=https%3A%2F%2Fhyperaudio.github.io%2Fhyperaudio-lite%2Fdemos%2Fembed.html"
+        title="Hyperaudio Lite — interactive transcript">
+
   <link rel="stylesheet" href="../css/hyperaudio-lite-player.css">
   <link rel="stylesheet" href="../css/examples.css">
   <style>
