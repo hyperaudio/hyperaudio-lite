@@ -391,6 +391,18 @@ let cap1 = caption();
 cap1.init("hypertranscript", "hyperplayer", '37' , '21'); // transcript Id, player Id, max chars, min chars for caption line
 ```
 
+`init()` takes an optional eighth argument of sentence and paragraph rules. With none given, captions are generated exactly as before.
+
+```javascript
+cap1.init("hypertranscript", "hyperplayer", '37', '21', undefined, undefined, null, {
+  detectAbbreviations: true,        // "e.g.", "U.S.", "p.m." end a sentence only before a capital; a lone initial never does
+  abbreviations: ["Dr.", "Prof."],  // words that never end a sentence — language-specific, so you supply them
+  joinSentences: true,              // a short sentence shares the caption before it when the whole sentence fits
+  maxJoinGap: 1,                    // ...unless more than this many seconds of silence separate them
+  paragraphBreaks: true,            // a new paragraph always starts a new caption
+});
+```
+
 ## :money_with_wings: Web Monetization Support :money_with_wings:
 
 [Web Monetization](https://webmonetization.org/) is a browser API, stewarded by the [Interledger Foundation](https://interledger.org/), that lets visitors stream micropayments to the sites they're reading. There is currently no native browser support — visitors need a [Web Monetization agent](https://webmonetization.org/supporters/get-started/) (browser extension) installed to actually pay.
