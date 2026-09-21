@@ -1,5 +1,5 @@
 /*! (C) The Hyperaudio Project. MIT @license: en.wikipedia.org/wiki/MIT_License. */
-/*! Version 2.2.0 */
+/*! Version 2.3.0 */
 'use strict';
 
 const caption = function () {
@@ -47,6 +47,18 @@ const caption = function () {
   //                        joined across a speaker label or a long pause.
   //   maxJoinGap           seconds of silence that still allow a join (default 1)
   //   paragraphBreaks      true: a new paragraph always starts a new caption
+  //   dualSpeakers         true: two short sentences from different speakers may
+  //                        share a caption, in the Netflix form - two speakers
+  //                        at most, one per line, each line opening with a
+  //                        hyphen. The hyphen marks two speakers SHARING a
+  //                        caption, not a change of speaker: a caption with
+  //                        one speaker never has one. paragraphBreaks wins.
+  //   leadSentences        true: a short sentence that could not join the
+  //                        caption before it leads the long sentence after
+  //                        it, when both are one speaker's and close in time.
+  //
+  // Every cue in the result's data carries `speakers`: the speaker of each of
+  // its lines, '' where the transcript names none.
   cap.init = function (transcriptId, playerId, maxLength, minLength, label, srclang, parent, options) {
 
     const opts = options || {};
@@ -58,6 +70,8 @@ const caption = function () {
     const joinSentences = opts.joinSentences === true;
     const paragraphBreaks = opts.paragraphBreaks === true;
     const maxJoinGap = typeof opts.maxJoinGap === 'number' && opts.maxJoinGap >= 0 ? opts.maxJoinGap : 1;
+    const dualSpeakers = opts.dualSpeakers === true;
+    const leadSentences = opts.leadSentences === true;
 
     let transcript = document.getElementById(transcriptId);
 
@@ -159,11 +173,18 @@ const caption = function () {
       minLineLength = minLength;
     }
 
+    // A label as the transcript writes it ("[Ann] ", "Ann: ") to a name.
+    const speakerName = (label) => String(label).trim().replace(/^\[(.*)\]$/, '$1').replace(/:$/, '').trim();
+    // Only the sentence a label opens has `speaker` set; the name is carried
+    // through the rest of the turn here, so every caption knows whose it is.
+    let currentSpeaker = '';
+
     words.forEach((word, i) => {
       if (thisSegmentMeta === null) {
         // create segment meta object
         thisSegmentMeta = new segmentMeta('', null, 0, 0, 0);
       }
+      thisSegmentMeta.speakerName = currentSpeaker;
 
       if (word.classList.contains('speaker')) {
         // checking that this is not a new segment AND a new empty segment wasn't already created
@@ -175,6 +196,8 @@ const caption = function () {
         // textContent, not innerText: identical for plain transcript spans,
         // doesn't force a layout pass, and works in jsdom for tests.
         thisSegmentMeta.speaker = word.textContent;
+        currentSpeaker = speakerName(word.textContent);
+        thisSegmentMeta.speakerName = currentSpeaker;
       } else {
         // A new paragraph (paragraphBreaks): close the sentence in hand, so no
         // caption runs across the break even where the paragraph ended without
@@ -186,6 +209,7 @@ const caption = function () {
           if (thisSegmentMeta.start !== null) {
             data.segments.push(thisSegmentMeta);
             thisSegmentMeta = new segmentMeta('', null, 0, 0, 0);
+            thisSegmentMeta.speakerName = currentSpeaker;
           }
           thisSegmentMeta.paragraphStart = true;
         }
@@ -252,6 +276,7 @@ const caption = function () {
       this.start = start;
       this.stop = stop;
       this.text = text;
+      this.speakers = []; // the speaker of each line; filled in once the lines are final
     }
 
     const captions = [];
@@ -262,16 +287,52 @@ const caption = function () {
     // timing safeguards may later extend.
     const speechEnd = new Map();
 
+    // Whose each caption is, and which captions hold nothing but whole
+    // sentences - only those may become one side of a dual-speaker caption.
+    const owner = new Map();
+    const lineSpeakers = new Map(); // set only where the lines differ
+    const wholeSentences = new Set();
+    const claim = (segment, from) => {
+      for (let c = from; c < captions.length; c++) owner.set(captions[c], segment.speakerName);
+    };
+
+    // dualSpeakers: a short sentence that opens another speaker's turn shares
+    // the one-line caption before it - "-to start?" / "-Sure." Each line is
+    // one speaker's whole sentences, and the hyphens count towards its length.
+    function joinAsSecondSpeaker(prev, segment, text, segmentStop) {
+      if (!dualSpeakers || paragraphBreaks) return false;
+      if (!wholeSentences.has(prev) || lineSpeakers.has(prev)) return false;
+      const first = prev.text.replace(/\n+$/, '');
+      if (first.includes('\n')) return false;
+      if (('-' + first).length > maxLineLength || ('-' + text).length > maxLineLength) return false;
+      lineSpeakers.set(prev, [owner.get(prev) || '', segment.speakerName]);
+      prev.text = '-' + first + '\n-' + text;
+      prev.stop = formatSeconds(segmentStop);
+      speechEnd.set(prev, segmentStop);
+      return true;
+    }
+
     // joinSentences: put a whole short sentence into the caption before it.
     // On the same line when it fits there, else as the second line of a
-    // one-line caption. Never across a speaker label, a paragraph that must
-    // break, or a pause longer than maxJoinGap.
+    // one-line caption. Never across a paragraph that must break or a pause
+    // longer than maxJoinGap, and across a speaker label only as the second
+    // speaker of a dual-speaker caption.
     function joinToPrevious(segment, text, segmentStop) {
       const prev = captions[captions.length - 1];
-      if (!joinSentences || prev === undefined) return false;
-      if (segment.speaker !== '' || segment.paragraphStart === true) return false;
+      if (prev === undefined || segment.paragraphStart === true) return false;
       const prevEnd = speechEnd.get(prev);
       if (prevEnd === undefined || segment.start - prevEnd > maxJoinGap) return false;
+      // A label always ends ordinary joining, as it did in 2.2.0. What it may
+      // do now is open the second line of a dual-speaker caption - when it
+      // really is another speaker, not the same name written again.
+      if (segment.speaker !== '') {
+        return segment.speakerName !== (owner.get(prev) || '')
+          && joinAsSecondSpeaker(prev, segment, text, segmentStop);
+      }
+      if (!joinSentences) return false;
+      // further sentences of a dual-speaker caption's second speaker go on
+      // their line; the first speaker's line is closed
+      if (lineSpeakers.has(prev) && lineSpeakers.get(prev)[1] !== segment.speakerName) return false;
 
       const lines = prev.text.replace(/\n+$/, '').split('\n');
       const last = lines[lines.length - 1];
@@ -317,6 +378,23 @@ const caption = function () {
           return; // the sentence went into the caption before it
         }
 
+        // leadSentences: nothing behind to join, and the same speaker's next
+        // sentence is too long for one line - lay the two out as one run, so
+        // "Sure." opens that sentence's first caption instead of standing
+        // alone. The long sentence is divided across captions either way.
+        const next = arr[i + 1];
+        if (leadSentences && next !== undefined && segment.chars < minLineLength
+            && next.speaker === '' && next.paragraphStart !== true
+            && next.chars >= maxLineLength && next.start - segmentStop <= maxJoinGap) {
+          next.words = segment.words.concat(next.words);
+          next.chars += segment.chars;
+          next.duration += segment.duration;
+          next.start = segment.start;
+          next.speaker = segment.speaker;               // it opens the turn now, if this did
+          next.paragraphStart = segment.paragraphStart;
+          return;
+        }
+
         thisCaption = new captionMeta(
           formatSeconds(segment.start),
           formatSeconds(segmentStop),
@@ -328,6 +406,8 @@ const caption = function () {
         //console.log(thisCaption);
         captions.push(thisCaption);
         speechEnd.set(thisCaption, segmentStop);
+        wholeSentences.add(thisCaption);
+        claim(segment, segmentStartCount);
         thisCaption = null;
       } else {
         // The number of chars in this segment is longer than our single line maximum
@@ -480,7 +560,14 @@ const caption = function () {
         if (captions.length > segmentStartCount && lastOutTime !== undefined) {
           speechEnd.set(captions[captions.length - 1], lastOutTime);
         }
+        claim(segment, segmentStartCount);
       }
+    });
+
+    // the speaker of each line, now that the lines are final
+    captions.forEach((caption) => {
+      const lineCount = caption.text.replace(/\n+$/, '').split('\n').length;
+      caption.speakers = lineSpeakers.get(caption) || new Array(lineCount).fill(owner.get(caption) || '');
     });
 
     // Enforce a comfortable minimum on-screen time for each cue. A cue is
