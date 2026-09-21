@@ -7,6 +7,8 @@ export interface CaptionCue {
   /** "HH:MM:SS.mmm" */
   stop: string;
   text: string;
+  /** The speaker of each line of `text`, '' where the transcript names none. */
+  speakers: string[];
 }
 
 export interface CaptionsResult {
@@ -38,6 +40,17 @@ export interface CaptionOptions {
   maxJoinGap?: number;
   /** A new paragraph always starts a new caption. */
   paragraphBreaks?: boolean;
+  /**
+   * Two short sentences from different speakers may share a caption: two
+   * speakers at most, one per line, each line opening with a hyphen. A
+   * caption with one speaker never has a hyphen. `paragraphBreaks` wins.
+   */
+  dualSpeakers?: boolean;
+  /**
+   * A short sentence that could not join the caption before it leads the long
+   * sentence after it, when both are one speaker's and within maxJoinGap.
+   */
+  leadSentences?: boolean;
 }
 
 export interface CaptionInstance {

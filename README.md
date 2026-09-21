@@ -400,8 +400,12 @@ cap1.init("hypertranscript", "hyperplayer", '37', '21', undefined, undefined, nu
   joinSentences: true,              // a short sentence shares the caption before it when the whole sentence fits
   maxJoinGap: 1,                    // ...unless more than this many seconds of silence separate them
   paragraphBreaks: true,            // a new paragraph always starts a new caption
+  dualSpeakers: true,               // two speakers may share a caption: one per line, each line opening with a hyphen
+  leadSentences: true,              // a short sentence with nothing to join leads the long sentence after it
 });
 ```
+
+Each cue in the result's `data` also carries `speakers`: the speaker of each of its lines (`["Ann", "Bob"]` for a dual-speaker caption, `""` where the transcript names none).
 
 ## :money_with_wings: Web Monetization Support :money_with_wings:
 

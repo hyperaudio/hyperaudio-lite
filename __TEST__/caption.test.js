@@ -389,3 +389,144 @@ test("joined captions never overlap and keep the cue count honest", () => {
   expect(cues.map((c) => c.text).join(" "))
     .toBe("Yes. No. Maybe. I see. Go on. This one is a good deal longer than a line allows. Fine.");
 });
+
+// ---- 2.3.0: the speaker of each line, dual-speaker captions, leading sentences
+
+const lineTexts = (result) => result.data.map((c) => c.text.replace(/\n+$/, "").split("\n").map((l) => l.trim()));
+const INTERVIEW = "@speaker-A to start? | @speaker-B Sure. So to start off, Dr. Ashby, can you just introduce yourself and give us a little insight into your background?";
+
+test("with no new options, captions are exactly what 2.2.0 generated", () => {
+  buildFromText(INTERVIEW);
+  const plain = run({ joinSentences: true, detectAbbreviations: true, abbreviations: ["Dr."] });
+  expect(cueTexts(plain).slice(0, 2)).toEqual(["to start?", "Sure."]);
+  expect(plain.vtt).not.toContain("-to start?");
+  // a label repeating the speaker already talking still starts a new caption
+  buildFromText("@Ann Yes. @Ann No.");
+  expect(cueTexts(run({ joinSentences: true }))).toEqual(["Yes.", "No."]);
+});
+
+test("every cue names the speaker of each of its lines, deep into a turn", () => {
+  buildFromText("@Ann This sentence is far too long to sit on one line of a caption. Yes. | @Bob No. Never. It was not like that at all in those days, I can tell you.");
+  const result = run({ joinSentences: true });
+  result.data.forEach((cue) => {
+    expect(cue.speakers).toHaveLength(cue.text.replace(/\n+$/, "").split("\n").length);
+  });
+  const bySpeaker = (name) => result.data.filter((c) => c.speakers.every((s) => s === name)).map((c) => flat(c.text)).join(" ");
+  expect(bySpeaker("Ann")).toBe("This sentence is far too long to sit on one line of a caption. Yes.");
+  expect(bySpeaker("Bob")).toBe("No. Never. It was not like that at all in those days, I can tell you.");
+  // label styles: "[Ann] " and "Ann: " both read as Ann; no label at all is ''
+  document.body.innerHTML = '<div id="transcript"><p><span class="speaker" data-m="0">Ann: </span><span data-m="0" data-d="300">Yes. </span></p></div>';
+  expect(run().data[0].speakers).toEqual(["Ann"]);
+  buildFromText("Yes.");
+  expect(run().data[0].speakers).toEqual([""]);
+});
+
+test("dualSpeakers: two speakers share a caption, one per line, each line with a hyphen", () => {
+  buildFromText(INTERVIEW);
+  const result = run({ joinSentences: true, dualSpeakers: true, detectAbbreviations: true, abbreviations: ["Dr."] });
+  expect(lineTexts(result)[0]).toEqual(["-to start?", "-Sure."]);
+  expect(result.data[0].speakers).toEqual(["speaker-A", "speaker-B"]);
+  // the caption runs from the first speaker's first word to the second's last
+  const cues = parseVtt(result.vtt);
+  expect(cues[0].start).toBe("00:00:00.000");
+  expect(cues[0].stop).toBe("00:00:01.150"); // "Sure." starts at 0.8s, lasts 350ms
+  // the long sentence after it is one speaker's: no hyphen anywhere else
+  result.data.slice(1).forEach((cue) => {
+    expect(cue.text).not.toMatch(/(^|\n)-/);
+    expect(new Set(cue.speakers)).toEqual(new Set(["speaker-B"]));
+  });
+  expect(result.srt).toMatch(/-to start\? ?\n-Sure\./);
+});
+
+test("dualSpeakers: a hyphen marks a shared caption, never just a change of speaker", () => {
+  // the pause is too long to share: two captions, neither with a hyphen
+  buildTranscript([
+    ["speaker", "[Ann] "], [0, 300, "Ready?"],
+    ["speaker", "[Bob] "], [3000, 300, "Sure."],
+  ]);
+  const apart = run({ dualSpeakers: true });
+  expect(cueTexts(apart)).toEqual(["Ready?", "Sure."]);
+  expect(apart.data.map((c) => c.speakers)).toEqual([["Ann"], ["Bob"]]);
+});
+
+test("dualSpeakers: two speakers at most, whole sentences only, and the hyphen counts", () => {
+  // a third turn starts a new caption
+  buildFromText("@Ann Ready? @Bob Sure. @Ann Good.");
+  expect(lineTexts(run({ dualSpeakers: true }))).toEqual([["-Ready?", "-Sure."], ["Good."]]);
+
+  // several short sentences from one speaker can make up a side
+  buildFromText("@Ann Yes. No. @Bob Fine. Go on.");
+  const sides = run({ joinSentences: true, dualSpeakers: true });
+  expect(lineTexts(sides)).toEqual([["-Yes. No.", "-Fine. Go on."]]);
+  expect(sides.data[0].speakers).toEqual(["Ann", "Bob"]);
+
+  // the tail of a long sentence is not a whole sentence: nothing shares with it
+  buildFromText("@Ann This sentence is far too long to sit on one line. @Bob Sure.");
+  const tail = lineTexts(run({ dualSpeakers: true }));
+  expect(tail[tail.length - 1]).toEqual(["Sure."]);
+
+  // a line filled to the limit by joining has no room left for its hyphen
+  buildFromText("@Ann Yes. No. @Bob Fine.");
+  expect(lineTexts(run({ joinSentences: true, dualSpeakers: true }, 9, 5))).toEqual([["Yes. No."], ["Fine."]]);
+  buildFromText("@Ann Yes. No. @Bob Fine.");
+  expect(lineTexts(run({ joinSentences: true, dualSpeakers: true }, 10, 5))).toEqual([["-Yes. No.", "-Fine."]]);
+});
+
+test("dualSpeakers: paragraphBreaks wins, and a transcript with no labels is untouched", () => {
+  buildFromText("@Ann Ready? | @Bob Sure.");
+  expect(lineTexts(run({ dualSpeakers: true, paragraphBreaks: true }))).toEqual([["Ready?"], ["Sure."]]);
+  buildFromText("Yes. No. Maybe. I see.");
+  const withOption = run({ joinSentences: true, dualSpeakers: true, leadSentences: true });
+  buildFromText("Yes. No. Maybe. I see.");
+  expect(withOption.vtt).toBe(run({ joinSentences: true }).vtt);
+});
+
+test("leadSentences: a short sentence leads the long sentence after it", () => {
+  buildFromText("@speaker-B Sure. So to start off, Dr. Ashby, can you just introduce yourself and give us a little insight into your background?");
+  const options = { joinSentences: true, detectAbbreviations: true, abbreviations: ["Dr."] };
+  expect(cueTexts(run(options))[0]).toBe("Sure.");
+  const led = run({ ...options, leadSentences: true });
+  expect(cueTexts(led)[0].startsWith("Sure. So to start off,")).toBe(true);
+  // nothing lost, nothing over the line length, one speaker throughout
+  expect(cueTexts(led).join(" ")).toBe("Sure. So to start off, Dr. Ashby, can you just introduce yourself and give us a little insight into your background?");
+  lineTexts(led)[0].forEach((line) => expect(line.length).toBeLessThanOrEqual(32));
+  led.data.forEach((cue) => expect(new Set(cue.speakers)).toEqual(new Set(["speaker-B"])));
+  expect(parseVtt(led.vtt)[0].start).toBe("00:00:00.000");
+});
+
+test("leadSentences: not across a speaker, a long pause, or a paragraph that must break; joining back comes first", () => {
+  const LONG = "This sentence is far too long to sit on one line of a caption.";
+  buildFromText(`Sure. @Bob ${LONG}`);
+  expect(cueTexts(run({ leadSentences: true }))[0]).toBe("Sure.");
+
+  buildFromText(`Sure. | ${LONG}`);
+  expect(cueTexts(run({ leadSentences: true, paragraphBreaks: true }))[0]).toBe("Sure.");
+  expect(cueTexts(run({ leadSentences: true }))[0]).not.toBe("Sure.");
+
+  buildTranscript([[0, 300, "Sure."], ...LONG.split(" ").map((w, i) => [5000 + i * 400, 350, w])]);
+  expect(cueTexts(run({ leadSentences: true }))[0]).toBe("Sure.");
+
+  // "Yes." has a caption behind it to join: it goes back, not forward
+  buildFromText(`No. Yes. ${LONG}`);
+  expect(cueTexts(run({ joinSentences: true, leadSentences: true }))[0]).toBe("No. Yes.");
+});
+
+test("together: the interview opening, as the pause allows", () => {
+  const options = { joinSentences: true, dualSpeakers: true, leadSentences: true, detectAbbreviations: true, abbreviations: ["Dr."] };
+  buildFromText(INTERVIEW);
+  expect(lineTexts(run(options))[0]).toEqual(["-to start?", "-Sure."]);
+
+  // a long pause before the answer: no shared caption, and "Sure." leads instead
+  const answer = "Sure. So to start off, Dr. Ashby, can you just introduce yourself?".split(" ");
+  buildTranscript([
+    ["speaker", "[speaker-A] "], [0, 300, "to"], [350, 300, "start?"],
+    ["speaker", "[speaker-B] "], ...answer.map((w, i) => [4000 + i * 400, 350, w]),
+  ]);
+  const apart = run(options);
+  expect(cueTexts(apart)[0]).toBe("to start?");
+  expect(cueTexts(apart)[1].startsWith("Sure. So to start off,")).toBe(true);
+  expect(apart.vtt).not.toMatch(/\n-/);
+  // and no cue overlaps the next
+  const cues = parseVtt(apart.vtt);
+  for (let i = 1; i < cues.length; i += 1) expect(cues[i].start >= cues[i - 1].stop).toBe(true);
+});
