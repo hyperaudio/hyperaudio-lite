@@ -244,3 +244,148 @@ test("an inverted or zero-length cue is repaired to a readable length, not skipp
   // repaired: extended to the 1s minimum on-screen time
   expect(cues[1].stop).toBe("00:00:06.000");
 });
+
+// ---- options: abbreviations, sentence joining, paragraph breaks ------------
+
+// One word per 400ms; "|" starts a new paragraph, a ["speaker", name] tuple
+// (given as the string "@Name") a speaker label.
+function buildFromText(text, stepMs = 400, durMs = 350) {
+  let t = 0;
+  const paragraphs = text.split("|").map((para) =>
+    "<p>" + para.trim().split(/\s+/).map((w) => {
+      if (w.startsWith("@")) return `<span class="speaker" data-m="${t}">[${w.slice(1)}] </span>`;
+      const span = `<span data-m="${t}" data-d="${durMs}">${w} </span>`;
+      t += stepMs;
+      return span;
+    }).join("") + "</p>");
+  document.body.innerHTML = `<div id="transcript">${paragraphs.join("")}</div>`;
+}
+const cueTexts = (result) => parseVtt(result.vtt).map((c) => c.text);
+const run = (options, max = 32, min = 21) =>
+  caption().init("transcript", null, max, min, undefined, undefined, null, options);
+
+test("with no options an abbreviation still ends the caption, as it always has", () => {
+  buildFromText("We spoke to Dr. Smith about it.");
+  expect(cueTexts(run())).toEqual(["We spoke to Dr.", "Smith about it."]);
+});
+
+test("a listed title never ends a sentence", () => {
+  buildFromText("We spoke to Dr. Smith about it.");
+  expect(cueTexts(run({ abbreviations: ["Dr."] }))).toEqual(["We spoke to Dr. Smith about it."]);
+  // case and the trailing full stop are ignored, in the list and in the text
+  buildFromText("We spoke to (dr. Smith) about it.");
+  expect(cueTexts(run({ abbreviations: new Set(["DR"]) }))).toEqual(["We spoke to (dr. Smith) about it."]);
+});
+
+test("a title in another language's list is just a word", () => {
+  buildFromText("Wir trafen Hr. Schmidt.");
+  expect(cueTexts(run({ detectAbbreviations: true, abbreviations: ["Dr."] })))
+    .toEqual(["Wir trafen Hr.", "Schmidt."]);
+  expect(cueTexts(run({ detectAbbreviations: true, abbreviations: ["Hr.", "Fr."] })))
+    .toEqual(["Wir trafen Hr. Schmidt."]);
+});
+
+test("a dotted abbreviation ends a sentence only before a capital", () => {
+  buildFromText("It costs 3.5 million, e.g. for a small firm.");
+  expect(cueTexts(run({ detectAbbreviations: true })).join(" "))
+    .toBe("It costs 3.5 million, e.g. for a small firm.");
+  expect(cueTexts(run({ detectAbbreviations: true })).some((t) => t.endsWith("e.g."))).toBe(false);
+
+  buildFromText("We left at 5 p.m. Then it rained.");
+  expect(cueTexts(run({ detectAbbreviations: true }))).toEqual(["We left at 5 p.m.", "Then it rained."]);
+
+  buildFromText("We left at 5 p.m. on Friday.");
+  expect(cueTexts(run({ detectAbbreviations: true }))).toEqual(["We left at 5 p.m. on Friday."]);
+});
+
+test("a lone initial never ends a sentence, but the word I does", () => {
+  buildFromText("It was J. Smith again.");
+  expect(cueTexts(run({ detectAbbreviations: true }))).toEqual(["It was J. Smith again."]);
+  buildFromText("So did I. Then we left.");
+  expect(cueTexts(run({ detectAbbreviations: true }))).toEqual(["So did I.", "Then we left."]);
+});
+
+test("question marks, exclamation marks and an ellipsis are untouched by the rule", () => {
+  buildFromText("Really? Yes! She paused... then went on.");
+  expect(cueTexts(run({ detectAbbreviations: true, abbreviations: ["Dr."] })))
+    .toEqual(["Really?", "Yes!", "She paused...", "then went on."]);
+});
+
+test("short sentences share a caption when joinSentences is on", () => {
+  buildFromText("Yes. No. Maybe. I see. Go on. Fine. That is all. Thanks.");
+  expect(cueTexts(run())).toHaveLength(8); // one per sentence, as before
+  const joined = run({ joinSentences: true });
+  const cues = parseVtt(joined.vtt);
+  expect(cues.map((c) => c.text)).toEqual(["Yes. No. Maybe. I see. Go on. Fine. That is all. Thanks."]);
+  // two lines, neither over the limit, and the times cover every sentence
+  const lines = joined.data[0].text.replace(/\n+$/, "").split("\n");
+  expect(lines.map((l) => l.trim())).toEqual(["Yes. No. Maybe. I see. Go on.", "Fine. That is all. Thanks."]);
+  lines.forEach((line) => expect(line.length).toBeLessThanOrEqual(32));
+  expect(cues[0].start).toBe("00:00:00.000");
+  expect(cues[0].stop).toBe("00:00:04.750"); // "Thanks." starts at 4.4s, lasts 350ms
+});
+
+test("a caption holds two lines at most, so a third short sentence starts a new one", () => {
+  buildFromText("That really is the whole of it. And nothing else at all here. Thanks.");
+  expect(cueTexts(run({ joinSentences: true }))).toEqual([
+    "That really is the whole of it. And nothing else at all here.",
+    "Thanks.",
+  ]);
+});
+
+test("a sentence is never split in order to fill a caption", () => {
+  // the second sentence fits on neither the first line nor a line of its own
+  buildFromText("Yes. This sentence is far too long to sit on one line of a caption.");
+  const texts = cueTexts(run({ joinSentences: true }));
+  expect(texts[0]).toBe("Yes.");
+  expect(texts.slice(1).join(" ")).toBe("This sentence is far too long to sit on one line of a caption.");
+});
+
+test("a short sentence joins the last caption of a long one", () => {
+  buildFromText("This sentence is far too long to sit on one line. Yes.");
+  expect(cueTexts(run())).toEqual(["This sentence is far too long to sit on one line.", "Yes."]);
+  expect(cueTexts(run({ joinSentences: true }))).toEqual(["This sentence is far too long to sit on one line. Yes."]);
+  // ...but not when the caption's second line has no room left for it
+  buildFromText("This sentence is far too long to sit on one line of a caption. Yes.");
+  const texts = cueTexts(run({ joinSentences: true }));
+  expect(texts[texts.length - 1]).toBe("Yes.");
+});
+
+test("nothing is joined across a speaker label", () => {
+  buildFromText("@Ann Yes. No. @Bob Maybe. Fine.");
+  expect(cueTexts(run({ joinSentences: true }))).toEqual(["Yes. No.", "Maybe. Fine."]);
+});
+
+test("nothing is joined across a pause longer than maxJoinGap", () => {
+  buildTranscript([
+    [0, 300, "Yes."],
+    [400, 300, "No."],     // 100ms after "Yes." ends
+    [3000, 300, "Maybe."], // 2.3s of silence
+    [3400, 300, "Fine."],
+  ]);
+  expect(cueTexts(run({ joinSentences: true }))).toEqual(["Yes. No.", "Maybe. Fine."]);
+  expect(cueTexts(run({ joinSentences: true, maxJoinGap: 5 }))).toEqual(["Yes. No. Maybe. Fine."]);
+  expect(cueTexts(run({ joinSentences: true, maxJoinGap: 0 }))).toEqual(["Yes.", "No.", "Maybe.", "Fine."]);
+});
+
+test("paragraphBreaks: a new paragraph always starts a new caption", () => {
+  buildFromText("Yes. No. | Maybe. Fine.");
+  expect(cueTexts(run({ joinSentences: true }))).toEqual(["Yes. No. Maybe. Fine."]);
+  expect(cueTexts(run({ joinSentences: true, paragraphBreaks: true }))).toEqual(["Yes. No.", "Maybe. Fine."]);
+});
+
+test("paragraphBreaks also breaks where a paragraph ends without punctuation", () => {
+  buildFromText("the first thought | the second thought");
+  expect(cueTexts(run())).toEqual(["the first thought the second thought"]);
+  expect(cueTexts(run({ paragraphBreaks: true }))).toEqual(["the first thought", "the second thought"]);
+});
+
+test("joined captions never overlap and keep the cue count honest", () => {
+  buildFromText("Yes. No. Maybe. | @Ann I see. Go on. This one is a good deal longer than a line allows. Fine.");
+  const cues = parseVtt(run({ joinSentences: true, paragraphBreaks: true, detectAbbreviations: true }).vtt);
+  for (let i = 1; i < cues.length; i += 1) {
+    expect(cues[i].start >= cues[i - 1].stop).toBe(true);
+  }
+  expect(cues.map((c) => c.text).join(" "))
+    .toBe("Yes. No. Maybe. I see. Go on. This one is a good deal longer than a line allows. Fine.");
+});
