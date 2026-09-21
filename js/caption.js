@@ -1,5 +1,5 @@
 /*! (C) The Hyperaudio Project. MIT @license: en.wikipedia.org/wiki/MIT_License. */
-/*! Version 2.1.7 */
+/*! Version 2.2.0 */
 'use strict';
 
 const caption = function () {
@@ -32,7 +32,32 @@ const caption = function () {
     return (parseInt(parts[0], 10) * 3600) + (parseInt(parts[1], 10) * 60) + parseFloat(parts[2]);
   }
 
-  cap.init = function (transcriptId, playerId, maxLength, minLength, label, srclang, parent) {
+  // options (all optional; with none given the output is what it always was):
+  //   detectAbbreviations  true: a dotted abbreviation ("e.g.", "U.S.", "p.m.")
+  //                        ends a sentence only when the next word starts with
+  //                        a capital, and a lone initial ("J.") never does
+  //   abbreviations        words that never end a sentence however they are
+  //                        followed - titles such as "Dr." or "Prof.", which
+  //                        no rule can tell from a sentence end. An array or
+  //                        Set; case and the trailing full stop are ignored.
+  //                        Language-specific, so the caller supplies them.
+  //   joinSentences        true: a short sentence shares the caption before it
+  //                        when the WHOLE sentence fits there. A sentence is
+  //                        never split in order to fill a caption, and never
+  //                        joined across a speaker label or a long pause.
+  //   maxJoinGap           seconds of silence that still allow a join (default 1)
+  //   paragraphBreaks      true: a new paragraph always starts a new caption
+  cap.init = function (transcriptId, playerId, maxLength, minLength, label, srclang, parent, options) {
+
+    const opts = options || {};
+    const detectAbbreviations = opts.detectAbbreviations === true;
+    const normaliseAbbreviation = (text) => String(text).toLowerCase().replace(/\.$/, '');
+    const abbreviationSet = opts.abbreviations
+      ? new Set(Array.from(opts.abbreviations, normaliseAbbreviation))
+      : null;
+    const joinSentences = opts.joinSentences === true;
+    const paragraphBreaks = opts.paragraphBreaks === true;
+    const maxJoinGap = typeof opts.maxJoinGap === 'number' && opts.maxJoinGap >= 0 ? opts.maxJoinGap : 1;
 
     let transcript = document.getElementById(transcriptId);
 
@@ -93,6 +118,39 @@ const caption = function () {
     const endSentenceDelimiter = /[\.。?؟!]/g;
     const midSentenceDelimiter = /[,、–，،و:，…‥]/g;
 
+    // A full stop is not always the end of a sentence. Only "." is ambiguous:
+    // ? ! 。 ؟ close the sentence whatever the word is.
+    const startsWithCapital = (text) => /^[^\p{L}\p{N}]*\p{Lu}/u.test(text || '');
+    function endsSentence(text, nextText) {
+      const token = text.replace(/\s/g, '');
+      if (!token.slice(-1).match(endSentenceDelimiter)) return false;
+      if (token.slice(-1) !== '.') return true;
+      const core = token.replace(/^[^\p{L}\p{N}]+/u, ''); // opening quotes and brackets
+      if (abbreviationSet !== null && abbreviationSet.has(normaliseAbbreviation(core))) {
+        return false; // a listed title: never a sentence end
+      }
+      if (detectAbbreviations) {
+        // a lone initial, "J. Smith" - but "I." is a word, and ends sentences
+        if (/^\p{Lu}\.$/u.test(core) && core !== 'I.') return false;
+        // "e.g.", "U.S.", "p.m.", "Ph.D.": these can legitimately close a
+        // sentence ("We left at 5 p.m. Then it rained."), and the capital
+        // that follows is the only sign of it
+        if (/^(?:\p{L}{1,2}\.){2,}$/u.test(core)) return nextText === null || startsWithCapital(nextText);
+      }
+      return true;
+    }
+
+    // the text of the next spoken word, or null when a speaker label or the
+    // end of the transcript comes first (either closes the sentence anyway)
+    function nextSpokenText(index) {
+      const next = words[index + 1];
+      if (next === undefined || next.classList.contains('speaker')) return null;
+      return next.textContent;
+    }
+
+    const paragraphOf = (word) => (typeof word.closest === 'function' ? word.closest('p') : null);
+    let lastParagraph = null;
+
     if (!isNaN(maxLength) && maxLength != null) {
       maxLineLength = maxLength;
     }
@@ -118,6 +176,20 @@ const caption = function () {
         // doesn't force a layout pass, and works in jsdom for tests.
         thisSegmentMeta.speaker = word.textContent;
       } else {
+        // A new paragraph (paragraphBreaks): close the sentence in hand, so no
+        // caption runs across the break even where the paragraph ended without
+        // punctuation, and mark the segment so nothing is joined onto it.
+        const paragraph = paragraphOf(word);
+        const newParagraph = paragraphBreaks && lastParagraph !== null && paragraph !== lastParagraph;
+        lastParagraph = paragraph;
+        if (newParagraph) {
+          if (thisSegmentMeta.start !== null) {
+            data.segments.push(thisSegmentMeta);
+            thisSegmentMeta = new segmentMeta('', null, 0, 0, 0);
+          }
+          thisSegmentMeta.paragraphStart = true;
+        }
+
         let thisStart = parseInt(word.getAttribute('data-m'), 10) / 1000;
         let thisDuration = parseInt(word.getAttribute('data-d'), 10) / 1000;
 
@@ -161,9 +233,7 @@ const caption = function () {
 
         thisSegmentMeta.words.push(thisWordMeta);
 
-        // remove spaces first just in case
-        const lastChar = thisText.replace(/\s/g, '').slice(-1);
-        if (lastChar.match(endSentenceDelimiter)) {
+        if (endsSentence(thisText, nextSpokenText(i))) {
           data.segments.push(thisSegmentMeta);
           thisSegmentMeta = null;
         }
@@ -186,6 +256,38 @@ const caption = function () {
 
     const captions = [];
     let thisCaption = null;
+
+    // Where each caption's speech really ends, in seconds - the pause before
+    // the next sentence is measured from here, not from a stop time that the
+    // timing safeguards may later extend.
+    const speechEnd = new Map();
+
+    // joinSentences: put a whole short sentence into the caption before it.
+    // On the same line when it fits there, else as the second line of a
+    // one-line caption. Never across a speaker label, a paragraph that must
+    // break, or a pause longer than maxJoinGap.
+    function joinToPrevious(segment, text, segmentStop) {
+      const prev = captions[captions.length - 1];
+      if (!joinSentences || prev === undefined) return false;
+      if (segment.speaker !== '' || segment.paragraphStart === true) return false;
+      const prevEnd = speechEnd.get(prev);
+      if (prevEnd === undefined || segment.start - prevEnd > maxJoinGap) return false;
+
+      const lines = prev.text.replace(/\n+$/, '').split('\n');
+      const last = lines[lines.length - 1];
+      if ((last + text).length <= maxLineLength) {
+        lines[lines.length - 1] = last + text;
+      } else if (lines.length === 1) {
+        lines.push(text);
+      } else {
+        return false;
+      }
+      // a one-line caption ends in a newline, a two-line one does not
+      prev.text = lines.length === 1 ? lines[0] + '\n' : lines.join('\n');
+      prev.stop = formatSeconds(segmentStop);
+      speechEnd.set(prev, segmentStop);
+      return true;
+    }
 
     data.segments.forEach((segment, i, arr) => {
       // Captions pushed from here on belong to this segment (one sentence,
@@ -210,20 +312,22 @@ const caption = function () {
           segmentStop = segment.start + 5;
         }
 
+        const segmentText = segment.words.map((word) => word.text).join('');
+        if (joinToPrevious(segment, segmentText, segmentStop)) {
+          return; // the sentence went into the caption before it
+        }
+
         thisCaption = new captionMeta(
           formatSeconds(segment.start),
           formatSeconds(segmentStop),
           '',
         );
 
-        segment.words.forEach((word) => {
-          thisCaption.text += word.text;
-        });
-
-        thisCaption.text += '\n';
+        thisCaption.text = segmentText + '\n';
         //console.log("0. pushing because the whole segment fits on a line!");
         //console.log(thisCaption);
         captions.push(thisCaption);
+        speechEnd.set(thisCaption, segmentStop);
         thisCaption = null;
       } else {
         // The number of chars in this segment is longer than our single line maximum
@@ -370,6 +474,11 @@ const caption = function () {
               thisCaption = null;
             }
           }
+        }
+
+        // the sentence's last caption ends where its last word does
+        if (captions.length > segmentStartCount && lastOutTime !== undefined) {
+          speechEnd.set(captions[captions.length - 1], lastOutTime);
         }
       }
     });

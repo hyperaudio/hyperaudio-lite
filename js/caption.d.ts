@@ -18,6 +18,28 @@ export interface CaptionsResult {
   data: CaptionCue[];
 }
 
+export interface CaptionOptions {
+  /**
+   * Dotted abbreviations ("e.g.", "U.S.", "p.m.") end a sentence only when
+   * the next word starts with a capital; a lone initial ("J.") never does.
+   */
+  detectAbbreviations?: boolean;
+  /**
+   * Words that never end a sentence, e.g. titles such as "Dr." or "Prof.".
+   * Case and the trailing full stop are ignored. Language-specific.
+   */
+  abbreviations?: Iterable<string>;
+  /**
+   * A short sentence shares the caption before it when the whole sentence
+   * fits there. Never across a speaker label or a pause over maxJoinGap.
+   */
+  joinSentences?: boolean;
+  /** Seconds of silence that still allow a join (default 1). */
+  maxJoinGap?: number;
+  /** A new paragraph always starts a new caption. */
+  paragraphBreaks?: boolean;
+}
+
 export interface CaptionInstance {
   /**
    * Generate captions from a hypertranscript's [data-m] word spans.
@@ -31,6 +53,8 @@ export interface CaptionInstance {
    * @param srclang      value for the text track's srclang attribute
    * @param parent       optional element whose innerHTML is parsed instead of
    *                     the live document (e.g. a detached editor state)
+   * @param options      sentence and paragraph rules; with none given the
+   *                     output is unchanged from earlier versions
    */
   init(
     transcriptId: string,
@@ -39,7 +63,8 @@ export interface CaptionInstance {
     minLength?: number,
     label?: string,
     srclang?: string,
-    parent?: HTMLElement
+    parent?: HTMLElement | null,
+    options?: CaptionOptions
   ): CaptionsResult;
 }
 
