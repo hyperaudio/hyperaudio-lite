@@ -414,6 +414,29 @@ test("setPlayHead updates currentTime and plays if playOnClick is true", () => {
   expect(ht.myPlayer.play).toHaveBeenCalled();
 });
 
+test("setPlayHead tracks the clicked word when timestamps are duplicated (#269)", () => {
+  const spans = document.querySelectorAll("span[data-m]");
+  const lastWordInFirstParagraph = spans[4];
+  const firstWordInSecondParagraph = spans[5];
+  const originalTimestamp = lastWordInFirstParagraph.dataset.m;
+
+  lastWordInFirstParagraph.dataset.m = firstWordInSecondParagraph.dataset.m;
+  ht.wordArr = ht.createWordArray(spans);
+  ht.myPlayer = { setTime: jest.fn(), play: jest.fn(), paused: true };
+  ht.playOnClick = false;
+
+  ht.setPlayHead({ target: firstWordInSecondParagraph });
+
+  expect(lastWordInFirstParagraph.parentNode.classList.contains("active")).toBe(false);
+  expect(firstWordInSecondParagraph.parentNode.classList.contains("active")).toBe(true);
+  expect(ht.activeWordElement).toBe(firstWordInSecondParagraph);
+  expect(ht.activeParentElement).toBe(firstWordInSecondParagraph.parentNode);
+
+  lastWordInFirstParagraph.dataset.m = originalTimestamp;
+  ht.wordArr = ht.createWordArray(spans);
+  ht.clearActiveClasses();
+});
+
 test("preparePlayHead sets paused to false and calls checkPlayHead", () => {
   ht.checkPlayHead = jest.fn();
   ht.preparePlayHead();
