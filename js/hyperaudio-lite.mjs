@@ -571,6 +571,12 @@ class HyperaudioLite {
     } else {
       this.scrollContainer = this.transcript;
     }
+
+    const cancelAutoscroll = () => this.cancelScrollAnimation();
+    const listenerOpts = { signal: this.listenerController.signal };
+    ['wheel', 'touchstart', 'keydown'].forEach(eventName => {
+      this.scrollContainer.addEventListener(eventName, cancelAutoscroll, listenerOpts);
+    });
   }
 
   // Setup event listeners for interactions
@@ -790,6 +796,13 @@ class HyperaudioLite {
     this.autoscroll = true;
   }
 
+  cancelScrollAnimation() {
+    if (this.scrollAnimationId != null) {
+      cancelAnimationFrame(this.scrollAnimationId);
+      this.scrollAnimationId = null;
+    }
+  }
+
   // Tear down the instance: stop the polling loop, cancel any in-flight
   // scroll animation and remove every DOM listener this instance added
   // (transcript, native player, popover). Embed players (YouTube, Vimeo,
@@ -798,10 +811,7 @@ class HyperaudioLite {
   destroy() {
     this.destroyed = true;
     this.clearTimer();
-    if (this.scrollAnimationId) {
-      cancelAnimationFrame(this.scrollAnimationId);
-      this.scrollAnimationId = null;
-    }
+    this.cancelScrollAnimation();
     this.listenerController.abort();
   }
 
