@@ -929,12 +929,18 @@ class HyperaudioLite {
           }
         }
 
-        let interval = 0;
+        let interval = 250;
         if (this.wordArr[index]) {
-          interval = this.wordArr[index].n.getAttribute('data-m') - this.currentTime * 1000;
+          const nextWordTime = Number.parseFloat(
+            this.wordArr[index].n.getAttribute('data-m')
+          );
+          const timeUntilNextWord = nextWordTime - this.currentTime * 1000;
+          if (Number.isFinite(timeUntilNextWord) && timeUntilNextWord > 0) {
+            interval = timeUntilNextWord + 1;
+          }
         }
 
-        this.timer = setTimeout(() => this.checkPlayHead(), interval + 1);
+        this.timer = setTimeout(() => this.checkPlayHead(), interval);
       }
     } else {
       this.clearTimer();

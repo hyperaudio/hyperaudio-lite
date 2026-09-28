@@ -523,6 +523,60 @@ test("checkStatus schedules next check", () => {
   jest.useRealTimers();
 });
 
+test("checkStatus avoids busy polling after the final timed word (#263)", () => {
+  jest.useFakeTimers();
+  const inst = new HyperaudioLite({
+    transcript: "hypertranscript",
+    player: "hyperplayer",
+    autoScroll: false,
+  });
+  inst.myPlayer = { paused: false };
+  inst.currentTime = 20;
+  inst.updateTranscriptVisualState = jest.fn().mockReturnValue({
+    currentWordIndex: inst.wordArr.length,
+    currentParentElementIndex: 1,
+  });
+  inst.checkPlayHead = jest.fn();
+
+  inst.checkStatus();
+  jest.advanceTimersByTime(249);
+  expect(inst.checkPlayHead).not.toHaveBeenCalled();
+  jest.advanceTimersByTime(1);
+  expect(inst.checkPlayHead).toHaveBeenCalledTimes(1);
+
+  inst.destroy();
+  jest.useRealTimers();
+});
+
+test("checkStatus avoids busy polling when the next timestamp is invalid (#263)", () => {
+  jest.useFakeTimers();
+  const inst = new HyperaudioLite({
+    transcript: "hypertranscript",
+    player: "hyperplayer",
+    autoScroll: false,
+  });
+  const nextWord = inst.wordArr[4].n;
+  const timestamp = nextWord.getAttribute("data-m");
+  nextWord.removeAttribute("data-m");
+  inst.myPlayer = { paused: false };
+  inst.currentTime = 4;
+  inst.updateTranscriptVisualState = jest.fn().mockReturnValue({
+    currentWordIndex: 4,
+    currentParentElementIndex: 0,
+  });
+  inst.checkPlayHead = jest.fn();
+
+  inst.checkStatus();
+  jest.advanceTimersByTime(249);
+  expect(inst.checkPlayHead).not.toHaveBeenCalled();
+  jest.advanceTimersByTime(1);
+  expect(inst.checkPlayHead).toHaveBeenCalledTimes(1);
+
+  nextWord.setAttribute("data-m", timestamp);
+  inst.destroy();
+  jest.useRealTimers();
+});
+
 test("selection playback stops at fractional end times (regression for #249)", () => {
   // end/currentTime are fractional seconds. parseInt truncated both, so with
   // end=5.25 and currentTime=5.5 the comparison saw 5 < 5 and kept playing —
