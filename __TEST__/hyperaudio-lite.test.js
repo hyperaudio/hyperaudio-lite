@@ -746,6 +746,24 @@ test("registerPlayer() adds a custom player type (#253)", () => {
   delete hyperaudioPlayerOptions.fake;
 });
 
+test("NativePlayer stays paused when browser playback is rejected (#268)", async () => {
+  const inst = new HyperaudioLite({
+    transcript: "hypertranscript",
+    player: "hyperplayer",
+  });
+  const rejectedPlay = Promise.reject(new DOMException("Autoplay blocked", "NotAllowedError"));
+  rejectedPlay.catch(() => {});
+  const playSpy = jest.spyOn(inst.player, "play").mockReturnValue(rejectedPlay);
+
+  inst.myPlayer.paused = true;
+  inst.myPlayer.play();
+  await Promise.resolve();
+
+  expect(inst.myPlayer.paused).toBe(true);
+
+  playSpy.mockRestore();
+  inst.destroy();
+});
 
 
 

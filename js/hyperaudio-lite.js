@@ -62,8 +62,12 @@ class NativePlayer extends BasePlayer {
   }
 
   play() {
-    this.player.play();
-    this.paused = false;
+    const playPromise = this.player.play();
+    if (playPromise && typeof playPromise.catch === 'function') {
+      playPromise.catch(() => {
+        this.paused = true;
+      });
+    }
   }
 
   pause() {
