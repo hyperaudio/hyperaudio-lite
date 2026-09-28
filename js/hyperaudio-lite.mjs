@@ -631,8 +631,23 @@ class HyperaudioLite {
 
   // Create an array of words with metadata from the transcript
   createWordArray(words) {
-    return Array.from(words).map(word => {
+    const wordArr = [];
+
+    Array.from(words).forEach(word => {
       const m = parseInt(word.getAttribute('data-m'));
+
+      // Reset to a clean baseline — stale read/active classes from a previous
+      // instance on the same DOM would survive the delta updates in
+      // updateTranscriptVisualState (#251).
+      word.classList.remove('read', 'active');
+      word.classList.add('unread');
+
+      // A malformed timestamp breaks every binary-search comparison that
+      // probes it. Keep the DOM node inert instead of poisoning playback.
+      if (Number.isNaN(m)) {
+        return;
+      }
+
       let p = word.parentNode;
       while (p !== document) {
         if (['p', 'figure', 'ul'].includes(p.tagName.toLowerCase())) {
@@ -640,13 +655,11 @@ class HyperaudioLite {
         }
         p = p.parentNode;
       }
-      // Reset to a clean baseline — stale read/active classes from a previous
-      // instance on the same DOM would survive the delta updates in
-      // updateTranscriptVisualState (#251).
-      word.classList.remove('read', 'active');
-      word.classList.add('unread');
-      return { n: word, m, p };
+
+      wordArr.push({ n: word, m, p });
     });
+
+    return wordArr;
   }
 
   getSelectionRange = () => {
@@ -721,10 +734,19 @@ class HyperaudioLite {
     }
 
     const target = e.target || e.srcElement;
+    const timeSecs = target && target.dataset
+      ? parseInt(target.dataset.m) / 1000
+      : NaN;
+
+    // Clicks on transcript whitespace or malformed timed nodes must not update
+    // the visual-state binary search with NaN.
+    if (Number.isNaN(timeSecs)) {
+      return;
+    }
+
     this.highlightedText = false;
     this.clearActiveClasses();
 
-    const timeSecs = parseInt(target.dataset.m) / 1000;
     this.updateTranscriptVisualState(timeSecs);
 
     // Mark the clicked word as active AFTER updateTranscriptVisualState (which
@@ -736,12 +758,10 @@ class HyperaudioLite {
       target.parentNode.classList.add('active');
     }
 
-    if (!isNaN(timeSecs)) {
-      this.end = null;
-      this.myPlayer.setTime(timeSecs);
-      if (this.playOnClick) {
-        this.myPlayer.play();
-      }
+    this.end = null;
+    this.myPlayer.setTime(timeSecs);
+    if (this.playOnClick) {
+      this.myPlayer.play();
     }
   }
 

@@ -158,6 +158,22 @@ test("createWordArray", () => {
   expect(ht.createWordArray(words)).toStrictEqual(expectedResult);
 });
 
+test("createWordArray ignores malformed data-m values", () => {
+  const container = document.createElement("p");
+  container.innerHTML =
+    '<span data-m="100">valid</span>' +
+    '<span class="read active" data-m="">invalid</span>' +
+    '<span data-m="300">valid</span>';
+
+  const result = ht.createWordArray(container.querySelectorAll("[data-m]"));
+  const invalidWord = container.children[1];
+
+  expect(result.map(({ m }) => m)).toEqual([100, 300]);
+  expect(invalidWord.classList.contains("unread")).toBe(true);
+  expect(invalidWord.classList.contains("read")).toBe(false);
+  expect(invalidWord.classList.contains("active")).toBe(false);
+});
+
 test("getSelectionMediaFragment", () => {
   document
     .getSelection()
@@ -412,6 +428,25 @@ test("setPlayHead updates currentTime and plays if playOnClick is true", () => {
 
   expect(ht.myPlayer.setTime).toHaveBeenCalledWith(3.95);
   expect(ht.myPlayer.play).toHaveBeenCalled();
+});
+
+test("setPlayHead ignores targets without a numeric data-m", () => {
+  ht.playOnClick = true;
+  ht.highlightedText = true;
+  ht.myPlayer = { setTime: jest.fn(), play: jest.fn(), paused: true };
+  const updateSpy = jest.spyOn(ht, "updateTranscriptVisualState");
+  const activeWord = document.querySelector('span[data-m="3950"]');
+  activeWord.classList.add("active");
+
+  ht.setPlayHead({ target: activeWord.parentNode });
+
+  expect(updateSpy).not.toHaveBeenCalled();
+  expect(ht.myPlayer.setTime).not.toHaveBeenCalled();
+  expect(ht.myPlayer.play).not.toHaveBeenCalled();
+  expect(ht.highlightedText).toBe(true);
+  expect(activeWord.classList.contains("active")).toBe(true);
+
+  updateSpy.mockRestore();
 });
 
 test("preparePlayHead sets paused to false and calls checkPlayHead", () => {
