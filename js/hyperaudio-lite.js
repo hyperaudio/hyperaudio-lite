@@ -542,8 +542,24 @@ class HyperaudioLite {
 
   // Setup the transcript words
   setupTranscriptWords() {
+    this.refreshWords();
+  }
+
+  // Rebuild cached word and parent references after transcript DOM edits.
+  refreshWords() {
+    if (this.activeWordElement) {
+      this.activeWordElement.classList.remove('active');
+    }
+    if (this.activeParentElement) {
+      this.activeParentElement.classList.remove('active');
+    }
+    this.prevWordIndex = 0;
+    this.activeWordElement = null;
+    this.activeParentElement = null;
+
     const words = this.transcript.querySelectorAll('[data-m]');
     this.wordArr = this.createWordArray(words);
+    this.parentTag = null;
 
     // check for elements with data-m attributes that are not directly below <section>
     // these will contain <p> or similar that we can scroll to
@@ -556,7 +572,10 @@ class HyperaudioLite {
       }
     }
 
-    this.parentElements = this.transcript.getElementsByTagName(this.parentTag);
+    this.parentElements = this.parentTag
+      ? this.transcript.getElementsByTagName(this.parentTag)
+      : [];
+    return this.wordArr;
   }
 
   setupAutoScroll(autoscroll, scrollContainer) {
@@ -1051,7 +1070,9 @@ class HyperaudioLite {
       if (!this.myPlayer.paused || forceActiveWord) {
         activeWord.classList.add('active');
       }
-      activeParent.classList.add('active');
+      if (activeParent) {
+        activeParent.classList.add('active');
+      }
     }
 
     this.activeWordElement = activeWord;

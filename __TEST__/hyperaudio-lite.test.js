@@ -403,6 +403,49 @@ test("updateTranscriptVisualState self-heals after external class rewrites (#251
   expect(spans[5].classList.contains("unread")).toBe(true);
 });
 
+test("updateTranscriptVisualState tolerates a detached cached word (#265)", () => {
+  ht.myPlayer = { paused: false };
+  const detachedWord = ht.wordArr[4].n;
+  const parent = detachedWord.parentNode;
+  const nextSibling = detachedWord.nextSibling;
+  const exactStart = parseInt(detachedWord.dataset.m) / 1000;
+
+  detachedWord.remove();
+  expect(() => ht.updateTranscriptVisualState(exactStart)).not.toThrow();
+
+  parent.insertBefore(detachedWord, nextSibling);
+  ht.refreshWords();
+});
+
+test("refreshWords rebuilds DOM caches after transcript edits (#265)", () => {
+  const firstWord = ht.wordArr[0].n;
+  const firstParent = firstWord.parentNode;
+  const firstNextSibling = firstWord.nextSibling;
+  const replacement = document.createElement("span");
+  replacement.dataset.m = "12000";
+  replacement.dataset.d = "500";
+  replacement.textContent = "replacement ";
+
+  firstWord.remove();
+  document.querySelector("#hypertranscript p:last-of-type").appendChild(replacement);
+  ht.prevWordIndex = 5;
+  ht.activeWordElement = ht.wordArr[4].n;
+  ht.activeParentElement = ht.wordArr[4].n.parentNode;
+
+  const refreshed = ht.refreshWords();
+
+  expect(refreshed.some(entry => entry.n === firstWord)).toBe(false);
+  expect(refreshed.some(entry => entry.n === replacement)).toBe(true);
+  expect(ht.prevWordIndex).toBe(0);
+  expect(ht.activeWordElement).toBeNull();
+  expect(ht.activeParentElement).toBeNull();
+  expect(Array.from(ht.parentElements)).toContain(replacement.parentNode);
+
+  replacement.remove();
+  firstParent.insertBefore(firstWord, firstNextSibling);
+  ht.refreshWords();
+});
+
 test("setPlayHead updates currentTime and plays if playOnClick is true", () => {
   ht.playOnClick = true;
   ht.myPlayer = { setTime: jest.fn(), play: jest.fn(), paused: true };
