@@ -281,6 +281,19 @@ test("getSelectionRange with valid selection", () => {
   expect(ht.getSelectionRange()).toBe("0.88,5.21");
 });
 
+test("getSelectionRange ignores leading whitespace from the previous word", () => {
+  const firstSpanText = document.querySelector('span[data-m="880"]').firstChild;
+  const lastSpanText = document.querySelector('span[data-m="4750"]').firstChild;
+  const range = document.createRange();
+  range.setStart(firstSpanText, firstSpanText.length - 1);
+  range.setEnd(lastSpanText, 3);
+  window.getSelection().removeAllRanges();
+  window.getSelection().addRange(range);
+
+  expect(range.toString().startsWith(" ")).toBe(true);
+  expect(ht.getSelectionRange()).toBe("2.56,5.21");
+});
+
 test("clearActiveClasses removes all active classes", () => {
   const spans = document.querySelectorAll('span');
   spans.forEach(span => span.classList.add('active'));
