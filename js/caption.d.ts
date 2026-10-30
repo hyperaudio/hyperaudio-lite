@@ -42,8 +42,10 @@ export interface CaptionOptions {
   paragraphBreaks?: boolean;
   /**
    * Two short sentences from different speakers may share a caption: two
-   * speakers at most, one per line, each line opening with a hyphen. A
-   * caption with one speaker never has a hyphen. `paragraphBreaks` wins.
+   * speakers at most, one per line, each line opening with a hyphen. Each
+   * line is a sentence closed by its own punctuation: a turn a label cut
+   * mid-sentence keeps its own caption. A caption with one speaker never
+   * has a hyphen. `paragraphBreaks` wins.
    */
   dualSpeakers?: boolean;
   /**

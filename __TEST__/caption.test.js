@@ -472,6 +472,22 @@ test("dualSpeakers: two speakers at most, whole sentences only, and the hyphen c
   expect(lineTexts(run({ joinSentences: true, dualSpeakers: true }, 10, 5))).toEqual([["-Yes. No.", "-Fine."]]);
 });
 
+test("dualSpeakers: a turn without closing punctuation is no sentence, and shares with nothing (hyperaudio-lite-editor#749)", () => {
+  // a diarizer gave the one word opening "This is Marusa." to the other
+  // speaker: "This" neither joins the sentence before it nor opens a shared
+  // caption with the one after it
+  buildFromText("@Ann And we're sitting at Mozfest. @Bob This @Ann is Marusa.");
+  const result = run({ joinSentences: true, dualSpeakers: true });
+  expect(lineTexts(result)).toEqual([["And we're sitting at Mozfest."], ["This"], ["is Marusa."]]);
+  expect(result.data.map((c) => c.speakers)).toEqual([["Ann"], ["Bob"], ["Ann"]]);
+  // the same on the first side: a label cutting a sentence short
+  buildFromText("@Ann Ready @Bob Sure.");
+  expect(lineTexts(run({ dualSpeakers: true }))).toEqual([["Ready"], ["Sure."]]);
+  // a dotted abbreviation still closes a sentence, as the segmenter has it
+  buildFromText("@Ann See you at 5 p.m. @Bob Fine.");
+  expect(lineTexts(run({ dualSpeakers: true }))).toEqual([["-See you at 5 p.m.", "-Fine."]]);
+});
+
 test("dualSpeakers: paragraphBreaks wins, and a transcript with no labels is untouched", () => {
   buildFromText("@Ann Ready? | @Bob Sure.");
   expect(lineTexts(run({ dualSpeakers: true, paragraphBreaks: true }))).toEqual([["Ready?"], ["Sure."]]);

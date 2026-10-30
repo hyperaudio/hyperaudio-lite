@@ -1,5 +1,5 @@
 /*! (C) The Hyperaudio Project. MIT @license: en.wikipedia.org/wiki/MIT_License. */
-/*! Version 2.3.0 */
+/*! Version 2.3.1 */
 'use strict';
 
 const caption = function () {
@@ -305,6 +305,12 @@ const caption = function () {
       const first = prev.text.replace(/\n+$/, '');
       if (first.includes('\n')) return false;
       if (('-' + first).length > maxLineLength || ('-' + text).length > maxLineLength) return false;
+      // Each side is a sentence, closed by its own punctuation. A segment a
+      // label closed mid-sentence - "This", where a diarizer gave the one
+      // word of "This is Marusa." to the other speaker - is a fragment, and
+      // keeps its own caption on either side (hyperaudio-lite-editor#749).
+      const closes = (line) => endsSentence(line.trim().split(/\s+/).pop(), null);
+      if (!closes(first) || !closes(text)) return false;
       lineSpeakers.set(prev, [owner.get(prev) || '', segment.speakerName]);
       prev.text = '-' + first + '\n-' + text;
       prev.stop = formatSeconds(segmentStop);
